@@ -15,7 +15,8 @@ public class Swatch extends ApplicationAdapter {
 	Grid grid;
 	OrthographicCamera camera;
 	Viewport viewport;
-	int boxSize;
+	int boxSize = 20;
+	int margin = 10;
 	@Override
 	public void create () {
 		camera = new OrthographicCamera();
@@ -23,7 +24,7 @@ public class Swatch extends ApplicationAdapter {
 		// Make the short axis of the world larger to fill the screen, maintaining aspect ratio
 
 		grid = new Grid(15,15);
-		viewport = new ExtendViewport(grid.getWidth() * 3 + 1, grid.getHeight() * 3 + 1, camera);
+		viewport = new ExtendViewport(grid.getWidth() * (boxSize + margin) + margin, grid.getHeight() * (boxSize + margin) + margin, camera);
 		renderer = new ShapeRenderer();
 	}
 
@@ -46,7 +47,7 @@ public class Swatch extends ApplicationAdapter {
 		for (int i = 0; i < grid.getWidth(); i++) {
 			for (int j = 0; j < grid.getHeight(); j++) {
 				renderer.setColor(squares[i][j].getColor());
-				renderer.rect(i * 3 + 1,j * 3 + 1,2,2);
+				renderer.rect(i * (boxSize + margin) + margin,j * (boxSize + margin) + margin, boxSize, boxSize);
 			}
 		}
 	}
