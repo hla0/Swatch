@@ -4,12 +4,12 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.hla0.util.Constants;
 
 /**
  * Created by aft99 on 8/22/2016.
  */
 public class Input extends InputAdapter {
-    Grid grid;
     Viewport viewport;
     public Input(Viewport viewport) {
         this.viewport = viewport;
@@ -48,10 +48,9 @@ public class Input extends InputAdapter {
     }
 
     public Vector2 transformToGrid(Vector2 v1) {
-        int boxSize = 20;
-        int margin = 10;
-        int bottomPadding = 150;
-        Vector2 v = new Vector2((v1.x - (margin / 2))/(boxSize + margin),(v1.y - bottomPadding - (margin / 2)) / (boxSize + margin));
+
+        Vector2 v = new Vector2((v1.x - (Constants.margin / 2))/(Constants.boxSize + Constants.margin),
+                (v1.y - Constants.bottomPadding - (Constants.margin / 2)) / (Constants.boxSize + Constants.margin));
         //removes margins from grid with some flexibility for slightly off touches
         if (v.x % 1 >= .07 && v.x % 1 <= .93 && v.y % 1 >= .07 && v.y % 1 <= .93) {
             System.out.println("Obtained grid coordinates: (" + (int)v.x + ", " + (int)v.y + ")");
