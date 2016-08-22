@@ -1,6 +1,7 @@
 package com.hla0;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -18,19 +19,20 @@ public class Swatch extends ApplicationAdapter {
 	Viewport viewport;
 	int boxSize = 20;
 	int margin = 10;
-	int topPadding = 200;
-	int bottomPadding = 200;
+	int topPadding = 150;
+	int bottomPadding = 150;
 	@Override
 	public void create () {
 		camera = new OrthographicCamera();
 
 		// Make the short axis of the world larger to fill the screen, maintaining aspect ratio
 
-		grid = new Grid(15,15);
+		grid = new Grid(10,10);
 		viewport = new FitViewport(grid.getWidth() * (boxSize + margin) + margin,
 				grid.getHeight() * (boxSize + margin) + topPadding + bottomPadding + margin,
 				camera);
 		renderer = new ShapeRenderer();
+		Gdx.input.setInputProcessor(new Input(viewport));
 	}
 
 	@Override
@@ -52,7 +54,7 @@ public class Swatch extends ApplicationAdapter {
 		for (int i = 0; i < grid.getWidth(); i++) {
 			for (int j = 0; j < grid.getHeight(); j++) {
 				renderer.setColor(squares[i][j].getColor());
-				renderer.rect(i * (boxSize + margin) + margin,j * (boxSize + margin) + topPadding + margin, boxSize, boxSize);
+				renderer.rect(i * (boxSize + margin) + margin,j * (boxSize + margin) + bottomPadding + margin, boxSize, boxSize);
 			}
 		}
 	}
