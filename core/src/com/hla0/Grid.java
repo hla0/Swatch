@@ -18,13 +18,18 @@ public class Grid extends InputAdapter{
     boolean[] columnChanged;
     //check the state of all squares
     boolean animating;
+    int[] colorDestroyed;
+    //y screen index where new squares would be added
+    int top;
 
     Grid (int width, int height, Viewport viewport) {
         this.width = width;
         this.height = height;
         squares = new Square[width][height];
         columnChanged = new boolean[width];
+        colorDestroyed = new int[Constants.numColors];
         this.viewport = viewport;
+        top = Constants.bottomPadding + (height + 1) * (Constants.boxSize + Constants.margin);
         animating = false;
         init();
     }
@@ -32,8 +37,11 @@ public class Grid extends InputAdapter{
     void init() {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                squares[i][j] = new Square(i,j,(int)(Math.random() * 8));
+                squares[i][j] = new Square(i,j,(int)(Math.random() * Constants.numColors));
             }
+        }
+        for (int i = 0; i < Constants.numColors; i++) {
+            colorDestroyed[i] = 0;
         }
     }
 
@@ -50,6 +58,7 @@ public class Grid extends InputAdapter{
     public void removeSquare(Square s) {
         if (s != null) {
             columnChanged[s.x] = true;
+            colorDestroyed[s.getColorNum()]++;
             //check white
             if (s.getColorNum() == 1) {
                 squares[s.x][s.y] = null;
@@ -93,7 +102,8 @@ public class Grid extends InputAdapter{
                     Square s = findNextSquare(col, i);
                     //did not find square above
                     if (s == null) {
-                        squares[col][i] = new Square(col,i,(int)(Math.random() * 8));
+                        squares[col][i] = new Square(col,i,(int)(Math.random() * Constants.numColors));
+                        squares[col][i].pos.y = top + squareCount * (Constants.boxSize + Constants.margin);
                         squareCount++;
                         above = false;
                     }
@@ -107,7 +117,8 @@ public class Grid extends InputAdapter{
                 }
                 //no squares above
                 else {
-                    squares[col][i] = new Square(col,i,(int)(Math.random() * 8));
+                    squares[col][i] = new Square(col,i,(int)(Math.random() * Constants.numColors));
+                    squares[col][i].pos.y = top + squareCount * (Constants.boxSize + Constants.margin);
                     squareCount++;
                 }
                 //can add parameters to animate fall or swap
@@ -188,6 +199,7 @@ public class Grid extends InputAdapter{
     //TODO animate selected square
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        System.out.println(screenY);;
         //do not process touches when grid is animating
         if (animating) {
             //check if animating is finished
@@ -221,6 +233,7 @@ public class Grid extends InputAdapter{
         return v;
     }
 
+    //where there is selected = *; change status of the variable within square
     public void processTouch(int x, int y) {
         boolean onX = false;
         if (selected == null) {
@@ -258,10 +271,10 @@ public class Grid extends InputAdapter{
                 }
             }
         }
+        //second square on same row or column is clicked
         if (selected2 != null) {
             swapLineColors(selected, selected2, onX);
             updateColumns();
-            System.out.println("got second square");
             selected = null;
             selected2 = null;
         }

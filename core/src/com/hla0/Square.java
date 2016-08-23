@@ -1,7 +1,9 @@
 package com.hla0;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.hla0.util.Constants;
 
 public class Square {
     //position on screen
@@ -21,11 +23,22 @@ public class Square {
     Square(int x, int y, int c) {
         this.x = x;
         this.y = y;
+        pos = new Vector2(screenConvertX(x),screenConvertY(y));
         this.type = type;
         selected = false;
         animating = false;
         colorNum = c;
         setColor(c);
+    }
+
+
+
+    public int screenConvertX(int x) {
+        return x * (Constants.boxSize + Constants.margin) + Constants.margin;
+    }
+
+    public int screenConvertY(int y) {
+        return y * (Constants.boxSize + Constants.margin) + Constants.bottomPadding + Constants.margin;
     }
 
     public void setColor(int c) {
@@ -144,12 +157,19 @@ public class Square {
     //TODO animate falling blocks
     //if pos does not match x and y on grid move down
     public void update() {
-
+        if (pos.y != screenConvertY(y)) {
+            pos.y -= Constants.velocity;
+        }
+        else {
+            animating = false;
+        }
     }
 
     //TODO make sure render does not go off screen and draw portion of squares as it descends from top which can be done in swatch by placing black rectangle to cover
     //draw based on position on screen
-    public void render() {
-
+    public void render(ShapeRenderer r) {
+        update();
+        r.setColor(getColor());
+        r.rect(pos.x,pos.y,Constants.boxSize,Constants.boxSize);
     }
 }

@@ -1,6 +1,7 @@
 package com.hla0;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -37,6 +38,9 @@ public class Swatch extends ApplicationAdapter {
 		renderer.setProjectionMatrix(camera.combined);
 		renderer.begin(ShapeType.Filled);
 		renderGrid();
+		//section to block new Squares not working
+		//renderer.setColor(Color.RED);
+		//renderer.rect((grid.getHeight() + 1) * (Constants.boxSize + Constants.margin),0,(grid.getWidth() + 1) * (Constants.boxSize + Constants.margin),Constants.topPadding);
 		renderer.end();
 	}
 
@@ -49,10 +53,7 @@ public class Swatch extends ApplicationAdapter {
 			for (int j = 0; j < grid.getHeight(); j++) {
 				if (squares[i][j] != null) {
 					//TODO squares should render themselves
-					renderer.setColor(squares[i][j].getColor());
-					renderer.rect(i * (Constants.boxSize + Constants.margin) + Constants.margin,
-							j * (Constants.boxSize + Constants.margin) + Constants.bottomPadding + Constants.margin,
-							Constants.boxSize, Constants.boxSize);
+					squares[i][j].render(renderer);
 				}
 			}
 		}
