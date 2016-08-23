@@ -217,8 +217,9 @@ public class Grid extends InputAdapter{
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         //do not process touches when grid is animating
         if (animating) {
-            //if (toDelete.size() == 0 && )
             boolean animate = false;
+            if (toDelete.size() > 0)
+                animate = true;
             for (int i = 0; i < width; i++) {
                 for (int j = 0; j < height; j++) {
                     if (squares[i][j].isAnimating()) {
