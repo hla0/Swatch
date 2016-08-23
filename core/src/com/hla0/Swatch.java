@@ -10,6 +10,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hla0.util.Constants;
 
+import java.util.ArrayList;
+
 public class Swatch extends ApplicationAdapter {
 	public static final String TAG = Swatch.class.getName();
 	ShapeRenderer renderer;
@@ -46,9 +48,20 @@ public class Swatch extends ApplicationAdapter {
 
 	public void renderGrid() {
 		Square[][] squares = grid.getSquares();
+		ArrayList<Square> d = grid.getDeleted();
+		for (int i = d.size() - 1; i >= 0; i--) {
+			d.get(i).renderDeleted(renderer);
+			if (d.get(i).size < 0) {
+				d.remove(i);
+			}
+		}
+
 		for (int i = 0; i < grid.getWidth(); i++) {
 			for (int j = 0; j < grid.getHeight(); j++) {
 				if (squares[i][j] != null) {
+					if (d.size() == 0) {
+						squares[i][j].update();
+					}
 					squares[i][j].render(renderer);
 				}
 			}

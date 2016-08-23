@@ -19,6 +19,7 @@ public class Square {
     boolean selected;
     Color color;
     int colorNum;
+    int size;
     boolean animating;
     Square(int x, int y, int c) {
         this.x = x;
@@ -28,6 +29,7 @@ public class Square {
         selected = false;
         animating = false;
         colorNum = c;
+        size = Constants.boxSize;
         setColor(c);
     }
 
@@ -154,7 +156,9 @@ public class Square {
     public void invertBlue() {haveBlue = !haveBlue;}
     public void invertYellow() {haveYellow = !haveYellow;}
     public void animate() {animating = true;}
-    //TODO animate falling blocks
+    public boolean isAnimating() {return animating;}
+
+
     //if pos does not match x and y on grid move down
     public void update() {
         if (pos.y > screenConvertY(y)) {
@@ -171,8 +175,17 @@ public class Square {
     //TODO make sure render does not go off screen and draw portion of squares as it descends from top which can be done in swatch by placing black rectangle to cover
     //draw based on position on screen
     public void render(ShapeRenderer r) {
-        update();
         r.setColor(getColor());
         r.rect(pos.x,pos.y,Constants.boxSize,Constants.boxSize);
     }
+
+    public void renderDeleted(ShapeRenderer r) {
+        r.setColor(getColor());
+        size -= Constants.shrinkVelocity;
+        System.out.println(pos.x + ", " + pos.y);
+        pos.x += Constants.shrinkVelocity / 2;
+        pos.y += Constants.shrinkVelocity / 2;
+        r.rect(pos.x,pos.y,size,size);
+    }
+
 }

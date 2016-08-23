@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hla0.util.Constants;
 
 import java.math.*;
+import java.util.ArrayList;
 
 public class Grid extends InputAdapter{
     private Square[][] squares;
@@ -19,8 +20,11 @@ public class Grid extends InputAdapter{
     //check the state of all squares
     boolean animating;
     int[] colorDestroyed;
+    int totalDestroyed;
+    int moves;
     //y screen index where new squares would be added
     int top;
+    ArrayList<Square> toDelete;
 
     Grid (int width, int height, Viewport viewport) {
         this.width = width;
@@ -31,6 +35,9 @@ public class Grid extends InputAdapter{
         this.viewport = viewport;
         top = Constants.bottomPadding + (height + 1) * (Constants.boxSize + Constants.margin);
         animating = false;
+        moves = 0;
+        totalDestroyed = 0;
+        toDelete = new ArrayList<Square>();
         init();
     }
 
@@ -53,14 +60,18 @@ public class Grid extends InputAdapter{
 
     public int getHeight() {return height;}
 
+    //TODO animate removed blocks
     //deletions (depends on mode) match 3 and explode with black
     //remove the Square from the grid
     public void removeSquare(Square s) {
+        animating = true;
         if (s != null) {
             columnChanged[s.x] = true;
             colorDestroyed[s.getColorNum()]++;
+            totalDestroyed++;
             //check white
             if (s.getColorNum() == 1) {
+                toDelete.add(squares[s.x][s.y]);
                 squares[s.x][s.y] = null;
                 if (s.x + 1 < getWidth()) {
                     removeSquare(squares[s.x + 1][s.y]);
@@ -75,6 +86,7 @@ public class Grid extends InputAdapter{
                     removeSquare(squares[s.x][s.y - 1]);
                 }
             } else {
+                toDelete.add(squares[s.x][s.y]);
                 squares[s.x][s.y] = null;
             }
         }
@@ -92,7 +104,7 @@ public class Grid extends InputAdapter{
 
     //fix for removed squares in column
     public void updateColumn(int col) {
-        System.out.println(col);
+        animating = true;
         boolean above = true;
         int squareCount = 0;
         for (int i = 0; i < getHeight(); i++) {
@@ -140,14 +152,13 @@ public class Grid extends InputAdapter{
     //TODO animate swap colors
     //modifying colors
     public void swapLineColors(Square s1, Square s2, boolean onX) {
+        animating = true;
         boolean haveRed = s1.haveRed;
         boolean haveBlue = s1.haveBlue;
         boolean haveYellow = s1.haveYellow;
         System.out.println("swapping lines");
 
-        //can add parameters to animate fall or swap
-        //place in all for loops
-        //squares[x][y].animate();
+        //TODO nned to add a way to check animating has finished before uncommenting
 
         if (onX) {
             System.out.println("x are equal" + s1.x + " " + s2.x);
@@ -157,6 +168,7 @@ public class Grid extends InputAdapter{
                 for (int i = s1.y - 1; i >= s2.y; i--) {
                     System.out.println("swapping " + x + " " + i);
                     squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
+                    //squares[x][i].animate();
                 }
             }
             //swap up
@@ -164,6 +176,7 @@ public class Grid extends InputAdapter{
                 for (int i = s1.y + 1; i <= s2.y; i++) {
                     System.out.println("swapping " + x + " " + i);
                     squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
+                    //squares[x][i].animate();
                 }
             }
         }
@@ -176,6 +189,7 @@ public class Grid extends InputAdapter{
                 for (int i = s1.x - 1; i >= s2.x; i--) {
                     System.out.println("swapping " + i + " " + y);
                     squares[i][y].swapColor(haveRed, haveBlue, haveYellow);
+                    //squares[i][y].animate();
                 }
             }
             //swap right
@@ -184,6 +198,7 @@ public class Grid extends InputAdapter{
                 for (int i = s1.x + 1; i <= s2.x; i++) {
                     System.out.println("swapping " + i + " " + y);
                     squares[i][y].swapColor(haveRed, haveBlue, haveYellow);
+                    //squares[i][y].animate();
                 }
             }
         }
@@ -195,15 +210,27 @@ public class Grid extends InputAdapter{
     //should be called after swapLines and updateColumns
     //public void checkMatches() {}
 
+    public ArrayList<Square> getDeleted() {
+        return toDelete;
+    }
+
+
 
     //TODO animate selected square
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        System.out.println(screenY);;
         //do not process touches when grid is animating
         if (animating) {
-            //check if animating is finished
-            //go through all squares and check animation state and change animating to false if finished
+            //if (toDelete.size() == 0 && )
+            boolean animate = false;
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    if (squares[i][j].isAnimating()) {
+                        animate = true;
+                    }
+                }
+            }
+            animating = animate;
         }
         if (!animating) {
             Vector2 v = transformToGrid(viewport.unproject(new Vector2(screenX, screenY)));
@@ -243,6 +270,7 @@ public class Grid extends InputAdapter{
                 removeSquare(selected);
                 selected = null;
                 updateColumns();
+                moves++;
             }
         }
         else {
@@ -268,6 +296,7 @@ public class Grid extends InputAdapter{
                     removeSquare(selected);
                     selected = null;
                     updateColumns();
+                    moves++;
                 }
             }
         }
@@ -275,6 +304,7 @@ public class Grid extends InputAdapter{
         if (selected2 != null) {
             swapLineColors(selected, selected2, onX);
             updateColumns();
+            moves++;
             selected = null;
             selected2 = null;
         }
