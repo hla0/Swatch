@@ -60,8 +60,7 @@ public class Grid extends InputAdapter{
 
     public int getHeight() {return height;}
 
-    //TODO animate removed blocks
-    //deletions (depends on mode) match 3 and explode with black
+    //deletions (depends on mode) match 3 and explode with white
     //remove the Square from the grid
     public void removeSquare(Square s) {
         animating = true;
@@ -158,7 +157,7 @@ public class Grid extends InputAdapter{
         boolean haveYellow = s1.haveYellow;
         System.out.println("swapping lines");
 
-        //TODO nned to add a way to check animating has finished before uncommenting
+        //TODO need to add a way to check animating has finished before uncommenting
 
         if (onX) {
             System.out.println("x are equal" + s1.x + " " + s2.x);
@@ -257,7 +256,6 @@ public class Grid extends InputAdapter{
         return v;
     }
 
-    //TODO animate selected square
     //where there is selected = *; change status of the variable within square
     public void processTouch(int x, int y) {
         boolean onX = false;
@@ -292,13 +290,13 @@ public class Grid extends InputAdapter{
             //not in the same row or column
             else {
                 squares[selected.x][selected.y].setSelect(false);
+                selected = null;
                 //square is white
                 if (squares[x][y].getColorNum() == 1) {
                     removeSquare(squares[x][y]);
                     updateColumns();
                     moves++;
                 }
-                //can remove if want to reset
                 else {
                     selected = squares[x][y];
                     squares[x][y].setSelect(true);

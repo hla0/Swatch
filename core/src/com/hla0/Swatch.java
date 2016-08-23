@@ -40,6 +40,10 @@ public class Swatch extends ApplicationAdapter {
 		renderer.setProjectionMatrix(camera.combined);
 		renderer.begin(ShapeType.Filled);
 		renderGrid();
+		//TODO find better solution to hide new squares at top
+		//temporary solution
+		renderer.setColor(0,0,0,1);
+		renderer.rect(0,Constants.bottomPadding + 10 * (Constants.boxSize + Constants.margin) + Constants.margin,330,Constants.topPadding);
 		//section to block new Squares not working
 		//renderer.setColor(Color.RED);
 		//renderer.rect((grid.getHeight() + 1) * (Constants.boxSize + Constants.margin),0,(grid.getWidth() + 1) * (Constants.boxSize + Constants.margin),Constants.topPadding);
@@ -83,8 +87,4 @@ public class Swatch extends ApplicationAdapter {
 		renderer.dispose();
 		super.dispose();
 	}
-
-	//TODO checkGround() {}
-	//determine whether square is at the bottom of grid or the square below has been cleared;
-
 }

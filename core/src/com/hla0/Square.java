@@ -176,11 +176,12 @@ public class Square {
         }
     }
 
-    //TODO make sure render does not go off screen and draw portion of squares as it descends from top which can be done in swatch by placing black rectangle to cover
     //draw based on position on screen
     public void render(ShapeRenderer r) {
         r.setColor(getColor());
         r.rect(pos.x,pos.y,Constants.boxSize,Constants.boxSize);
+
+        //TODO properly animate selected
         if (selected) {
             r.setColor(new Color(1,1,1,0.5f));
             r.rect(pos.x + Constants.margin/2,pos.y + Constants.margin/2,Constants.boxSize - Constants.margin,Constants.boxSize - Constants.margin);
