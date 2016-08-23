@@ -19,15 +19,14 @@ public class Swatch extends ApplicationAdapter {
 	@Override
 	public void create () {
 		camera = new OrthographicCamera();
-
-		// Make the short axis of the world larger to fill the screen, maintaining aspect ratio
-
-		grid = new Grid(10,10);
-		viewport = new FitViewport(grid.getWidth() * (Constants.boxSize + Constants.margin) + Constants.margin,
-				grid.getHeight() * (Constants.boxSize + Constants.margin) + Constants.topPadding + Constants.bottomPadding + Constants.margin,
+		int width = 10;
+		int height = 10;
+		viewport = new FitViewport(width * (Constants.boxSize + Constants.margin) + Constants.margin,
+				height * (Constants.boxSize + Constants.margin) + Constants.topPadding + Constants.bottomPadding + Constants.margin,
 				camera);
+		grid = new Grid(width,height, viewport);
 		renderer = new ShapeRenderer();
-		Gdx.input.setInputProcessor(new Input(viewport));
+		Gdx.input.setInputProcessor(grid);
 	}
 
 	@Override

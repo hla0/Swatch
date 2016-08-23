@@ -12,30 +12,32 @@ public class Square {
     boolean haveYellow;
     boolean selected;
     Color color;
+    int colorNum;
 
-    Square(int x, int y, int type) {
+    Square(int x, int y, int c) {
         this.x = x;
         this.y = y;
         this.type = type;
         selected = false;
-        assignColor(type);
+        colorNum = c;
+        setColor(c);
     }
 
-    public void assignColor(int type) {
+    public void setColor(int c) {
         //colors except black and white from row 700 of https://www.materialui.co/colors
-        switch (type) {
+        switch (c) {
             //black
             case 0:
-                haveRed = false;
-                haveBlue = false;
-                haveYellow = false;
+                haveRed = true;
+                haveBlue = true;
+                haveYellow = true;
                 color = new Color(66/255f, 66/255f, 66/255f, 1);
                 break;
             //white
             case 1:
-                haveRed = true;
-                haveBlue = true;
-                haveYellow = true;
+                haveRed = false;
+                haveBlue = false;
+                haveYellow = false;
                 color = new Color(245/255f, 245/255f, 245/255f, 1);
                 break;
             //red
@@ -85,4 +87,51 @@ public class Square {
     public Color getColor() {
         return color;
     }
+    public int getColorNum() { return colorNum; }
+    public int getColorNum(boolean r, boolean b, boolean y) {
+        if (r && b && y) {
+            return 0;
+        }
+        else if (r && !b && !y) {
+            return 2;
+        }
+        else if (!r && b && !y) {
+            return 3;
+        }
+        else if (!r && !b && y) {
+            return 4;
+        }
+        else if (!r && b && y) {
+            return 5;
+        }
+        else if (r && !b && y) {
+            return 6;
+        }
+        else if (r && b && !y) {
+            return 7;
+        }
+        else {
+            return 1;
+        }
+
+    };
+    public void swapColor(boolean r, boolean b,boolean y) {
+        System.out.println(haveRed + " " + haveBlue + " " + haveYellow);
+        if (r) {
+            invertRed();
+        }
+        if (b) {
+            invertBlue();
+        }
+        if (y) {
+            invertYellow();
+        }
+        System.out.println(haveRed + " " + haveBlue + " " + haveYellow);
+        setColor(getColorNum(haveRed, haveBlue, haveYellow));
+    }
+    public int getX() { return x; }
+    public int getY() { return y; }
+    public void invertRed() {haveRed = !haveRed;}
+    public void invertBlue() {haveBlue = !haveBlue;}
+    public void invertYellow() {haveYellow = !haveYellow;}
 }
