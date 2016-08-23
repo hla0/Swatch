@@ -16,6 +16,8 @@ public class Grid extends InputAdapter{
     int height;
     Viewport viewport;
     boolean[] columnChanged;
+    //check the state of all squares
+    boolean animating;
 
     Grid (int width, int height, Viewport viewport) {
         this.width = width;
@@ -23,6 +25,7 @@ public class Grid extends InputAdapter{
         squares = new Square[width][height];
         columnChanged = new boolean[width];
         this.viewport = viewport;
+        animating = false;
         init();
     }
 
@@ -82,6 +85,7 @@ public class Grid extends InputAdapter{
     public void updateColumn(int col) {
         System.out.println(col);
         boolean above = true;
+        int squareCount = 0;
         for (int i = 0; i < getHeight(); i++) {
             if (squares[col][i] == null) {
                 //try finding squares above
@@ -90,6 +94,7 @@ public class Grid extends InputAdapter{
                     //did not find square above
                     if (s == null) {
                         squares[col][i] = new Square(col,i,(int)(Math.random() * 8));
+                        squareCount++;
                         above = false;
                     }
                     //found next square above
@@ -98,12 +103,12 @@ public class Grid extends InputAdapter{
                         squares[s.x][s.y] = null;
                         s.moveTo(col,i);
                         squares[col][i] = s;
-
                     }
                 }
                 //no squares above
                 else {
                     squares[col][i] = new Square(col,i,(int)(Math.random() * 8));
+                    squareCount++;
                 }
             }
         }
@@ -119,7 +124,7 @@ public class Grid extends InputAdapter{
         return s;
     }
 
-
+    //TODO animate swap colors
     //modifying colors
     public void swapLineColors(Square s1, Square s2, boolean onX) {
         boolean haveRed = s1.haveRed;
@@ -164,37 +169,46 @@ public class Grid extends InputAdapter{
                 }
             }
         }
+        //start checking for matches and removing
         System.out.println("finished swapping");
     }
 
+    //TODO check if there are any match 3s and remove them then update columns and recheck
+    //should be called after swapLines and updateColumns
+    //public void checkMatches() {}
 
 
+    //TODO animate selected square
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        System.out.println(screenX + ", " + screenY);
-        Vector2 v = transformToGrid(viewport.unproject(new Vector2(screenX,screenY)));
-        boolean withinGrid = false;
-        //removes margins from grid with some flexibility for slightly off touches
-        if (v.x % 1 >= .07 && v.x % 1 <= .93 && v.y % 1 >= .07 && v.y % 1 <= .93) {
-            if (v.x >= getWidth()|| v.x < 0 || v.y >= getHeight() || v.y < 0) {
+        //do not process touches when grid is animating
+        if (animating) {
+            //check if animating is finished
+            //go through all squares and check animation state and change animating to false if finished
+        }
+        if (!animating) {
+            Vector2 v = transformToGrid(viewport.unproject(new Vector2(screenX, screenY)));
+            boolean withinGrid = false;
+            //removes margins from grid with some flexibility for slightly off touches
+            if (v.x % 1 >= .07 && v.x % 1 <= .93 && v.y % 1 >= .07 && v.y % 1 <= .93) {
+                if (v.x >= getWidth() || v.x < 0 || v.y >= getHeight() || v.y < 0) {
+                    System.out.println("Outside grid");
+                    withinGrid = false;
+                } else {
+                    System.out.println("Obtained grid coordinates: (" + (int) v.x + ", " + (int) v.y + ")");
+                    processTouch((int) v.x, (int) v.y);
+                    withinGrid = true;
+                }
+            } else {
                 System.out.println("Outside grid");
                 withinGrid = false;
             }
-            else {
-                System.out.println("Obtained grid coordinates: (" + (int) v.x + ", " + (int) v.y + ")");
-                processTouch((int) v.x, (int) v.y);
-                withinGrid = true;
-            }
+            return withinGrid;
         }
-        else {
-            System.out.println("Outside grid");
-            withinGrid = false;
-        }
-        return withinGrid;
+        return false;
     }
 
     public Vector2 transformToGrid(Vector2 v1) {
-
         Vector2 v = new Vector2((v1.x - (Constants.margin / 2))/(Constants.boxSize + Constants.margin),
                 (v1.y - Constants.bottomPadding - (Constants.margin / 2)) / (Constants.boxSize + Constants.margin));
         return v;

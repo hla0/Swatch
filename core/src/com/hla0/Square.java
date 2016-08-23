@@ -1,8 +1,12 @@
 package com.hla0;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 
 public class Square {
+    //position on screen
+    Vector2 pos;
+
     //indices in the grid
     int x;
     int y;
@@ -135,4 +139,16 @@ public class Square {
     public void invertRed() {haveRed = !haveRed;}
     public void invertBlue() {haveBlue = !haveBlue;}
     public void invertYellow() {haveYellow = !haveYellow;}
+
+    //TODO animate falling blocks
+    //if pos does not match x and y on grid move down
+    public void update() {
+
+    }
+
+    //TODO make sure render does not go off screen and draw portion of squares as it descends from top which can be done in swatch by placing black rectangle to cover
+    //draw based on position on screen
+    public void render() {
+
+    }
 }
