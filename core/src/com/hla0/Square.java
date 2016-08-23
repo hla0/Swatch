@@ -17,12 +17,13 @@ public class Square {
     boolean selected;
     Color color;
     int colorNum;
-
+    boolean animating;
     Square(int x, int y, int c) {
         this.x = x;
         this.y = y;
         this.type = type;
         selected = false;
+        animating = false;
         colorNum = c;
         setColor(c);
     }
@@ -139,7 +140,7 @@ public class Square {
     public void invertRed() {haveRed = !haveRed;}
     public void invertBlue() {haveBlue = !haveBlue;}
     public void invertYellow() {haveYellow = !haveYellow;}
-
+    public void animate() {animating = true;}
     //TODO animate falling blocks
     //if pos does not match x and y on grid move down
     public void update() {

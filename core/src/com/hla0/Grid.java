@@ -110,6 +110,8 @@ public class Grid extends InputAdapter{
                     squares[col][i] = new Square(col,i,(int)(Math.random() * 8));
                     squareCount++;
                 }
+                //can add parameters to animate fall or swap
+                squares[col][i].animate();
             }
         }
     }
@@ -131,6 +133,11 @@ public class Grid extends InputAdapter{
         boolean haveBlue = s1.haveBlue;
         boolean haveYellow = s1.haveYellow;
         System.out.println("swapping lines");
+
+        //can add parameters to animate fall or swap
+        //place in all for loops
+        //squares[x][y].animate();
+
         if (onX) {
             System.out.println("x are equal" + s1.x + " " + s2.x);
             int x = s1.x;
@@ -243,6 +250,12 @@ public class Grid extends InputAdapter{
             //not in the same row or column
             else {
                 selected = squares[x][y];
+                //square is white
+                if (selected.getColorNum() == 1) {
+                    removeSquare(selected);
+                    selected = null;
+                    updateColumns();
+                }
             }
         }
         if (selected2 != null) {
