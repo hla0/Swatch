@@ -42,13 +42,35 @@ public class Grid extends InputAdapter{
     }
 
     void init() {
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                squares[i][j] = new Square(i,j,(int)(Math.random() * Constants.numColors));
-            }
-        }
+        generateWithoutChains();
         for (int i = 0; i < Constants.numColors; i++) {
             colorDestroyed[i] = 0;
+        }
+    }
+
+    //create a grid without match3
+    void generateWithoutChains() {
+        int colorLeft = -1;
+        int colorUp = -1;
+        int randomColor;
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                randomColor = (int)(Math.random() * Constants.numColors);
+                if (i > 1) {
+                    if (squares[i-1][j].getColorNum() == squares[i-2][j].getColorNum()) {
+                        colorLeft = squares[i-1][j].getColorNum();
+                    }
+                }
+                if (j > 1) {
+                    if (squares[i][j-1].getColorNum() == squares[i][j-2].getColorNum()) {
+                        colorUp = squares[i][j-1].getColorNum();
+                    }
+                }
+                while (randomColor == colorLeft || randomColor == colorUp) {
+                    randomColor = (int)(Math.random() * Constants.numColors);
+                }
+                squares[i][j] = new Square(i, j, randomColor);
+            }
         }
     }
 
@@ -103,8 +125,9 @@ public class Grid extends InputAdapter{
                 columnChanged[i] = false;
             }
         }
+        //TODO need a way to slow down the updates so animation can cascade
         if (checkMatches()) {
-            updateColumns();
+            //updateColumns();
         }
     }
 
@@ -117,7 +140,7 @@ public class Grid extends InputAdapter{
             if (squares[col][i] == null) {
                 //try finding squares above
                 if (above) {
-                    Square s = findNextSquare(col, i);
+                    Square s = findSquareAbove(col, i);
                     //did not find square above
                     if (s == null) {
                         squares[col][i] = new Square(col,i,(int)(Math.random() * Constants.numColors));
@@ -145,7 +168,7 @@ public class Grid extends InputAdapter{
         }
     }
 
-    public Square findNextSquare(int col, int index) {
+    public Square findSquareAbove(int col, int index) {
         Square s = null;
         for (int i = index + 1; i < getHeight(); i++) {
             if (squares[col][i] != null) {
@@ -210,6 +233,8 @@ public class Grid extends InputAdapter{
         }
         //start checking for matches and removing
         System.out.println("finished swapping");
+        //TODO fix continuous checking
+        // will overflow currently because no removals occur
         if (checkMatches()) {
             updateColumns();
         }
@@ -219,6 +244,8 @@ public class Grid extends InputAdapter{
     //should be called after swapLines and updateColumns
     public boolean checkMatches() {
         boolean match = false;
+        /*
+
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
                 if (squares[i][j] != null) {
@@ -229,90 +256,153 @@ public class Grid extends InputAdapter{
             }
         }
         return match;
+        */
+        for (int i = 0; i < getHeight(); i++) {
+            if (scanHorizontal(i)) {
+                match = true;
+                System.out.println("Found horizontal match on row " + i);
+            }
+        }
+        for (int i = 0; i < getWidth(); i++) {
+            if (scanVertical(i)) {
+                match = true;
+                System.out.println("Found vertical match on column " + i);
+            }
+        }
+        return match;
     }
 
-    public boolean checkMatch(Square s) {
+    public boolean scanHorizontal(int row) {
+        int curColor = -1;
+        int count = 0;
+        boolean match = false;
+        Square left1 = null;
+        Square left2 = null;
+        Square right1 = null;
+        Square right2 = null;
 
-        int horizontalCount = 1;
-        int verticalCount = 1;
-        boolean removed = false;
-        if (s.getX() + 1 < getWidth() && squares[s.getX() + 1][s.getY()] != null && squares[s.getX() + 1][s.getY()].getColorNum() == s.getColorNum()) {
-            if (s.getX() + 2 < getWidth() && squares[s.getX() + 2][s.getY()] != null && squares[s.getX() + 2][s.getY()].getColorNum() == s.getColorNum()) {
-                horizontalCount += 2;
-                removeSquare(squares[s.getX() + 1][s.getY()]);
-                removeSquare(squares[s.getX() + 2][s.getY()]);
-                removed = true;
+
+        for (int i = 0; i < getWidth(); i++) {
+            Square curSquare = squares[i][row];
+            if (curSquare != null) {
+                count = 1;
+                curColor = curSquare.getColorNum();
+                if (i - 2 >= 0) {
+                    left2 = squares[i - 2][row];
+                }
+                if (i - 1 >= 0) {
+                    left1 = squares[i - 1][row];
+                }
+                if (i + 2 < getWidth()) {
+                    right2 = squares[i + 2][row];
+                }
+                if (i + 1 < getWidth()) {
+                    right1 = squares[i + 1][row];
+                }
+                if (left1 != null && left1.getColorNum() == curColor) {
+                    count++;
+                    if (left2 != null && left2.getColorNum() == curColor) {
+                        count++;
+                    }
+                }
+                if (right1 != null && right1.getColorNum() == curColor) {
+                    count++;
+                    if (right2 != null && right2.getColorNum() == curColor) {
+                        count++;
+                    }
+                }
+                if (count >= 3) {
+                    System.out.println(count + "Found horizontal match for " + curSquare.getX() + ", " + curSquare.getY());
+                    match = true;
+                }
+                count = 0;
+                left1 = null;
+                left2 = null;
+                right1 = null;
+                right2 = null;
             }
-            else {
-                horizontalCount++;
-            }
-        }
-        if (s.getX() - 1 >=  0 && squares[s.getX() - 1][s.getY()] != null && squares[s.getX() - 1][s.getY()].getColorNum() == s.getColorNum()) {
-            if (s.getX() - 2 >=  0 && squares[s.getX() - 2][s.getY()] != null && squares[s.getX() - 2][s.getY()].getColorNum() == s.getColorNum()) {
-                horizontalCount += 2;
-                removeSquare(squares[s.getX() - 1][s.getY()]);
-                removeSquare(squares[s.getX() - 2][s.getY()]);
-                removed = true;
-            }
-            else {
-                horizontalCount++;
-            }
-        }
-        if (s.getY() + 1 < getHeight() && squares[s.getX()][s.getY() + 1] != null && squares[s.getX()][s.getY() + 1].getColorNum() == s.getColorNum()) {
-            if (s.getY() + 2 < getHeight() && squares[s.getX()][s.getY() + 2] != null && squares[s.getX()][s.getY() + 2].getColorNum() == s.getColorNum()) {
-                verticalCount += 2;
-                removeSquare(squares[s.getX()][s.getY() + 1]);
-                removeSquare(squares[s.getX()][s.getY() + 2]);
-            }
-            else {
-                verticalCount++;
-            }
-        }
-        if (s.getY() - 1 >=  0 && squares[s.getX()][s.getY() - 1] != null && squares[s.getX()][s.getY() - 1].getColorNum() == s.getColorNum()) {
-            if (s.getY() - 2 >=  0 && squares[s.getX()][s.getY() - 2] != null && squares[s.getX()][s.getY() - 2].getColorNum() == s.getColorNum()) {
-                verticalCount += 2;
-                removeSquare(squares[s.getX()][s.getY() - 1]);
-                removeSquare(squares[s.getX()][s.getY() - 2]);
-            }
-            else {
-                verticalCount++;
-            }
-        }
-        boolean match = horizontalCount >= 3 || verticalCount >= 3;
-        if (match) {
-            removeSquare(s);
-        }
-        if (horizontalCount >= 3 && !removed) {
-            removeSquare(squares[s.getX() + 1][s.getY()]);
-            removeSquare(squares[s.getX() - 1][s.getY()]);
-        }
-        if (verticalCount >= 3 && ! removed) {
-            removeSquare(squares[s.getX()][s.getY() + 1]);
-            removeSquare(squares[s.getX()][s.getY() - 1]);
         }
         return match;
     }
 
 
+    public boolean scanVertical(int col) {
+        int curColor = -1;
+        int count = 0;
+        boolean match = false;
+        Square up1 = null;
+        Square up2 = null;
+        Square down1 = null;
+        Square down2 = null;
+
+        for (int i = 0; i < getHeight(); i++) {
+            Square curSquare = squares[col][i];
+            if (curSquare != null) {
+                count = 1;
+                curColor = curSquare.getColorNum();
+                if (i + 2 < getHeight()) {
+                    up2 = squares[col][i + 2];
+                }
+                if (i + 1 < getHeight()) {
+                    up1 = squares[col][i + 1];
+                }
+                if (i - 2 >= 0) {
+                    down2 = squares[col][i - 2];
+                }
+                if (i - 1 >= 0) {
+                    down1 = squares[col][i - 1];
+                }
+                if (down1 != null && down1.getColorNum() == curColor) {
+                    count++;
+                    if (down2 != null && down2.getColorNum() == curColor) {
+                        count++;
+                    }
+                }
+                if (up1 != null && up1.getColorNum() == curColor) {
+                    count++;
+                    if (up2 != null && up2.getColorNum() == curColor) {
+                        count++;
+                    }
+                }
+                if (count >= 3) {
+                    System.out.println(count + "Found vertical match for " + curSquare.getX() + ", " + curSquare.getY());
+                    match = true;
+                }
+
+                count = 0;
+                up1 = null;
+                up2 = null;
+                down1 = null;
+                down1 = null;
+            }
+        }
+        return match;
+    }
+
     public ArrayList<Square> getDeleted() {
         return toDelete;
     }
+
+    public boolean isAnimating() {
+        if (toDelete.size() > 0) {
+            return true;
+        }
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (squares[i][j] != null && squares[i][j].isAnimating()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         //do not process touches when grid is animating
         if (animating) {
-            boolean animate = false;
-            if (toDelete.size() > 0)
-                animate = true;
-            for (int i = 0; i < width; i++) {
-                for (int j = 0; j < height; j++) {
-                    if (squares[i][j].isAnimating()) {
-                        animate = true;
-                    }
-                }
-            }
-            animating = animate;
+            animating = isAnimating();
         }
         if (!animating) {
             Vector2 v = transformToGrid(viewport.unproject(new Vector2(screenX, screenY)));

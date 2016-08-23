@@ -138,7 +138,6 @@ public class Square {
 
     };
     public void swapColor(boolean r, boolean b,boolean y) {
-        System.out.println(haveRed + " " + haveBlue + " " + haveYellow);
         if (r) {
             invertRed();
         }
@@ -191,7 +190,6 @@ public class Square {
     public void renderDeleted(ShapeRenderer r) {
         r.setColor(getColor());
         size -= Constants.shrinkVelocity;
-        System.out.println(pos.x + ", " + pos.y);
         pos.x += Constants.shrinkVelocity / 2;
         pos.y += Constants.shrinkVelocity / 2;
         r.rect(pos.x,pos.y,size,size);
