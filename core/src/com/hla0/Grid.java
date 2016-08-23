@@ -15,11 +15,13 @@ public class Grid extends InputAdapter{
     int width;
     int height;
     Viewport viewport;
+    boolean[] columnChanged;
 
     Grid (int width, int height, Viewport viewport) {
         this.width = width;
         this.height = height;
         squares = new Square[width][height];
+        columnChanged = new boolean[width];
         this.viewport = viewport;
         init();
     }
@@ -41,9 +43,82 @@ public class Grid extends InputAdapter{
     public int getHeight() {return height;}
 
     //deletions (depends on mode) match 3 and explode with black
+    //remove the Square from the grid
+    public void removeSquare(Square s) {
+        if (s != null) {
+            columnChanged[s.x] = true;
+            //check white
+            if (s.getColorNum() == 1) {
+                squares[s.x][s.y] = null;
+                if (s.x + 1 < getWidth()) {
+                    removeSquare(squares[s.x + 1][s.y]);
+                }
+                if (s.x > 0) {
+                    removeSquare(squares[s.x - 1][s.y]);
+                }
+                if (s.y + 1 < getHeight()) {
+                    removeSquare(squares[s.x][s.y + 1]);
+                }
+                if (s.y > 0) {
+                    removeSquare(squares[s.x][s.y - 1]);
+                }
+            } else {
+                squares[s.x][s.y] = null;
+            }
+        }
+    }
 
     //rearrange column so that blocks have fallen
-    //private void fixColumn(int col) {;}
+    public void updateColumns() {
+        for (int i = 0; i < width; i++) {
+            if (columnChanged[i]) {
+                updateColumn(i);
+                columnChanged[i] = false;
+            }
+        }
+    }
+
+    //fix for removed squares in column
+    public void updateColumn(int col) {
+        System.out.println(col);
+        boolean above = true;
+        for (int i = 0; i < getHeight(); i++) {
+            if (squares[col][i] == null) {
+                //try finding squares above
+                if (above) {
+                    Square s = findNextSquare(col, i);
+                    //did not find square above
+                    if (s == null) {
+                        squares[col][i] = new Square(col,i,(int)(Math.random() * 8));
+                        above = false;
+                    }
+                    //found next square above
+                    //moving square down and removing old copy
+                    else {
+                        squares[s.x][s.y] = null;
+                        s.moveTo(col,i);
+                        squares[col][i] = s;
+
+                    }
+                }
+                //no squares above
+                else {
+                    squares[col][i] = new Square(col,i,(int)(Math.random() * 8));
+                }
+            }
+        }
+    }
+
+    public Square findNextSquare(int col, int index) {
+        Square s = null;
+        for (int i = index + 1; i < getHeight(); i++) {
+            if (squares[col][i] != null) {
+                return squares[col][i];
+            }
+        }
+        return s;
+    }
+
 
     //modifying colors
     public void swapLineColors(Square s1, Square s2, boolean onX) {
@@ -100,9 +175,6 @@ public class Grid extends InputAdapter{
         Vector2 v = transformToGrid(viewport.unproject(new Vector2(screenX,screenY)));
         boolean withinGrid = false;
         //removes margins from grid with some flexibility for slightly off touches
-        //need to cover out of grid
-        System.out.println(getWidth() + " " + getHeight());
-
         if (v.x % 1 >= .07 && v.x % 1 <= .93 && v.y % 1 >= .07 && v.y % 1 <= .93) {
             if (v.x >= getWidth()|| v.x < 0 || v.y >= getHeight() || v.y < 0) {
                 System.out.println("Outside grid");
@@ -132,6 +204,12 @@ public class Grid extends InputAdapter{
         boolean onX = false;
         if (selected == null) {
             selected = squares[x][y];
+            //square is white
+            if (selected.getColorNum() == 1) {
+                removeSquare(selected);
+                selected = null;
+                updateColumns();
+            }
         }
         else {
             //same square
@@ -155,6 +233,7 @@ public class Grid extends InputAdapter{
         }
         if (selected2 != null) {
             swapLineColors(selected, selected2, onX);
+            updateColumns();
             System.out.println("got second square");
             selected = null;
             selected2 = null;

@@ -126,11 +126,12 @@ public class Square {
         if (y) {
             invertYellow();
         }
-        System.out.println(haveRed + " " + haveBlue + " " + haveYellow);
+        colorNum = getColorNum(haveRed,haveBlue,haveYellow);
         setColor(getColorNum(haveRed, haveBlue, haveYellow));
     }
     public int getX() { return x; }
     public int getY() { return y; }
+    public void moveTo(int x, int y) {this.x = x; this.y = y;}
     public void invertRed() {haveRed = !haveRed;}
     public void invertBlue() {haveBlue = !haveBlue;}
     public void invertYellow() {haveYellow = !haveYellow;}

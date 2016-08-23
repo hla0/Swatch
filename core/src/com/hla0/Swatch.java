@@ -47,10 +47,12 @@ public class Swatch extends ApplicationAdapter {
 
 		for (int i = 0; i < grid.getWidth(); i++) {
 			for (int j = 0; j < grid.getHeight(); j++) {
-				renderer.setColor(squares[i][j].getColor());
-				renderer.rect(i * (Constants.boxSize + Constants.margin) + Constants.margin,
-						j * (Constants.boxSize + Constants.margin) + Constants.bottomPadding + Constants.margin,
-						Constants.boxSize, Constants.boxSize);
+				if (squares[i][j] != null) {
+					renderer.setColor(squares[i][j].getColor());
+					renderer.rect(i * (Constants.boxSize + Constants.margin) + Constants.margin,
+							j * (Constants.boxSize + Constants.margin) + Constants.bottomPadding + Constants.margin,
+							Constants.boxSize, Constants.boxSize);
+				}
 			}
 		}
 	}
