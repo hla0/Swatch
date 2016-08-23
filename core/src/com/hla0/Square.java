@@ -21,6 +21,7 @@ public class Square {
     int colorNum;
     int size;
     boolean animating;
+
     Square(int x, int y, int c) {
         this.x = x;
         this.y = y;
@@ -30,6 +31,7 @@ public class Square {
         animating = false;
         colorNum = c;
         size = Constants.boxSize;
+        selected = false;
         setColor(c);
     }
 
@@ -157,6 +159,8 @@ public class Square {
     public void invertYellow() {haveYellow = !haveYellow;}
     public void animate() {animating = true;}
     public boolean isAnimating() {return animating;}
+    public void setSelect(boolean s) {selected = s;}
+    public boolean isSelected() {return selected;}
 
 
     //if pos does not match x and y on grid move down
@@ -177,6 +181,10 @@ public class Square {
     public void render(ShapeRenderer r) {
         r.setColor(getColor());
         r.rect(pos.x,pos.y,Constants.boxSize,Constants.boxSize);
+        if (selected) {
+            r.setColor(new Color(1,1,1,0.5f));
+            r.rect(pos.x + Constants.margin/2,pos.y + Constants.margin/2,Constants.boxSize - Constants.margin,Constants.boxSize - Constants.margin);
+        }
     }
 
     public void renderDeleted(ShapeRenderer r) {

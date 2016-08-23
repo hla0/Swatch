@@ -214,9 +214,6 @@ public class Grid extends InputAdapter{
         return toDelete;
     }
 
-
-
-    //TODO animate selected square
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         //do not process touches when grid is animating
@@ -260,23 +257,27 @@ public class Grid extends InputAdapter{
         return v;
     }
 
+    //TODO animate selected square
     //where there is selected = *; change status of the variable within square
     public void processTouch(int x, int y) {
         boolean onX = false;
         if (selected == null) {
-            selected = squares[x][y];
             //square is white
-            if (selected.getColorNum() == 1) {
-                removeSquare(selected);
-                selected = null;
+            if (squares[x][y].getColorNum() == 1) {
+                removeSquare(squares[x][y]);
                 updateColumns();
                 moves++;
+            }
+            else {
+                selected = squares[x][y];
+                squares[x][y].setSelect(true);
             }
         }
         else {
             //same square
             if (selected.getX() == x && selected.getY() == y) {
                 selected = null;
+                squares[x][y].setSelect(false);
             }
             //on same column
             else if (selected.getX() == x) {
@@ -290,13 +291,17 @@ public class Grid extends InputAdapter{
             }
             //not in the same row or column
             else {
-                selected = squares[x][y];
+                squares[selected.x][selected.y].setSelect(false);
                 //square is white
-                if (selected.getColorNum() == 1) {
-                    removeSquare(selected);
-                    selected = null;
+                if (squares[x][y].getColorNum() == 1) {
+                    removeSquare(squares[x][y]);
                     updateColumns();
                     moves++;
+                }
+                //can remove if want to reset
+                else {
+                    selected = squares[x][y];
+                    squares[x][y].setSelect(true);
                 }
             }
         }
@@ -305,6 +310,7 @@ public class Grid extends InputAdapter{
             swapLineColors(selected, selected2, onX);
             updateColumns();
             moves++;
+            squares[selected.x][selected.y].setSelect(false);
             selected = null;
             selected2 = null;
         }
