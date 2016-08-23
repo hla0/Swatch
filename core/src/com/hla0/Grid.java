@@ -102,14 +102,17 @@ public class Grid extends InputAdapter{
         //removes margins from grid with some flexibility for slightly off touches
         //need to cover out of grid
         System.out.println(getWidth() + " " + getHeight());
-        if (v.x > getWidth() - 1 || v.x < 0 || v.y > getHeight() - 1 || v.y < 0) {
-            System.out.println("Outside grid");
-            withinGrid = false;
-        }
-        else if (v.x % 1 >= .07 && v.x % 1 <= .93 && v.y % 1 >= .07 && v.y % 1 <= .93) {
-            System.out.println("Obtained grid coordinates: (" + (int) v.x + ", " + (int) v.y + ")");
-            processTouch((int) v.x, (int) v.y);
-            withinGrid = true;
+
+        if (v.x % 1 >= .07 && v.x % 1 <= .93 && v.y % 1 >= .07 && v.y % 1 <= .93) {
+            if (v.x >= getWidth()|| v.x < 0 || v.y >= getHeight() || v.y < 0) {
+                System.out.println("Outside grid");
+                withinGrid = false;
+            }
+            else {
+                System.out.println("Obtained grid coordinates: (" + (int) v.x + ", " + (int) v.y + ")");
+                processTouch((int) v.x, (int) v.y);
+                withinGrid = true;
+            }
         }
         else {
             System.out.println("Outside grid");
