@@ -9,5 +9,5 @@ public class Constants {
     public static final int topPadding = 150;
     public static final int bottomPadding = 150;
     public static final int numColors = 8;
-    public static final int velocity = 10;
+    public static final int velocity = 12;
 }

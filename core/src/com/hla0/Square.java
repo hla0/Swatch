@@ -157,8 +157,11 @@ public class Square {
     //TODO animate falling blocks
     //if pos does not match x and y on grid move down
     public void update() {
-        if (pos.y != screenConvertY(y)) {
+        if (pos.y > screenConvertY(y)) {
             pos.y -= Constants.velocity;
+        }
+        else if (pos.y < screenConvertY(y)) {
+            pos.y = screenConvertY(y);
         }
         else {
             animating = false;

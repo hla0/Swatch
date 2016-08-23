@@ -46,13 +46,9 @@ public class Swatch extends ApplicationAdapter {
 
 	public void renderGrid() {
 		Square[][] squares = grid.getSquares();
-		int width = Gdx.graphics.getWidth();
-		int height = Gdx.graphics.getHeight();
-
 		for (int i = 0; i < grid.getWidth(); i++) {
 			for (int j = 0; j < grid.getHeight(); j++) {
 				if (squares[i][j] != null) {
-					//TODO squares should render themselves
 					squares[i][j].render(renderer);
 				}
 			}
@@ -66,7 +62,7 @@ public class Swatch extends ApplicationAdapter {
 	@Override
 	public void resize(int width, int height) {
 		viewport.update(width, height, true);
-		Gdx.app.log(TAG, "Viewport world dimensions: (" + viewport.getWorldHeight() + ", " + viewport.getWorldWidth() + ")");
+		//Gdx.app.log(TAG, "Viewport world dimensions: (" + viewport.getWorldHeight() + ", " + viewport.getWorldWidth() + ")");
 	}
 
 	@Override
