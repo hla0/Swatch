@@ -1,6 +1,8 @@
 package com.hla0;
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -12,18 +14,19 @@ import com.hla0.util.Constants;
 
 import java.util.ArrayList;
 
-public class Swatch extends ApplicationAdapter {
+public class Swatch extends Game {
 	public static final String TAG = Swatch.class.getName();
 	ShapeRenderer renderer;
 	Grid grid;
 	OrthographicCamera camera;
 	Viewport viewport;
 
+	//TODO Add separate screens and move current functions into relevant screen
 	@Override
 	public void create () {
 		camera = new OrthographicCamera();
-		int width = 10;
-		int height = 10;
+		int width = 9;
+		int height = 9;
 		viewport = new FitViewport(width * (Constants.boxSize + Constants.margin) + Constants.margin,
 				height * (Constants.boxSize + Constants.margin) + Constants.topPadding + Constants.bottomPadding + Constants.margin,
 				camera);
@@ -48,6 +51,7 @@ public class Swatch extends ApplicationAdapter {
 		//renderer.setColor(Color.RED);
 		//renderer.rect((grid.getHeight() + 1) * (Constants.boxSize + Constants.margin),0,(grid.getWidth() + 1) * (Constants.boxSize + Constants.margin),Constants.topPadding);
 		renderer.end();
+
 	}
 
 	public void renderGrid() {

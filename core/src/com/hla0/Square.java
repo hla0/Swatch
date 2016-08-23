@@ -169,7 +169,7 @@ public class Square {
             pos.y -= Constants.velocity;
         }
         else if (pos.y < screenConvertY(y)) {
-            pos.y = screenConvertY(y);
+            pos.y = screenConvertY(y) + Constants.velocity;
         }
         else {
             animating = false;
