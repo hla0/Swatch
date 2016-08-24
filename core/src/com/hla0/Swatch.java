@@ -70,7 +70,7 @@ public class Swatch extends Game {
 		}
 		for (int i = deleted.size() - 1; i >= 0; i--) {
 			deleted.get(i).renderDeleted(renderer);
-			if (deleted.get(i).size < 0) {
+			if (deleted.get(i).width < 0) {
 				deleted.remove(i);
 			}
 		}
@@ -80,7 +80,7 @@ public class Swatch extends Game {
 		//render one at a time
 		for (int i = 0; i < swapped.size(); i++) {
 			swapped.get(i).renderSwapped(renderer);
-			if (swapped.get(i).size < 0) {
+			if (swapped.get(i).width < 0) {
 				swapped.remove(i);
 			}
 		}

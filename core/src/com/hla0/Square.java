@@ -19,7 +19,8 @@ public class Square {
     boolean selected;
     Color color;
     int colorNum;
-    int size;
+    int width;
+    int height;
     boolean animating;
 
     Square(int x, int y, int c) {
@@ -30,7 +31,8 @@ public class Square {
         selected = false;
         animating = false;
         colorNum = c;
-        size = Constants.boxSize;
+        width = Constants.boxSize;
+        height = Constants.boxSize;
         selected = false;
         setColor(c);
     }
@@ -159,8 +161,6 @@ public class Square {
     public void animate() {animating = true;}
     public boolean isAnimating() {return animating;}
     public void setSelect(boolean s) {selected = s;}
-    public boolean isSelected() {return selected;}
-
 
     //if pos does not match x and y on grid move down
     public void update() {
@@ -189,19 +189,27 @@ public class Square {
 
     public void renderDeleted(ShapeRenderer r) {
         r.setColor(getColor());
-        size -= Constants.shrinkVelocity;
+        width -= Constants.shrinkVelocity;
+        height -= Constants.shrinkVelocity;
         pos.x += Constants.shrinkVelocity / 2;
         pos.y += Constants.shrinkVelocity / 2;
-        r.rect(pos.x,pos.y,size,size);
+        r.rect(pos.x,pos.y,width,height);
     }
 
     //TODO right render of swapped
     //temporary version of render swapped
     public void renderSwapped(ShapeRenderer r) {
         r.setColor(getColor());
-        size -= Constants.shrinkVelocity;
+
+        //animate left do not change x pos
+        //width -= Constants.shrinkVelocity;
+
+        //animate right move xPos
+        width -= Constants.shrinkVelocity;
+        pos.x += Constants.shrinkVelocity;
+
         //pos.x += Constants.shrinkVelocity / 2;
         //pos.y += Constants.shrinkVelocity / 2;
-        r.rect(pos.x,pos.y,size + 10,size + 10);
+        r.rect(pos.x,pos.y,width,height);
     }
 }
