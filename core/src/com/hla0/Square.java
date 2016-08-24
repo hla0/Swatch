@@ -202,18 +202,28 @@ public class Square {
 
     //TODO right render of swapped
     //temporary version of render swapped
-    public void renderSwapped(ShapeRenderer r) {
+    public void renderSwapped(ShapeRenderer r, int dir) {
         r.setColor(getColor());
-
-        //animate left do not change x pos
-        //width -= Constants.shrinkVelocity;
-
-        //animate right move xPos
-        width -= Constants.shrinkVelocity;
-        pos.x += Constants.shrinkVelocity;
-
-        //pos.x += Constants.shrinkVelocity / 2;
-        //pos.y += Constants.shrinkVelocity / 2;
+        switch (dir) {
+            case 0:
+                //animate up
+                height -= Constants.shrinkVelocity;
+                pos.y += Constants.shrinkVelocity;
+                break;
+            case 1:
+                //animate down
+                height -= Constants.shrinkVelocity;
+                break;
+            case 2:
+                //animate left
+                width -= Constants.shrinkVelocity;
+                break;
+            case 3:
+                //animate right
+                width -= Constants.shrinkVelocity;
+                pos.x += Constants.shrinkVelocity;
+                break;
+        }
         r.rect(pos.x,pos.y,width,height);
     }
 

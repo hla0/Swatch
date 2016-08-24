@@ -30,7 +30,7 @@ public class Swatch extends Game {
 		viewport = new FitViewport(width * (Constants.boxSize + Constants.margin) + Constants.margin,
 				height * (Constants.boxSize + Constants.margin) + Constants.topPadding + Constants.bottomPadding + Constants.margin,
 				camera);
-		grid = new Grid(width,height, viewport);
+		grid = new Grid(width,height, viewport, 1);
 		renderer = new ShapeRenderer();
 		Gdx.input.setInputProcessor(grid);
 	}
@@ -76,11 +76,12 @@ public class Swatch extends Game {
 		}
 
 		//TODO right removal of swapped squares
-		//TODO render one at a time
+		//TODO render one at a time and add direction
 		//render the old color on top of the swapped square for transition
 		for (int i = 0; i < swapped.size(); i++) {
-			swapped.get(i).renderSwapped(renderer);
-			if (swapped.get(i).width < 0) {
+			//need to replace 0 with direction
+			swapped.get(i).renderSwapped(renderer,0);
+			if (swapped.get(i).width <= 0 || swapped.get(i).height <= 0) {
 				swapped.remove(i);
 			}
 		}

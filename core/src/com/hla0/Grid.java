@@ -2,6 +2,7 @@ package com.hla0;
 
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.assets.loaders.SynchronousAssetLoader;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hla0.util.Constants;
@@ -28,7 +29,7 @@ public class Grid extends InputAdapter{
     ArrayList<Square> toSwap;
     //was animating but finished
 
-    Grid (int width, int height, Viewport viewport) {
+    Grid (int width, int height, Viewport viewport, int level) {
         this.width = width;
         this.height = height;
         squares = new Square[width][height];
@@ -41,10 +42,12 @@ public class Grid extends InputAdapter{
         totalDestroyed = 0;
         toDelete = new ArrayList<Square>();
         toSwap = new ArrayList<Square>();
-        init();
+        loadLevel(level);
     }
 
-    void init() {
+    //TODO parse JSON for level details in future
+    void loadLevel(int level) {
+        //currently set to random
         generateWithoutChains();
         for (int i = 0; i < Constants.numColors; i++) {
             colorDestroyed[i] = 0;
@@ -231,12 +234,8 @@ public class Grid extends InputAdapter{
         }
         //start checking for matches and removing
         System.out.println("finished swapping");
-        //TODO fix continuous checking
-        //check after swapping and falling e.g. end of animating
-        // will overflow currently because no removals occur
     }
 
-    //TODO check if there are any match 3s and remove them
     //should be called after swapLines and updateColumns
     public boolean checkMatches() {
         boolean match = false;
@@ -364,14 +363,15 @@ public class Grid extends InputAdapter{
         return match;
     }
 
-    //TODO remove all matches from the grid
-    //need to have square have data marking it with match
-    //if squares have a certain criteria (match horizontal and vertical) match 4 or 5
+    //TODO if squares have a certain criteria (match horizontal and vertical) match 4 or 5
     public void removeMatches() {
         for (int i = 0; i < getWidth(); i++) {
             for (int j = 0; j < getHeight(); j++) {
-                if (squares[i][j].getHorizontalMatch() >= 3 || squares[i][j].getVerticalMatch() >= 3) {
-                    removeSquare(squares[i][j]);
+                Square s = squares[i][j];
+                if (s != null) {
+                    if ((s.getHorizontalMatch() >= 3 || s.getVerticalMatch() >= 3)) {
+                        removeSquare(squares[i][j]);
+                    }
                 }
             }
         }
@@ -495,6 +495,7 @@ public class Grid extends InputAdapter{
             selected2 = null;
         }
     }
+
     void update() {
         if (animating) {
             animating = isAnimating();
@@ -505,7 +506,6 @@ public class Grid extends InputAdapter{
                 }
             }
         }
-
     }
 
 }
