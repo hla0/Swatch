@@ -25,6 +25,8 @@ public class Grid extends InputAdapter{
     //y screen index where new squares would be added
     int top;
     ArrayList<Square> toDelete;
+    ArrayList<Square> toSwap;
+    //was animating but finished
 
     Grid (int width, int height, Viewport viewport) {
         this.width = width;
@@ -38,6 +40,7 @@ public class Grid extends InputAdapter{
         moves = 0;
         totalDestroyed = 0;
         toDelete = new ArrayList<Square>();
+        toSwap = new ArrayList<Square>();
         init();
     }
 
@@ -125,10 +128,6 @@ public class Grid extends InputAdapter{
                 columnChanged[i] = false;
             }
         }
-        //TODO need a way to slow down the updates so animation can cascade
-        if (checkMatches()) {
-            //updateColumns();
-        }
     }
 
     //fix for removed squares in column
@@ -188,7 +187,6 @@ public class Grid extends InputAdapter{
         System.out.println("swapping lines");
 
         //TODO need to add a way to check animating has finished before uncommenting
-
         if (onX) {
             System.out.println("x are equal" + s1.x + " " + s2.x);
             int x = s1.x;
@@ -196,16 +194,16 @@ public class Grid extends InputAdapter{
             if (s1.y > s2.y) {
                 for (int i = s1.y - 1; i >= s2.y; i--) {
                     System.out.println("swapping " + x + " " + i);
+                    toSwap.add(new Square(x,i,squares[x][i].getColorNum()));
                     squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
-                    //squares[x][i].animate();
                 }
             }
             //swap up
             else {
                 for (int i = s1.y + 1; i <= s2.y; i++) {
                     System.out.println("swapping " + x + " " + i);
+                    toSwap.add(new Square(x,i,squares[x][i].getColorNum()));
                     squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
-                    //squares[x][i].animate();
                 }
             }
         }
@@ -217,8 +215,8 @@ public class Grid extends InputAdapter{
                 System.out.println("x left: " + s1.x + " " + s2.x);
                 for (int i = s1.x - 1; i >= s2.x; i--) {
                     System.out.println("swapping " + i + " " + y);
+                    toSwap.add(new Square(i,y,squares[i][y].getColorNum()));
                     squares[i][y].swapColor(haveRed, haveBlue, haveYellow);
-                    //squares[i][y].animate();
                 }
             }
             //swap right
@@ -226,37 +224,22 @@ public class Grid extends InputAdapter{
                 System.out.println("x right: " + s1.x + " " + s2.x);
                 for (int i = s1.x + 1; i <= s2.x; i++) {
                     System.out.println("swapping " + i + " " + y);
+                    toSwap.add(new Square(i,y,squares[i][y].getColorNum()));
                     squares[i][y].swapColor(haveRed, haveBlue, haveYellow);
-                    //squares[i][y].animate();
                 }
             }
         }
         //start checking for matches and removing
         System.out.println("finished swapping");
         //TODO fix continuous checking
+        //check after swapping and falling e.g. end of animating
         // will overflow currently because no removals occur
-        if (checkMatches()) {
-            updateColumns();
-        }
     }
 
     //TODO check if there are any match 3s and remove them
     //should be called after swapLines and updateColumns
     public boolean checkMatches() {
         boolean match = false;
-        /*
-
-        for (int i = 0; i < getWidth(); i++) {
-            for (int j = 0; j < getHeight(); j++) {
-                if (squares[i][j] != null) {
-                    if (checkMatch(squares[i][j])) {
-                        match = true;
-                    }
-                }
-            }
-        }
-        return match;
-        */
         for (int i = 0; i < getHeight(); i++) {
             if (scanHorizontal(i)) {
                 match = true;
@@ -269,6 +252,7 @@ public class Grid extends InputAdapter{
                 System.out.println("Found vertical match on column " + i);
             }
         }
+        removeMatches();
         return match;
     }
 
@@ -280,7 +264,6 @@ public class Grid extends InputAdapter{
         Square left2 = null;
         Square right1 = null;
         Square right2 = null;
-
 
         for (int i = 0; i < getWidth(); i++) {
             Square curSquare = squares[i][row];
@@ -379,12 +362,27 @@ public class Grid extends InputAdapter{
         return match;
     }
 
+    //TODO remove all matches from the grid
+    //need to have square have data marking it with match
+    //if squares have a certain criteria (match horizontal and vertical) match 4 or 5
+    public void removeMatches() {
+
+    }
+
+
     public ArrayList<Square> getDeleted() {
         return toDelete;
     }
 
+    public ArrayList<Square> getSwapped() {
+        return toSwap;
+    }
+
     public boolean isAnimating() {
         if (toDelete.size() > 0) {
+            return true;
+        }
+        if (toSwap.size() > 0) {
             return true;
         }
         for (int i = 0; i < width; i++) {
@@ -488,6 +486,18 @@ public class Grid extends InputAdapter{
             selected = null;
             selected2 = null;
         }
+    }
+    void update() {
+        if (animating) {
+            animating = isAnimating();
+            //finished animating
+            if (!animating) {
+                if (checkMatches()) {
+                    updateColumns();
+                }
+            }
+        }
+
     }
 
 }

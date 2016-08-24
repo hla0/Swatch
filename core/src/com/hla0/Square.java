@@ -195,4 +195,13 @@ public class Square {
         r.rect(pos.x,pos.y,size,size);
     }
 
+    //TODO right render of swapped
+    //temporary version of render swapped
+    public void renderSwapped(ShapeRenderer r) {
+        r.setColor(getColor());
+        size -= Constants.shrinkVelocity;
+        //pos.x += Constants.shrinkVelocity / 2;
+        //pos.y += Constants.shrinkVelocity / 2;
+        r.rect(pos.x,pos.y,size + 10,size + 10);
+    }
 }

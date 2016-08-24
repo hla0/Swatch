@@ -56,24 +56,35 @@ public class Swatch extends Game {
 
 	public void renderGrid() {
 		Square[][] squares = grid.getSquares();
-		ArrayList<Square> d = grid.getDeleted();
-		for (int i = d.size() - 1; i >= 0; i--) {
-			d.get(i).renderDeleted(renderer);
-			if (d.get(i).size < 0) {
-				d.remove(i);
-			}
-		}
-
+		ArrayList<Square> deleted = grid.getDeleted();
+		ArrayList<Square> swapped = grid.getSwapped();
 		for (int i = 0; i < grid.getWidth(); i++) {
 			for (int j = 0; j < grid.getHeight(); j++) {
 				if (squares[i][j] != null) {
-					if (d.size() == 0) {
+					if (deleted.size() == 0 && swapped.size() == 0) {
 						squares[i][j].update();
 					}
 					squares[i][j].render(renderer);
 				}
 			}
 		}
+		for (int i = deleted.size() - 1; i >= 0; i--) {
+			deleted.get(i).renderDeleted(renderer);
+			if (deleted.get(i).size < 0) {
+				deleted.remove(i);
+			}
+		}
+
+		//TODO right removal of swapped squares
+		//render the old color on top of the swapped square for transition
+		//render one at a time
+		for (int i = 0; i < swapped.size(); i++) {
+			swapped.get(i).renderSwapped(renderer);
+			if (swapped.get(i).size < 0) {
+				swapped.remove(i);
+			}
+		}
+		grid.update();
 	}
 
 	/**
