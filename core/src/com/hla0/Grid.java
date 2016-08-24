@@ -295,6 +295,7 @@ public class Grid extends InputAdapter{
                     }
                 }
                 if (count >= 3) {
+                    squares[i][row].setHorizontalMatch(count);
                     System.out.println(count + "Found horizontal match for " + curSquare.getX() + ", " + curSquare.getY());
                     match = true;
                 }
@@ -348,6 +349,7 @@ public class Grid extends InputAdapter{
                     }
                 }
                 if (count >= 3) {
+                    squares[col][i].setVerticalMatch(count);
                     System.out.println(count + "Found vertical match for " + curSquare.getX() + ", " + curSquare.getY());
                     match = true;
                 }
@@ -366,7 +368,13 @@ public class Grid extends InputAdapter{
     //need to have square have data marking it with match
     //if squares have a certain criteria (match horizontal and vertical) match 4 or 5
     public void removeMatches() {
-
+        for (int i = 0; i < getWidth(); i++) {
+            for (int j = 0; j < getHeight(); j++) {
+                if (squares[i][j].getHorizontalMatch() >= 3 || squares[i][j].getVerticalMatch() >= 3) {
+                    removeSquare(squares[i][j]);
+                }
+            }
+        }
     }
 
 

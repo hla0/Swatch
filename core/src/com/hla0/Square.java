@@ -21,6 +21,8 @@ public class Square {
     int colorNum;
     int width;
     int height;
+    int horizontalMatch;
+    int verticalMatch;
     boolean animating;
 
     Square(int x, int y, int c) {
@@ -33,6 +35,8 @@ public class Square {
         colorNum = c;
         width = Constants.boxSize;
         height = Constants.boxSize;
+        horizontalMatch = 0;
+        verticalMatch = 0;
         selected = false;
         setColor(c);
     }
@@ -212,4 +216,10 @@ public class Square {
         //pos.y += Constants.shrinkVelocity / 2;
         r.rect(pos.x,pos.y,width,height);
     }
+
+    public void setHorizontalMatch(int m) {horizontalMatch = m;}
+    public void setVerticalMatch(int m) {verticalMatch = m;}
+    public int getHorizontalMatch() {return horizontalMatch;}
+    public int getVerticalMatch() {return verticalMatch;}
+
 }

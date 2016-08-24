@@ -76,8 +76,8 @@ public class Swatch extends Game {
 		}
 
 		//TODO right removal of swapped squares
+		//TODO render one at a time
 		//render the old color on top of the swapped square for transition
-		//render one at a time
 		for (int i = 0; i < swapped.size(); i++) {
 			swapped.get(i).renderSwapped(renderer);
 			if (swapped.get(i).width < 0) {
