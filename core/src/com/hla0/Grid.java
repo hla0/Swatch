@@ -51,8 +51,10 @@ public class Grid{
 
     //TODO parse JSON for level details in future
     void loadLevel(int level) {
-        selected = null;
+        reset();
         this.level = level;
+        //different amount of moves per level
+        moves = 20;
         for (int i = 0; i < Constants.numColors; i++) {
             colorDestroyed[i] = 0;
             //TODO add different objectives for each level
@@ -68,6 +70,14 @@ public class Grid{
         }
         //currently set to random
         generateWithoutChains();
+    }
+
+    void reset() {
+        toDelete = new ArrayList<Square>();
+        toSwap = new ArrayList<Square>();
+        score = 0;
+        selected = null;
+        selected2 = null;
     }
 
     //create a grid without match3
@@ -486,7 +496,7 @@ public class Grid{
             else if (squares[x][y].getColorNum() == 1) {
                 removeSquare(squares[x][y]);
                 updateColumns();
-                moves++;
+                moves--;
             }
             else {
                 selected = squares[x][y];
@@ -521,7 +531,7 @@ public class Grid{
                     if (squares[x][y].getColorNum() == 1) {
                         removeSquare(squares[x][y]);
                         updateColumns();
-                        moves++;
+                        moves--;
                     } else {
                         selected = squares[x][y];
                         squares[x][y].setSelect(true);
@@ -534,7 +544,7 @@ public class Grid{
             //TODO maybe check if ones in between are empty
             swapLineColors(selected, selected2, onX);
             updateColumns();
-            moves++;
+            moves--;
             squares[selected.x][selected.y].setSelect(false);
             selected = null;
             selected2 = null;
@@ -549,6 +559,9 @@ public class Grid{
         }
         return true;
     }
+
+    public boolean checkFail() {return moves <= 0;}
+
 
     void update() {
         if (animating) {

@@ -32,20 +32,26 @@ public class SwatchScreen extends InputAdapter implements Screen{
     int curScreen;
     FileHandle file;
     int levelsComplete;
+    int parentScreen;
+    int worldWidth;
+    int worldHeight;
 
     SwatchScreen() {
+        parentScreen = -1;
         camera = new OrthographicCamera();
         int level = 1;
-        viewport = new FitViewport(Constants.gridSize * (Constants.boxSize + Constants.margin) + Constants.margin,
-                Constants.gridSize * (Constants.boxSize + Constants.margin) + Constants.topPadding + Constants.bottomPadding + Constants.margin,
-                camera);
+        //490,790
+        worldWidth = Constants.gridSize * (Constants.boxSize + Constants.margin) + Constants.margin;
+        worldHeight = Constants.gridSize * (Constants.boxSize + Constants.margin) + Constants.topPadding + Constants.bottomPadding + Constants.margin;
+        viewport = new FitViewport(worldWidth,worldHeight,camera);
         grid = new Grid(viewport, level);
         renderer = new ShapeRenderer();
         font = new BitmapFont();
         spriteBatch = new SpriteBatch();
-        file = Gdx.files.local("files/file.txt");
-        if (Gdx.files.local("files/myfile.txt").exists()) {
+        file = Gdx.files.local("levelsComplete.txt");
+        if (Gdx.files.local("levelsComplete.txt").exists()) {
             String data = file.readString();
+            System.out.println("File data: " + data);
             level = Integer.parseInt(file.readString());
         }
         else {
@@ -81,6 +87,16 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 break;
             case 2:
                 renderGame();
+                break;
+            case 3:
+                //renderSettings();
+                switchScreen(parentScreen);
+                break;
+            case 4:
+                renderWin();
+                break;
+            case 5:
+                renderLose();
                 break;
         }
         spriteBatch.end();
@@ -118,20 +134,53 @@ public class SwatchScreen extends InputAdapter implements Screen{
         spriteBatch.dispose();
     }
 
+    //might need to use touch up since clicks happen through screens
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         switch (curScreen) {
             case 0:
-                //choose mode or settings
-                curScreen = 2;
+
+                //choose levelSelect
+                switchScreen(1);
+                //TODO choose mode
+                //switchScreen(2);
+                //choose settings
+                //switchScreen(3);
                 break;
             case 1:
                 grid.loadLevel(2);
-                curScreen = 2;
+                switchScreen(2);
             case 2:
                 return gameTouch(screenX, screenY);
+            case 3:
+                //settings
+                break;
+            case 4:
+                //winScreen
+                //decide to go to levelSelect
+                //curScreen = 1
+                //or next level
+                grid.level++;
+                grid.loadLevel(grid.level);
+                curScreen = 2;
+                break;
+            case 5:
+                //levelSelect
+                //curScreen = 1
+                //retry
+                grid.loadLevel(grid.level);
+                curScreen = 2;
+                //loseScreen
+                break;
         }
         return false;
+    }
+
+    public void switchScreen(int screen) {
+        parentScreen = curScreen;
+        curScreen = screen;
+        //animate screen coming down
+        //except splash and main
     }
 
     public void renderLevelSelect() {
@@ -143,19 +192,25 @@ public class SwatchScreen extends InputAdapter implements Screen{
     }
 
     public void renderGame() {
-        if (grid.checkObjectives()) {
-            if (grid.level > levelsComplete) {
-                file.writeString("" + levelsComplete,false);
-            }
-            System.out.println("Completed Level");
-            //prompt for next level or level select
-        }
         renderGrid();
         //TODO find better solution to hide new squares at top
         //temporary solution
         renderer.setColor(0, 0, 0, 1);
         renderer.rect(0, Constants.bottomPadding + Constants.gridSize * (Constants.boxSize + Constants.margin) + Constants.margin, 660, Constants.topPadding);
         renderGridUI();
+        if (grid.checkObjectives()) {
+            if (grid.level > levelsComplete) {
+                levelsComplete = grid.level;
+                file.writeString("" + levelsComplete,false);
+            }
+            System.out.println("Completed Level");
+            //prompt for next level or level select
+            switchScreen(4);
+        }
+        if (grid.checkFail()) {
+            System.out.println("Lost");
+            switchScreen(5);
+        }
     }
 
     public boolean gameTouch(int screenX, int screenY) {
@@ -245,5 +300,19 @@ public class SwatchScreen extends InputAdapter implements Screen{
         font.setColor(Color.WHITE);
         font.getData().setScale(3,3);
         font.draw(spriteBatch,score,200,200);
+    }
+
+    public void renderWin() {
+        //temporary win screen
+        font.setColor(Color.WHITE);
+        font.getData().setScale(3,3);
+        font.draw(spriteBatch,"You win",200,200);
+    }
+
+    public void renderLose() {
+        //temporary lose screen
+        font.setColor(Color.WHITE);
+        font.getData().setScale(3,3);
+        font.draw(spriteBatch,"You lose",200,200);
     }
 }
