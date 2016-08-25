@@ -2,6 +2,7 @@ package com.hla0;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -9,13 +10,14 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hla0.util.Constants;
 
 import java.util.ArrayList;
 
-public class SwatchScreen implements Screen{
+public class SwatchScreen extends InputAdapter implements Screen{
     public static final String TAG = SwatchScreen.class.getName();
     ShapeRenderer renderer;
     Grid grid;
@@ -26,22 +28,23 @@ public class SwatchScreen implements Screen{
     int level;
     Swatch game;
 
-    public SwatchScreen (Swatch g) {game = g;}
-
-    @Override
-    public void show() {
-        camera = new OrthographicCamera();
+    public SwatchScreen (Swatch g) {
         int width = 8;
         int height = 8;
+        game = g;
         level = 1;
         viewport = new FitViewport(width * (Constants.boxSize + Constants.margin) + Constants.margin,
-                height * (Constants.boxSize + Constants.margin) + Constants.topPadding + Constants.bottomPadding + Constants.margin,
-                camera);
+        height * (Constants.boxSize + Constants.margin) + Constants.topPadding + Constants.bottomPadding + Constants.margin,
+        camera);
         grid = new Grid(width,height, viewport, level);
+        camera = new OrthographicCamera();
         renderer = new ShapeRenderer();
         font = new BitmapFont();
         spriteBatch = new SpriteBatch();
-        Gdx.input.setInputProcessor(grid);
+    }
+
+    @Override
+    public void show() {
     }
 
     //add in the deltas for individual render methods
@@ -117,9 +120,49 @@ public class SwatchScreen implements Screen{
     }
 
     public void setLevel(int i) {
+        if (grid != null)
         grid.loadLevel(i);
     }
 
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        //do not process touches when grid is animating
+        if (game.curScreen == 2) {
+            if (grid.animating) {
+                grid.animating = grid.isAnimating();
+            }
+            if (!grid.animating) {
+                Vector2 v;
+                v = transformToGrid(viewport.unproject(new Vector2(screenX, screenY)));
+
+                boolean withinGrid = false;
+                //removes margins from grid with some flexibility for slightly off touches
+                if (v.x % 1 >= .07 && v.x % 1 <= .93 && v.y % 1 >= .07 && v.y % 1 <= .93) {
+                    if (v.x >= grid.getWidth() || v.x < 0 || v.y >= grid.getHeight() || v.y < 0) {
+                        System.out.println("Outside grid");
+                        withinGrid = false;
+                    } else {
+                        System.out.println("Obtained grid coordinates: (" + (int) v.x + ", " + (int) v.y + ")");
+                        grid.processTouch((int) v.x, (int) v.y);
+                        withinGrid = true;
+                    }
+                } else {
+                    System.out.println("Outside grid");
+                    withinGrid = false;
+                }
+                return withinGrid;
+            }
+        }
+        System.out.println("Touch");
+        return false;
+    }
+
+    public Vector2 transformToGrid(Vector2 v1) {
+        Vector2 v = new Vector2((v1.x - (Constants.margin / 2))/(Constants.boxSize + Constants.margin),
+                (v1.y - Constants.bottomPadding - (Constants.margin / 2)) / (Constants.boxSize + Constants.margin));
+        return v;
+    }
 
     /**
      * When the screen is resized, we need to inform the viewport. Note that when using an
@@ -127,7 +170,8 @@ public class SwatchScreen implements Screen{
      */
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height, true);
+        if (viewport != null && game.curScreen == 2)
+            viewport.update(width, height, true);
         //Gdx.app.log(TAG, "Viewport world dimensions: (" + viewport.getWorldHeight() + ", " + viewport.getWorldWidth() + ")");
     }
 

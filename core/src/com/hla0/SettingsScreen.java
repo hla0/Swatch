@@ -1,6 +1,7 @@
 package com.hla0;
 
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 
 public class SettingsScreen extends InputAdapter implements Screen {

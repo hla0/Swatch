@@ -2,11 +2,11 @@ package com.hla0;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 
 public class LevelScreen extends InputAdapter implements Screen {
     Swatch game;
-
     public LevelScreen(Swatch g) {game = g;}
 
 

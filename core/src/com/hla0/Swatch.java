@@ -2,6 +2,7 @@ package com.hla0;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -18,8 +19,22 @@ import java.util.ArrayList;
 
 public class Swatch extends Game {
 	SwatchScreen swatchScreen;
+	SplashScreen splashScreen;
+	SettingsScreen settingsScreen;
+	LevelScreen levelScreen;
+	InputMultiplexer im;
+	int curScreen;
 	public void create() {
+		im = new InputMultiplexer();
+		splashScreen = new SplashScreen(this);
 		swatchScreen = new SwatchScreen(this);
+		settingsScreen = new SettingsScreen(this);
+		levelScreen = new LevelScreen(this);
+		im.addProcessor(swatchScreen);
+		im.addProcessor(splashScreen);
+		//im.addProcessor(settingsScreen);
+		//im.addProcessor(levelScreen);
+		Gdx.input.setInputProcessor(im);
 		setScreen(0);
 	}
 
@@ -27,19 +42,24 @@ public class Swatch extends Game {
 	public void setScreen(int index) {
 		switch (index) {
 			case 0:
-				setScreen(new SplashScreen(this));
+				curScreen = 0;
+				setScreen(splashScreen);
 				break;
 			case 1:
-				setScreen(new LevelScreen(this));
+				curScreen = 1;
+				setScreen(levelScreen);
 				break;
 			case 2:
+				curScreen = 2;
 				setScreen(swatchScreen);
 				break;
 		}
+		System.out.println(curScreen);
 	}
 
 	//overloaded set Screen to allow loading levels from other screens
 	public void setScreen(int index, int level) {
+		setScreen(2);
 		swatchScreen.setLevel(level);
 	}
 

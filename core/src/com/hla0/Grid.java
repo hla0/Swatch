@@ -11,7 +11,7 @@ import java.math.*;
 import java.util.ArrayList;
 
 public class Grid extends InputAdapter{
-    private Square[][] squares;
+    Square[][] squares;
     Square selected;
     Square selected2;
     int width;
@@ -423,40 +423,24 @@ public class Grid extends InputAdapter{
         return false;
     }
 
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        //do not process touches when grid is animating
+    void update() {
         if (animating) {
             animating = isAnimating();
-        }
-        if (!animating) {
-            Vector2 v = transformToGrid(viewport.unproject(new Vector2(screenX, screenY)));
-            boolean withinGrid = false;
-            //removes margins from grid with some flexibility for slightly off touches
-            if (v.x % 1 >= .07 && v.x % 1 <= .93 && v.y % 1 >= .07 && v.y % 1 <= .93) {
-                if (v.x >= getWidth() || v.x < 0 || v.y >= getHeight() || v.y < 0) {
-                    System.out.println("Outside grid");
-                    withinGrid = false;
-                } else {
-                    System.out.println("Obtained grid coordinates: (" + (int) v.x + ", " + (int) v.y + ")");
-                    processTouch((int) v.x, (int) v.y);
-                    withinGrid = true;
+            //finished animating
+            if (!animating) {
+                if (checkMatches()) {
+                    updateColumns();
                 }
-            } else {
-                System.out.println("Outside grid");
-                withinGrid = false;
             }
-            return withinGrid;
         }
-        return false;
+        if (animatedScore < score) {
+            animatedScore += 51;
+        }
+        else {
+            animatedScore = score;
+        }
     }
 
-    public Vector2 transformToGrid(Vector2 v1) {
-        Vector2 v = new Vector2((v1.x - (Constants.margin / 2))/(Constants.boxSize + Constants.margin),
-                (v1.y - Constants.bottomPadding - (Constants.margin / 2)) / (Constants.boxSize + Constants.margin));
-        return v;
-    }
 
     //where there is selected = *; change status of the variable within square
     public void processTouch(int x, int y) {
@@ -513,24 +497,6 @@ public class Grid extends InputAdapter{
             squares[selected.x][selected.y].setSelect(false);
             selected = null;
             selected2 = null;
-        }
-    }
-
-    void update() {
-        if (animating) {
-            animating = isAnimating();
-            //finished animating
-            if (!animating) {
-                if (checkMatches()) {
-                    updateColumns();
-                }
-            }
-        }
-        if (animatedScore < score) {
-            animatedScore += 51;
-        }
-        else {
-            animatedScore = score;
         }
     }
 

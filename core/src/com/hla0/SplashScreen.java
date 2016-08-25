@@ -3,6 +3,7 @@ package com.hla0;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -15,7 +16,6 @@ public class SplashScreen extends InputAdapter implements Screen {
     private Swatch myGame;
     private OrthographicCamera camera;
     private int rendCount;
-
     public SplashScreen(Swatch g) // ** constructor called initially **//
     {
         Gdx.app.log("my Spash Screen", "constructor called");
@@ -34,7 +34,7 @@ public class SplashScreen extends InputAdapter implements Screen {
         //batch.draw(texture, 0, 0);
         batch.end();
         rendCount++;
-        myGame.setScreen(2);
+        //myGame.setScreen(2,1);
     }
 
     @Override
@@ -66,10 +66,13 @@ public class SplashScreen extends InputAdapter implements Screen {
     }
 
 
-    public boolean touchDown() {
-        System.out.println("touched splash screen");
-        myGame.setScreen(2,1);
-        return true;
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (myGame.curScreen == 0) {
+            System.out.println("touched splash screen");
+            myGame.setScreen(2, 1);
+            return true;
+        }
+        return false;
     }
 
 
