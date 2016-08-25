@@ -53,7 +53,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
         if (Gdx.files.local("levelsComplete.txt").exists()) {
             String data = complete.readString();
             System.out.println("File data: " + data);
-            level = Integer.parseInt(complete.readString());
+            levelsComplete = Integer.parseInt(complete.readString());
         }
         else {
             String s = "";
@@ -153,7 +153,8 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 //switchScreen(3);
                 break;
             case 1:
-                grid.loadLevel(2);
+                //based on selected level
+                grid.loadLevel(1);
                 switchScreen(2);
                 break;
             case 2:
@@ -209,7 +210,6 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 s += "0";
             }
             stars.writeString(s,false);
-            levelsComplete = 0;
         }
         int numStars = 0;
         //set the color of levelCompleted + 1 and lower to be brighter
@@ -233,6 +233,14 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 }
                 int xPos = i * Constants.boxSize * 3 + Constants.margin * 2;
                 int yPos = worldHeight * 3 / 4 - j * Constants.boxSize * 3 + Constants.margin;
+                if (index + 1 > levelsComplete + 1) {
+                    font.setColor(Color.WHITE);
+                    renderer.setColor(Color.BLACK);
+                }
+                else {
+                    font.setColor(Color.BLACK);
+                    renderer.setColor(Color.WHITE);
+                }
                 renderer.rect(xPos,yPos, Constants.boxSize * 2,Constants.boxSize * 2);
                 CharSequence curLevel = "" + (index + 1);
                 font.setColor(Color.BLACK);
