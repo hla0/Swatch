@@ -27,6 +27,7 @@ public class Grid{
     ArrayList<Square> toDelete;
     ArrayList<Square> toSwap;
     //was animating but finished
+    int level;
     int[][] levelMap;
 
     Grid (Viewport viewport, int level) {
@@ -50,6 +51,8 @@ public class Grid{
 
     //TODO parse JSON for level details in future
     void loadLevel(int level) {
+        selected = null;
+        this.level = level;
         for (int i = 0; i < Constants.numColors; i++) {
             colorDestroyed[i] = 0;
             //TODO add different objectives for each level
@@ -153,6 +156,15 @@ public class Grid{
         }
     }
 
+    public void generateSquare(int x, int y, float yPos) {
+        if (level < 5) {
+            //TODO specific levels will generate smaller set of colors
+        }
+        squares[x][y] = new Square(x,y,(int)(Math.random() * 8));
+        squares[x][y].pos.y = yPos;
+    }
+
+
     //fix for removed squares in column
     public void updateColumn(int col) {
         animating = true;
@@ -165,8 +177,7 @@ public class Grid{
                     Square s = findSquareAbove(col, i);
                     //did not find square above
                     if (s == null) {
-                        squares[col][i] = new Square(col,i,(int)(Math.random() * Constants.numColors));
-                        squares[col][i].pos.y = top + squareCount * (Constants.boxSize + Constants.margin);
+                        generateSquare(col,i,top + squareCount * (Constants.boxSize + Constants.margin));
                         squareCount++;
                         above = false;
                     }
@@ -180,8 +191,7 @@ public class Grid{
                 }
                 //no squares above
                 else {
-                    squares[col][i] = new Square(col,i,(int)(Math.random() * Constants.numColors));
-                    squares[col][i].pos.y = top + squareCount * (Constants.boxSize + Constants.margin);
+                    generateSquare(col,i,top + squareCount * (Constants.boxSize + Constants.margin));
                     squareCount++;
                 }
                 //can add parameters to animate fall or swap
@@ -313,34 +323,36 @@ public class Grid{
             if (curSquare != null) {
                 count = 1;
                 curColor = curSquare.getColorNum();
-                if (i - 2 >= 0) {
-                    left2 = squares[i - 2][row];
-                }
-                if (i - 1 >= 0) {
-                    left1 = squares[i - 1][row];
-                }
-                if (i + 2 < Constants.gridSize) {
-                    right2 = squares[i + 2][row];
-                }
-                if (i + 1 < Constants.gridSize) {
-                    right1 = squares[i + 1][row];
-                }
-                if (left1 != null && left1.getColorNum() == curColor) {
-                    count++;
-                    if (left2 != null && left2.getColorNum() == curColor) {
-                        count++;
+                if (curColor >= 0) {
+                    if (i - 2 >= 0) {
+                        left2 = squares[i - 2][row];
                     }
-                }
-                if (right1 != null && right1.getColorNum() == curColor) {
-                    count++;
-                    if (right2 != null && right2.getColorNum() == curColor) {
-                        count++;
+                    if (i - 1 >= 0) {
+                        left1 = squares[i - 1][row];
                     }
-                }
-                if (count >= 3) {
-                    squares[i][row].setHorizontalMatch(count);
-                    System.out.println(count + "Found horizontal match for " + curSquare.getX() + ", " + curSquare.getY());
-                    match = true;
+                    if (i + 2 < Constants.gridSize) {
+                        right2 = squares[i + 2][row];
+                    }
+                    if (i + 1 < Constants.gridSize) {
+                        right1 = squares[i + 1][row];
+                    }
+                    if (left1 != null && left1.getColorNum() == curColor) {
+                        count++;
+                        if (left2 != null && left2.getColorNum() == curColor) {
+                            count++;
+                        }
+                    }
+                    if (right1 != null && right1.getColorNum() == curColor) {
+                        count++;
+                        if (right2 != null && right2.getColorNum() == curColor) {
+                            count++;
+                        }
+                    }
+                    if (count >= 3) {
+                        squares[i][row].setHorizontalMatch(count);
+                        System.out.println(count + "Found horizontal match for " + curSquare.getX() + ", " + curSquare.getY());
+                        match = true;
+                    }
                 }
                 count = 0;
                 left1 = null;
@@ -367,36 +379,37 @@ public class Grid{
             if (curSquare != null) {
                 count = 1;
                 curColor = curSquare.getColorNum();
-                if (i + 2 < Constants.gridSize) {
-                    up2 = squares[col][i + 2];
-                }
-                if (i + 1 < Constants.gridSize) {
-                    up1 = squares[col][i + 1];
-                }
-                if (i - 2 >= 0) {
-                    down2 = squares[col][i - 2];
-                }
-                if (i - 1 >= 0) {
-                    down1 = squares[col][i - 1];
-                }
-                if (down1 != null && down1.getColorNum() == curColor) {
-                    count++;
-                    if (down2 != null && down2.getColorNum() == curColor) {
+                if (curColor >= 0) {
+                    if (i + 2 < Constants.gridSize) {
+                        up2 = squares[col][i + 2];
+                    }
+                    if (i + 1 < Constants.gridSize) {
+                        up1 = squares[col][i + 1];
+                    }
+                    if (i - 2 >= 0) {
+                        down2 = squares[col][i - 2];
+                    }
+                    if (i - 1 >= 0) {
+                        down1 = squares[col][i - 1];
+                    }
+                    if (down1 != null && down1.getColorNum() == curColor) {
                         count++;
+                        if (down2 != null && down2.getColorNum() == curColor) {
+                            count++;
+                        }
+                    }
+                    if (up1 != null && up1.getColorNum() == curColor) {
+                        count++;
+                        if (up2 != null && up2.getColorNum() == curColor) {
+                            count++;
+                        }
+                    }
+                    if (count >= 3) {
+                        squares[col][i].setVerticalMatch(count);
+                        System.out.println(count + "Found vertical match for " + curSquare.getX() + ", " + curSquare.getY());
+                        match = true;
                     }
                 }
-                if (up1 != null && up1.getColorNum() == curColor) {
-                    count++;
-                    if (up2 != null && up2.getColorNum() == curColor) {
-                        count++;
-                    }
-                }
-                if (count >= 3) {
-                    squares[col][i].setVerticalMatch(count);
-                    System.out.println(count + "Found vertical match for " + curSquare.getX() + ", " + curSquare.getY());
-                    match = true;
-                }
-
                 count = 0;
                 up1 = null;
                 up2 = null;

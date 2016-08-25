@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hla0.util.Constants;
 
@@ -51,6 +52,8 @@ public class SwatchScreen extends InputAdapter implements Screen{
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         viewport.apply();
         renderer.setProjectionMatrix(camera.combined);
         spriteBatch.setProjectionMatrix(camera.combined);
@@ -61,6 +64,9 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 font.setColor(Color.WHITE);
                 font.getData().setScale(3,3);
                 font.draw(spriteBatch,"Swatch",200,500);
+                break;
+            case 1:
+                renderLevelSelect();
                 break;
             case 2:
                 renderGame();
@@ -105,12 +111,20 @@ public class SwatchScreen extends InputAdapter implements Screen{
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         switch (curScreen) {
             case 0:
+                //choose mode or settings
                 curScreen = 2;
                 break;
+            case 1:
+                grid.loadLevel(2);
+                curScreen = 2;
             case 2:
                 return gameTouch(screenX, screenY);
         }
         return false;
+    }
+
+    public void renderLevelSelect() {
+
     }
 
     public void renderGame() {
