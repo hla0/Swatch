@@ -1,11 +1,12 @@
 package com.hla0.util;
 
 public class Constants {
-    public static final int boxSize = 20;
-    public static final int margin = 10;
-    public static final int topPadding = 150;
-    public static final int bottomPadding = 150;
+    public static final int boxSize = 40;
+    public static final int margin = boxSize / 2;
+    public static final int topPadding = margin * 15;
+    public static final int bottomPadding = margin * 15;
     public static final int numColors = 8;
-    public static final int velocity = 9;
-    public static final float shrinkVelocity = 3;
+    public static final int velocity = 17;
+    public static final float shrinkVelocity = 5;
+    public static final float shadowColor = 97/255f;
 }

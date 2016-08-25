@@ -182,7 +182,6 @@ public class Grid extends InputAdapter{
         return s;
     }
 
-    //TODO animate swap colors
     //modifying colors
     public void swapLineColors(Square s1, Square s2, boolean onX) {
         animating = true;
@@ -191,7 +190,6 @@ public class Grid extends InputAdapter{
         boolean haveYellow = s1.haveYellow;
         System.out.println("swapping lines");
 
-        //TODO need to add a way to check animating has finished before uncommenting
         if (onX) {
             System.out.println("x are equal" + s1.x + " " + s2.x);
             int x = s1.x;

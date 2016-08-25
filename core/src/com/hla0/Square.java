@@ -181,6 +181,10 @@ public class Square {
 
     //draw based on position on screen
     public void render(ShapeRenderer r) {
+        //render shadow
+        r.setColor(new Color(Constants.shadowColor,Constants.shadowColor,Constants.shadowColor,0.5f));
+        r.rect(pos.x + 2,pos.y - 2,Constants.boxSize,Constants.boxSize);
+
         r.setColor(getColor());
         r.rect(pos.x,pos.y,Constants.boxSize,Constants.boxSize);
 
@@ -192,16 +196,20 @@ public class Square {
     }
 
     public void renderDeleted(ShapeRenderer r) {
-        r.setColor(getColor());
         width -= Constants.shrinkVelocity;
         height -= Constants.shrinkVelocity;
         pos.x += Constants.shrinkVelocity / 2;
         pos.y += Constants.shrinkVelocity / 2;
+
+        //render shadow
+        r.setColor(new Color(Constants.shadowColor,Constants.shadowColor,Constants.shadowColor,0.5f));
+        r.rect(pos.x + 2,pos.y - 2,width,height);
+
+        r.setColor(getColor());
         r.rect(pos.x,pos.y,width,height);
+
     }
 
-    //TODO right render of swapped
-    //temporary version of render swapped
     public void renderSwapped(ShapeRenderer r, int dir) {
         r.setColor(getColor());
         switch (dir) {

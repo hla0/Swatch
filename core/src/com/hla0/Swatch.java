@@ -25,12 +25,13 @@ public class Swatch extends Game {
 	@Override
 	public void create () {
 		camera = new OrthographicCamera();
-		int width = 9;
-		int height = 9;
+		int width = 8;
+		int height = 8;
+		int level = 1;
 		viewport = new FitViewport(width * (Constants.boxSize + Constants.margin) + Constants.margin,
 				height * (Constants.boxSize + Constants.margin) + Constants.topPadding + Constants.bottomPadding + Constants.margin,
 				camera);
-		grid = new Grid(width,height, viewport, 1);
+		grid = new Grid(width,height, viewport, level);
 		renderer = new ShapeRenderer();
 		Gdx.input.setInputProcessor(grid);
 	}
@@ -47,9 +48,7 @@ public class Swatch extends Game {
 		//temporary solution
 		renderer.setColor(0,0,0,1);
 		renderer.rect(0,Constants.bottomPadding + 10 * (Constants.boxSize + Constants.margin) + Constants.margin,330,Constants.topPadding);
-		//section to block new Squares not working
-		//renderer.setColor(Color.RED);
-		//renderer.rect((grid.getHeight() + 1) * (Constants.boxSize + Constants.margin),0,(grid.getWidth() + 1) * (Constants.boxSize + Constants.margin),Constants.topPadding);
+		renderGridUI();
 		renderer.end();
 
 	}
@@ -85,6 +84,11 @@ public class Swatch extends Game {
 		}
 		grid.update();
 	}
+
+	public void renderGridUI() {
+
+	}
+
 
 	/**
 	 * When the screen is resized, we need to inform the viewport. Note that when using an
