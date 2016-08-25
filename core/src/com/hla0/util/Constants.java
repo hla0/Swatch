@@ -12,4 +12,5 @@ public class Constants {
     public static final float swapVelocity = 8;
     public static final float shadowColor = 97/255f;
     public static final int maxScore = 999999;
+    public static final int maxLevels = 36;
 }

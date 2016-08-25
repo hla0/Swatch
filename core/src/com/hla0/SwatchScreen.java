@@ -30,7 +30,8 @@ public class SwatchScreen extends InputAdapter implements Screen{
     BitmapFont font;
     SpriteBatch spriteBatch;
     int curScreen;
-    FileHandle file;
+    FileHandle complete;
+    FileHandle stars;
     int levelsComplete;
     int parentScreen;
     int worldWidth;
@@ -48,13 +49,18 @@ public class SwatchScreen extends InputAdapter implements Screen{
         renderer = new ShapeRenderer();
         font = new BitmapFont();
         spriteBatch = new SpriteBatch();
-        file = Gdx.files.local("levelsComplete.txt");
+        complete = Gdx.files.local("levelsComplete.txt");
         if (Gdx.files.local("levelsComplete.txt").exists()) {
-            String data = file.readString();
+            String data = complete.readString();
             System.out.println("File data: " + data);
-            level = Integer.parseInt(file.readString());
+            level = Integer.parseInt(complete.readString());
         }
         else {
+            String s = "";
+            for (int i = 0; i < Constants.maxLevels; i++) {
+                s += "0";
+            }
+            stars.writeString(s,false);
             levelsComplete = 0;
         }
         curScreen = 0;
@@ -134,7 +140,6 @@ public class SwatchScreen extends InputAdapter implements Screen{
         spriteBatch.dispose();
     }
 
-    //might need to use touch up since clicks happen through screens
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         switch (curScreen) {
@@ -150,6 +155,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
             case 1:
                 grid.loadLevel(2);
                 switchScreen(2);
+                break;
             case 2:
                 return gameTouch(screenX, screenY);
             case 3:
@@ -184,9 +190,40 @@ public class SwatchScreen extends InputAdapter implements Screen{
     }
 
     public void renderLevelSelect() {
+
+        stars = Gdx.files.local("levelStars.txt");
+        if (Gdx.files.local("levelStars.txt").exists()) {
+            String data = stars.readString();
+            if (data.length() == 0) {
+                String s = "";
+                for (int i = 0; i < Constants.maxLevels; i++) {
+                    s += "0";
+                }
+                stars.writeString(s,false);
+            }
+            System.out.println("File data: " + data);
+        }
+        else {
+            String s = "";
+            for (int i = 0; i < Constants.maxLevels; i++) {
+                s += "0";
+            }
+            stars.writeString(s,false);
+            levelsComplete = 0;
+        }
+        int numStars = 0;
+        //set the color of levelCompleted + 1 and lower to be brighter
+        renderer.setColor(Color.WHITE);
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
-
+                int index = i * 6 + j;
+                if (Gdx.files.local("levelStars.txt").exists()) {
+                    numStars = Integer.parseInt("" + stars.readString().charAt(index));
+                }
+                else {
+                    numStars = 0;
+                }
+                renderer.rect(i * Constants.boxSize * 2, j * Constants.boxSize * 2, Constants.boxSize,Constants.boxSize);
             }
         }
     }
@@ -201,7 +238,26 @@ public class SwatchScreen extends InputAdapter implements Screen{
         if (grid.checkObjectives()) {
             if (grid.level > levelsComplete) {
                 levelsComplete = grid.level;
-                file.writeString("" + levelsComplete,false);
+                complete.writeString("" + levelsComplete,false);
+            }
+            //check stars
+            //update stars
+            stars = Gdx.files.local("levelStars.txt");
+            if (Gdx.files.local("levelStars.txt").exists()) {
+                String s = "";
+                String sLine = stars.readString();
+                stars.writeString(sLine.substring(0,grid.level) + "1" + sLine.substring(grid.level+1,Constants.maxLevels),false);
+            }
+            else {
+                String s = "";
+                for (int i = 0; i < Constants.maxLevels; i++) {
+                    if (grid.level == i) {
+                        s += "1";
+                        //add star amount
+                    }
+                    s += "0";
+                }
+                stars.writeString(s,false);
             }
             System.out.println("Completed Level");
             //prompt for next level or level select
