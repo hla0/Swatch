@@ -1,8 +1,5 @@
 package com.hla0;
 
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.assets.loaders.SynchronousAssetLoader;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hla0.util.Constants;
@@ -14,13 +11,12 @@ public class Grid{
     private Square[][] squares;
     Square selected;
     Square selected2;
-    int width;
-    int height;
     Viewport viewport;
     boolean[] columnChanged;
     //check the state of all squares
     boolean animating;
     int[] colorDestroyed;
+    int[] colorObjectives;
     int totalDestroyed;
     int moves;
     int direction;
@@ -31,15 +27,16 @@ public class Grid{
     ArrayList<Square> toDelete;
     ArrayList<Square> toSwap;
     //was animating but finished
+    int[][] levelMap;
 
-    Grid (int width, int height, Viewport viewport, int level) {
-        this.width = width;
-        this.height = height;
-        squares = new Square[width][height];
-        columnChanged = new boolean[width];
+    Grid (Viewport viewport, int level) {
+        squares = new Square[Constants.gridSize][Constants.gridSize];
+        levelMap = new int[Constants.gridSize][Constants.gridSize];
+        columnChanged = new boolean[Constants.gridSize];
         colorDestroyed = new int[Constants.numColors];
+        colorObjectives = new int[Constants.numColors];
         this.viewport = viewport;
-        top = Constants.bottomPadding + (height + 1) * (Constants.boxSize + Constants.margin);
+        top = Constants.bottomPadding + (Constants.gridSize + 1) * (Constants.boxSize + Constants.margin);
         animating = false;
         moves = 0;
         totalDestroyed = 0;
@@ -53,11 +50,20 @@ public class Grid{
 
     //TODO parse JSON for level details in future
     void loadLevel(int level) {
-        //currently set to random
-        generateWithoutChains();
         for (int i = 0; i < Constants.numColors; i++) {
             colorDestroyed[i] = 0;
+            //TODO add different objectives for each level
+            colorObjectives[i] = 0;
         }
+        //set levelMap up then generate
+        //currently allowing full grid to be filled
+        for (int i = 0; i < Constants.gridSize; i++) {
+            for (int j = 0; j < Constants.gridSize; j++) {
+                levelMap[i][j] = (int) (Math.random() * 10) / 9;
+            }
+        }
+        //currently set to random
+        generateWithoutChains();
     }
 
     //create a grid without match3
@@ -65,23 +71,29 @@ public class Grid{
         int colorLeft = -1;
         int colorUp = -1;
         int randomColor;
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                randomColor = (int)(Math.random() * Constants.numColors);
-                if (i > 1) {
-                    if (squares[i-1][j].getColorNum() == squares[i-2][j].getColorNum()) {
-                        colorLeft = squares[i-1][j].getColorNum();
+        for (int i = 0; i < Constants.gridSize; i++) {
+            for (int j = 0; j < Constants.gridSize; j++) {
+                if (levelMap[i][j] == 0) {
+                    randomColor = (int) (Math.random() * Constants.numColors);
+                    if (i > 1) {
+                        if (squares[i - 1][j].getColorNum() == squares[i - 2][j].getColorNum()) {
+                            colorLeft = squares[i - 1][j].getColorNum();
+                        }
                     }
-                }
-                if (j > 1) {
-                    if (squares[i][j-1].getColorNum() == squares[i][j-2].getColorNum()) {
-                        colorUp = squares[i][j-1].getColorNum();
+                    if (j > 1) {
+                        if (squares[i][j - 1].getColorNum() == squares[i][j - 2].getColorNum()) {
+                            colorUp = squares[i][j - 1].getColorNum();
+                        }
                     }
+                    while (randomColor == colorLeft || randomColor == colorUp) {
+                        randomColor = (int) (Math.random() * Constants.numColors);
+                    }
+                    squares[i][j] = new Square(i, j, randomColor);
                 }
-                while (randomColor == colorLeft || randomColor == colorUp) {
-                    randomColor = (int)(Math.random() * Constants.numColors);
+                else {
+                    //create specific square
+                    squares[i][j] = new Square(i, j, -1);
                 }
-                squares[i][j] = new Square(i, j, randomColor);
             }
         }
     }
@@ -90,17 +102,15 @@ public class Grid{
         return squares;
     }
 
-    public int getWidth() {return width;}
-
-    public int getHeight() {return height;}
-
     //deletions (depends on mode) match 3 and explode with white
     //remove the Square from the grid
     public void removeSquare(Square s) {
         animating = true;
-        if (s != null) {
+        if (s != null && s.getColorNum() >= 0) {
             columnChanged[s.x] = true;
-            colorDestroyed[s.getColorNum()]++;
+            if (s.getColorNum() > 0) {
+                colorDestroyed[s.getColorNum()]++;
+            }
             totalDestroyed++;
             score += 100;
             if (score > Constants.maxScore) {
@@ -112,13 +122,13 @@ public class Grid{
                     toDelete.add(squares[s.x][s.y]);
                 }
                 squares[s.x][s.y] = null;
-                if (s.x + 1 < getWidth()) {
+                if (s.x + 1 < Constants.gridSize) {
                     removeSquare(squares[s.x + 1][s.y]);
                 }
                 if (s.x > 0) {
                     removeSquare(squares[s.x - 1][s.y]);
                 }
-                if (s.y + 1 < getHeight()) {
+                if (s.y + 1 < Constants.gridSize) {
                     removeSquare(squares[s.x][s.y + 1]);
                 }
                 if (s.y > 0) {
@@ -135,7 +145,7 @@ public class Grid{
 
     //rearrange column so that blocks have fallen
     public void updateColumns() {
-        for (int i = 0; i < width; i++) {
+        for (int i = 0; i < Constants.gridSize; i++) {
             if (columnChanged[i]) {
                 updateColumn(i);
                 columnChanged[i] = false;
@@ -148,7 +158,7 @@ public class Grid{
         animating = true;
         boolean above = true;
         int squareCount = 0;
-        for (int i = 0; i < getHeight(); i++) {
+        for (int i = 0; i < Constants.gridSize; i++) {
             if (squares[col][i] == null) {
                 //try finding squares above
                 if (above) {
@@ -182,8 +192,8 @@ public class Grid{
 
     public Square findSquareAbove(int col, int index) {
         Square s = null;
-        for (int i = index + 1; i < getHeight(); i++) {
-            if (squares[col][i] != null) {
+        for (int i = index + 1; i < Constants.gridSize; i++) {
+            if (squares[col][i] != null && squares[col][i].getColorNum() >= 0) {
                 return squares[col][i];
             }
         }
@@ -205,8 +215,13 @@ public class Grid{
             if (s1.y < s2.y) {
                 for (int i = s1.y + 1; i <= s2.y; i++) {
                     System.out.println("swapping " + x + " " + i);
-                    toSwap.add(new Square(x,i,squares[x][i].getColorNum()));
-                    squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
+                    if (squares[x][i].getColorNum() < 0) {
+
+                    }
+                    else {
+                        toSwap.add(new Square(x, i, squares[x][i].getColorNum()));
+                        squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
+                    }
                 }
                 direction = 0;
             }
@@ -214,8 +229,13 @@ public class Grid{
             else {
                 for (int i = s1.y - 1; i >= s2.y; i--) {
                     System.out.println("swapping " + x + " " + i);
-                    toSwap.add(new Square(x,i,squares[x][i].getColorNum()));
-                    squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
+                    if (squares[x][i].getColorNum() < 0) {
+
+                    }
+                    else {
+                        toSwap.add(new Square(x, i, squares[x][i].getColorNum()));
+                        squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
+                    }
                 }
                 direction = 1;
             }
@@ -228,8 +248,13 @@ public class Grid{
                 System.out.println("x left: " + s1.x + " " + s2.x);
                 for (int i = s1.x - 1; i >= s2.x; i--) {
                     System.out.println("swapping " + i + " " + y);
-                    toSwap.add(new Square(i,y,squares[i][y].getColorNum()));
-                    squares[i][y].swapColor(haveRed, haveBlue, haveYellow);
+                    if (squares[i][y].getColorNum() < 0) {
+
+                    }
+                    else {
+                        toSwap.add(new Square(i, y, squares[i][y].getColorNum()));
+                        squares[i][y].swapColor(haveRed, haveBlue, haveYellow);
+                    }
                 }
                 direction = 2;
             }
@@ -238,8 +263,13 @@ public class Grid{
                 System.out.println("x right: " + s1.x + " " + s2.x);
                 for (int i = s1.x + 1; i <= s2.x; i++) {
                     System.out.println("swapping " + i + " " + y);
-                    toSwap.add(new Square(i,y,squares[i][y].getColorNum()));
-                    squares[i][y].swapColor(haveRed, haveBlue, haveYellow);
+                    if (squares[i][y].getColorNum() < 0) {
+
+                    }
+                    else {
+                        toSwap.add(new Square(i, y, squares[i][y].getColorNum()));
+                        squares[i][y].swapColor(haveRed, haveBlue, haveYellow);
+                    }
                 }
                 direction = 3;
             }
@@ -253,13 +283,13 @@ public class Grid{
     //should be called after swapLines and updateColumns
     public boolean checkMatches() {
         boolean match = false;
-        for (int i = 0; i < getHeight(); i++) {
+        for (int i = 0; i < Constants.gridSize; i++) {
             if (scanHorizontal(i)) {
                 match = true;
                 System.out.println("Found horizontal match on row " + i);
             }
         }
-        for (int i = 0; i < getWidth(); i++) {
+        for (int i = 0; i < Constants.gridSize; i++) {
             if (scanVertical(i)) {
                 match = true;
                 System.out.println("Found vertical match on column " + i);
@@ -278,7 +308,7 @@ public class Grid{
         Square right1 = null;
         Square right2 = null;
 
-        for (int i = 0; i < getWidth(); i++) {
+        for (int i = 0; i < Constants.gridSize; i++) {
             Square curSquare = squares[i][row];
             if (curSquare != null) {
                 count = 1;
@@ -289,10 +319,10 @@ public class Grid{
                 if (i - 1 >= 0) {
                     left1 = squares[i - 1][row];
                 }
-                if (i + 2 < getWidth()) {
+                if (i + 2 < Constants.gridSize) {
                     right2 = squares[i + 2][row];
                 }
-                if (i + 1 < getWidth()) {
+                if (i + 1 < Constants.gridSize) {
                     right1 = squares[i + 1][row];
                 }
                 if (left1 != null && left1.getColorNum() == curColor) {
@@ -332,15 +362,15 @@ public class Grid{
         Square down1 = null;
         Square down2 = null;
 
-        for (int i = 0; i < getHeight(); i++) {
+        for (int i = 0; i < Constants.gridSize; i++) {
             Square curSquare = squares[col][i];
             if (curSquare != null) {
                 count = 1;
                 curColor = curSquare.getColorNum();
-                if (i + 2 < getHeight()) {
+                if (i + 2 < Constants.gridSize) {
                     up2 = squares[col][i + 2];
                 }
-                if (i + 1 < getHeight()) {
+                if (i + 1 < Constants.gridSize) {
                     up1 = squares[col][i + 1];
                 }
                 if (i - 2 >= 0) {
@@ -379,8 +409,8 @@ public class Grid{
 
     //TODO if squares have a certain criteria (match horizontal and vertical) match 4 or 5
     public void removeMatches() {
-        for (int i = 0; i < getWidth(); i++) {
-            for (int j = 0; j < getHeight(); j++) {
+        for (int i = 0; i < Constants.gridSize; i++) {
+            for (int j = 0; j < Constants.gridSize; j++) {
                 Square s = squares[i][j];
                 if (s != null) {
                     if ((s.getHorizontalMatch() >= 3 || s.getVerticalMatch() >= 3)) {
@@ -413,8 +443,8 @@ public class Grid{
         if (toSwap.size() > 0) {
             return true;
         }
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
+        for (int i = 0; i < Constants.gridSize; i++) {
+            for (int j = 0; j < Constants.gridSize; j++) {
                 if (squares[i][j] != null && squares[i][j].isAnimating()) {
                     return true;
                 }
@@ -433,8 +463,12 @@ public class Grid{
     public void processTouch(int x, int y) {
         boolean onX = false;
         if (selected == null) {
+            //square is empty
+            if (squares[x][y].getColorNum() < 0) {
+
+            }
             //square is white
-            if (squares[x][y].getColorNum() == 1) {
+            else if (squares[x][y].getColorNum() == 1) {
                 removeSquare(squares[x][y]);
                 updateColumns();
                 moves++;
@@ -445,39 +479,44 @@ public class Grid{
             }
         }
         else {
-            //same square
-            if (selected.getX() == x && selected.getY() == y) {
-                selected = null;
-                squares[x][y].setSelect(false);
+            if (squares[x][y].getColorNum() < 0) {
+
             }
-            //on same column
-            else if (selected.getX() == x) {
-                selected2 = squares[x][y];
-                onX = true;
-            }
-            //on same row
-            else if (selected.getY() == y) {
-                selected2 = squares[x][y];
-                onX = false;
-            }
-            //not in the same row or column
             else {
-                squares[selected.x][selected.y].setSelect(false);
-                selected = null;
-                //square is white
-                if (squares[x][y].getColorNum() == 1) {
-                    removeSquare(squares[x][y]);
-                    updateColumns();
-                    moves++;
+                //same square
+                if (selected.getX() == x && selected.getY() == y) {
+                    selected = null;
+                    squares[x][y].setSelect(false);
                 }
+                //on same column
+                else if (selected.getX() == x) {
+                    selected2 = squares[x][y];
+                    onX = true;
+                }
+                //on same row
+                else if (selected.getY() == y) {
+                    selected2 = squares[x][y];
+                    onX = false;
+                }
+                //not in the same row or column
                 else {
-                    selected = squares[x][y];
-                    squares[x][y].setSelect(true);
+                    squares[selected.x][selected.y].setSelect(false);
+                    selected = null;
+                    //square is white
+                    if (squares[x][y].getColorNum() == 1) {
+                        removeSquare(squares[x][y]);
+                        updateColumns();
+                        moves++;
+                    } else {
+                        selected = squares[x][y];
+                        squares[x][y].setSelect(true);
+                    }
                 }
             }
         }
         //second square on same row or column is clicked
         if (selected2 != null) {
+            //TODO check if ones in between are empty
             swapLineColors(selected, selected2, onX);
             updateColumns();
             moves++;

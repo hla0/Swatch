@@ -110,6 +110,14 @@ public class Square {
                 haveYellow = false;
                 color = new Color(81/255f, 45/255f, 168/255f, 1);
                 break;
+            default:
+                haveRed = false;
+                haveBlue = false;
+                haveYellow = false;
+                colorNum = -1;
+                //background color
+                color = new Color(0,0,0,1);
+                break;
         }
     }
     public Color getColor() {
@@ -182,11 +190,12 @@ public class Square {
     //draw based on position on screen
     public void render(ShapeRenderer r) {
         //render shadow
-        r.setColor(new Color(Constants.shadowColor,Constants.shadowColor,Constants.shadowColor,0.5f));
-        r.rect(pos.x + 2,pos.y - 2,Constants.boxSize,Constants.boxSize);
-
-        r.setColor(getColor());
-        r.rect(pos.x,pos.y,Constants.boxSize,Constants.boxSize);
+        if (getColorNum() >= 0) {
+            r.setColor(new Color(Constants.shadowColor, Constants.shadowColor, Constants.shadowColor, 0.5f));
+            r.rect(pos.x + 2, pos.y - 2, Constants.boxSize, Constants.boxSize);
+            r.setColor(getColor());
+            r.rect(pos.x, pos.y, Constants.boxSize, Constants.boxSize);
+        }
 
         //TODO properly animate selected
         if (selected) {
@@ -202,12 +211,12 @@ public class Square {
         pos.y += Constants.shrinkVelocity / 2;
 
         //render shadow
-        r.setColor(new Color(Constants.shadowColor,Constants.shadowColor,Constants.shadowColor,0.5f));
-        r.rect(pos.x + 2,pos.y - 2,width,height);
-
-        r.setColor(getColor());
-        r.rect(pos.x,pos.y,width,height);
-
+        if (getColorNum() >= 0) {
+            r.setColor(new Color(Constants.shadowColor, Constants.shadowColor, Constants.shadowColor, 0.5f));
+            r.rect(pos.x + 2, pos.y - 2, width, height);
+            r.setColor(getColor());
+            r.rect(pos.x,pos.y,width,height);
+        }
     }
 
     public void renderSwapped(ShapeRenderer r, int dir, int index) {

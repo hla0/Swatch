@@ -23,7 +23,6 @@ public class Swatch extends Game {
 		swatchScreen = new SwatchScreen();
 		Gdx.input.setInputProcessor(swatchScreen);
 		setScreen(swatchScreen);
-
 	}
 
 }
