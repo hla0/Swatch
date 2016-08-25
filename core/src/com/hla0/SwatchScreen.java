@@ -1,5 +1,6 @@
 package com.hla0;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -22,13 +23,17 @@ public class SwatchScreen implements Screen{
     Viewport viewport;
     BitmapFont font;
     SpriteBatch spriteBatch;
+    int level;
+    Swatch game;
+
+    public SwatchScreen (Swatch g) {game = g;}
 
     @Override
     public void show() {
         camera = new OrthographicCamera();
         int width = 8;
         int height = 8;
-        int level = 1;
+        level = 1;
         viewport = new FitViewport(width * (Constants.boxSize + Constants.margin) + Constants.margin,
                 height * (Constants.boxSize + Constants.margin) + Constants.topPadding + Constants.bottomPadding + Constants.margin,
                 camera);
@@ -109,6 +114,10 @@ public class SwatchScreen implements Screen{
         font.setColor(Color.WHITE);
         font.getData().setScale(3,3);
         font.draw(spriteBatch,score,200,200);
+    }
+
+    public void setLevel(int i) {
+        grid.loadLevel(i);
     }
 
 

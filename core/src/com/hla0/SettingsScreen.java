@@ -4,6 +4,9 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 
 public class SettingsScreen extends InputAdapter implements Screen {
+    Swatch game;
+    public SettingsScreen(Swatch g) {game = g;}
+
     @Override
     public void show() {
 

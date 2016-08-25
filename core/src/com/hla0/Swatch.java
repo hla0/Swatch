@@ -17,8 +17,30 @@ import com.hla0.util.Constants;
 import java.util.ArrayList;
 
 public class Swatch extends Game {
+	SwatchScreen swatchScreen;
 	public void create() {
-		setScreen(new SwatchScreen());
+		swatchScreen = new SwatchScreen(this);
+		setScreen(0);
+	}
+
+	//overloaded set screen to give more control to Swatch
+	public void setScreen(int index) {
+		switch (index) {
+			case 0:
+				setScreen(new SplashScreen(this));
+				break;
+			case 1:
+				setScreen(new LevelScreen(this));
+				break;
+			case 2:
+				setScreen(swatchScreen);
+				break;
+		}
+	}
+
+	//overloaded set Screen to allow loading levels from other screens
+	public void setScreen(int index, int level) {
+		swatchScreen.setLevel(level);
 	}
 
 	/*
