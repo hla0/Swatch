@@ -17,6 +17,11 @@ import com.hla0.util.Constants;
 import java.util.ArrayList;
 
 public class Swatch extends Game {
+	public void create() {
+		setScreen(new SwatchScreen());
+	}
+
+	/*
 	public static final String TAG = Swatch.class.getName();
 	ShapeRenderer renderer;
 	Grid grid;
@@ -97,37 +102,22 @@ public class Swatch extends Game {
 		//TODO add leading zeros
 		int s = grid.getScore();
 		CharSequence score = "" + s;
-		if (s < 100000) {
-			score = "0" + score;
-		}
-		if (s < 10000) {
-			score = "0" + score;
-		}
-		if (s < 1000) {
-			score = "0" + score;
-		}
-		if (s < 100) {
-			score = "0" + score;
-		}
-		if (s < 10) {
-			score = "0" + score;
-		}
-		if (s < 1) {
-			score = "0" + score;
-		}
+		int length = 0;
 		if (s == 0) {
-			score = "000000";
+			length = 1;
+		}
+		for (int i = 0; s > 0; i++) {
+			s /= 10;
+			length++;
+		}
+		for (int i = length; i < 6; i++) {
+			score = "0" + score;
 		}
 		font.setColor(Color.WHITE);
 		font.getData().setScale(3,3);
 		font.draw(spriteBatch,score,200,200);
 	}
 
-
-	/**
-	 * When the screen is resized, we need to inform the viewport. Note that when using an
-	 * ExtendViewport, the world size might change as well.
-	 */
 	@Override
 	public void resize(int width, int height) {
 		viewport.update(width, height, true);
@@ -140,4 +130,5 @@ public class Swatch extends Game {
 		spriteBatch.dispose();
 		super.dispose();
 	}
+	*/
 }
