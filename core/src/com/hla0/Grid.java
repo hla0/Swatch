@@ -10,7 +10,7 @@ import com.hla0.util.Constants;
 import java.math.*;
 import java.util.ArrayList;
 
-public class Grid extends InputAdapter{
+public class Grid{
     private Square[][] squares;
     Square selected;
     Square selected2;
@@ -419,35 +419,6 @@ public class Grid extends InputAdapter{
                     return true;
                 }
             }
-        }
-        return false;
-    }
-
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        //do not process touches when grid is animating
-        if (animating) {
-            animating = isAnimating();
-        }
-        if (!animating) {
-            Vector2 v = transformToGrid(viewport.unproject(new Vector2(screenX, screenY)));
-            boolean withinGrid = false;
-            //removes margins from grid with some flexibility for slightly off touches
-            if (v.x % 1 >= .07 && v.x % 1 <= .93 && v.y % 1 >= .07 && v.y % 1 <= .93) {
-                if (v.x >= getWidth() || v.x < 0 || v.y >= getHeight() || v.y < 0) {
-                    System.out.println("Outside grid");
-                    withinGrid = false;
-                } else {
-                    System.out.println("Obtained grid coordinates: (" + (int) v.x + ", " + (int) v.y + ")");
-                    processTouch((int) v.x, (int) v.y);
-                    withinGrid = true;
-                }
-            } else {
-                System.out.println("Outside grid");
-                withinGrid = false;
-            }
-            return withinGrid;
         }
         return false;
     }
