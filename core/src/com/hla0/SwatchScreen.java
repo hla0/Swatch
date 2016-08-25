@@ -19,9 +19,6 @@ import com.hla0.util.Constants;
 
 import java.util.ArrayList;
 
-/**
- * Created by aft99 on 8/25/2016.
- */
 public class SwatchScreen extends InputAdapter implements Screen{
     public static final String TAG = SwatchScreen.class.getName();
     ShapeRenderer renderer;
@@ -194,7 +191,6 @@ public class SwatchScreen extends InputAdapter implements Screen{
 
     //render level numbers and stars onto squares
     public void renderLevelSelect() {
-
         stars = Gdx.files.local("levelStars.txt");
         if (Gdx.files.local("levelStars.txt").exists()) {
             String data = stars.readString();
@@ -218,16 +214,29 @@ public class SwatchScreen extends InputAdapter implements Screen{
         int numStars = 0;
         //set the color of levelCompleted + 1 and lower to be brighter
         renderer.setColor(Color.WHITE);
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 6; j++) {
-                int index = i * 6 + j;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 5; j++) {
+                int index = i + j * 4;
                 if (Gdx.files.local("levelStars.txt").exists()) {
-                    numStars = Integer.parseInt("" + stars.readString().charAt(index));
+                    String s = stars.readString();
+                    if (s.length() >= Constants.maxLevels) {
+                        numStars = Integer.parseInt("" + stars.readString().charAt(index));
+                    }
+                    else {
+                        numStars = 0;
+                        s += "0";
+                        stars.writeString("0",true);
+                    }
                 }
                 else {
                     numStars = 0;
                 }
-                renderer.rect(i * Constants.boxSize * 2 + Constants.margin,worldHeight / 4 + j * Constants.boxSize * 2 + Constants.margin, Constants.boxSize * 3 / 2,Constants.boxSize * 3 / 2);
+                int xPos = i * Constants.boxSize * 3 + Constants.margin * 2;
+                int yPos = worldHeight * 3 / 4 - j * Constants.boxSize * 3 + Constants.margin;
+                renderer.rect(xPos,yPos, Constants.boxSize * 2,Constants.boxSize * 2);
+                CharSequence curLevel = "" + (index + 1);
+                font.setColor(Color.BLACK);
+                font.draw(spriteBatch,curLevel,xPos,yPos);
             }
         }
     }
@@ -347,7 +356,6 @@ public class SwatchScreen extends InputAdapter implements Screen{
                     destroyed = grid.colorObjectives[i];
                 }
                 font.draw(spriteBatch,destroyed + "/" + grid.colorObjectives[i],xPos,yPos - Constants.boxSize);
-                System.out.println("Height: " + worldHeight);
                 numObjectives++;
             }
         }
