@@ -76,7 +76,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(0, .5f, .5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -192,6 +192,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
         //except splash and main
     }
 
+    //render level numbers and stars onto squares
     public void renderLevelSelect() {
 
         stars = Gdx.files.local("levelStars.txt");
@@ -226,17 +227,13 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 else {
                     numStars = 0;
                 }
-                renderer.rect(i * Constants.boxSize * 2, j * Constants.boxSize * 2, Constants.boxSize,Constants.boxSize);
+                renderer.rect(i * Constants.boxSize * 2 + Constants.margin,worldHeight / 4 + j * Constants.boxSize * 2 + Constants.margin, Constants.boxSize * 3 / 2,Constants.boxSize * 3 / 2);
             }
         }
     }
 
     public void renderGame() {
         renderGrid();
-        //TODO find better solution to hide new squares at top
-        //temporary solution
-        //renderer.setColor(0, 0, 0, 1);
-        //renderer.rect(0, Constants.bottomPadding + Constants.gridSize * (Constants.boxSize + Constants.margin) + Constants.margin, 660, Constants.topPadding);
         renderGridUI();
         if (grid.checkObjectives()) {
             if (grid.level > levelsComplete) {
@@ -337,6 +334,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
         //objectives
         int numObjectives = 0;
 
+        //TODO add moves left and menu button
         for (int i = 0; i < Constants.numColors; i++) {
             if (grid.colorObjectives[i] > 0 && i >= 2) {
                 renderer.setColor(Square.getColor(i));
