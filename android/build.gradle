@@ -24,7 +24,7 @@ android {
     }
     defaultConfig {
         applicationId "com.hla0"
-        minSdkVersion 8
+        minSdkVersion 9
         targetSdkVersion 24
     }
     buildTypes {
@@ -36,8 +36,8 @@ android {
             minifyEnabled false
         }
     }
-   lintOptions {
-    checkReleaseBuilds false
+    lintOptions {
+        checkReleaseBuilds false
     }
 }
 // called every time gradle gets executed, takes the native dependencies of
