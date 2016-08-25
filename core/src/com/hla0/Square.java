@@ -210,8 +210,9 @@ public class Square {
 
     }
 
-    public void renderSwapped(ShapeRenderer r, int dir) {
+    public void renderSwapped(ShapeRenderer r, int dir, int index) {
         r.setColor(getColor());
+        if (index == 0)
         switch (dir) {
             case 0:
                 //animate up
