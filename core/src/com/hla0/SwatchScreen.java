@@ -3,6 +3,7 @@ package com.hla0;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -29,6 +30,8 @@ public class SwatchScreen extends InputAdapter implements Screen{
     BitmapFont font;
     SpriteBatch spriteBatch;
     int curScreen;
+    FileHandle file;
+    int levelsComplete;
 
     SwatchScreen() {
         camera = new OrthographicCamera();
@@ -40,6 +43,14 @@ public class SwatchScreen extends InputAdapter implements Screen{
         renderer = new ShapeRenderer();
         font = new BitmapFont();
         spriteBatch = new SpriteBatch();
+        file = Gdx.files.local("files/file.txt");
+        if (Gdx.files.local("files/myfile.txt").exists()) {
+            String data = file.readString();
+            level = Integer.parseInt(file.readString());
+        }
+        else {
+            levelsComplete = 0;
+        }
         curScreen = 0;
     }
 
@@ -124,10 +135,21 @@ public class SwatchScreen extends InputAdapter implements Screen{
     }
 
     public void renderLevelSelect() {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
 
+            }
+        }
     }
 
     public void renderGame() {
+        if (grid.checkObjectives()) {
+            if (grid.level > levelsComplete) {
+                file.writeString("" + levelsComplete,false);
+            }
+            System.out.println("Completed Level");
+            //prompt for next level or level select
+        }
         renderGrid();
         //TODO find better solution to hide new squares at top
         //temporary solution

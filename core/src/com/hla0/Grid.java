@@ -56,7 +56,8 @@ public class Grid{
         for (int i = 0; i < Constants.numColors; i++) {
             colorDestroyed[i] = 0;
             //TODO add different objectives for each level
-            colorObjectives[i] = 0;
+            colorObjectives[i] = 5;
+            System.out.println("Color " + i + ":" + colorDestroyed[i] + "/" + colorObjectives[i]);
         }
         //set levelMap up then generate
         //currently allowing full grid to be filled
@@ -110,6 +111,7 @@ public class Grid{
     public void removeSquare(Square s) {
         animating = true;
         if (s != null && s.getColorNum() >= 0) {
+            colorDestroyed[s.getColorNum()]++;
             columnChanged[s.x] = true;
             if (s.getColorNum() > 0) {
                 colorDestroyed[s.getColorNum()]++;
@@ -529,7 +531,7 @@ public class Grid{
         }
         //second square on same row or column is clicked
         if (selected2 != null) {
-            //TODO check if ones in between are empty
+            //TODO maybe check if ones in between are empty
             swapLineColors(selected, selected2, onX);
             updateColumns();
             moves++;
@@ -537,6 +539,15 @@ public class Grid{
             selected = null;
             selected2 = null;
         }
+    }
+
+    public boolean checkObjectives() {
+        for (int i = 0; i < Constants.numColors; i++) {
+            if (colorObjectives[i] > colorDestroyed[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     void update() {
