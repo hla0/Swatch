@@ -23,6 +23,7 @@ public class Grid extends InputAdapter{
     int[] colorDestroyed;
     int totalDestroyed;
     int moves;
+    int direction;
     //y screen index where new squares would be added
     int top;
     ArrayList<Square> toDelete;
@@ -43,6 +44,7 @@ public class Grid extends InputAdapter{
         toDelete = new ArrayList<Square>();
         toSwap = new ArrayList<Square>();
         loadLevel(level);
+        direction = -1;
     }
 
     //TODO parse JSON for level details in future
@@ -193,21 +195,23 @@ public class Grid extends InputAdapter{
         if (onX) {
             System.out.println("x are equal" + s1.x + " " + s2.x);
             int x = s1.x;
-            //swap down
-            if (s1.y > s2.y) {
-                for (int i = s1.y - 1; i >= s2.y; i--) {
-                    System.out.println("swapping " + x + " " + i);
-                    toSwap.add(new Square(x,i,squares[x][i].getColorNum()));
-                    squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
-                }
-            }
             //swap up
-            else {
+            if (s1.y < s2.y) {
                 for (int i = s1.y + 1; i <= s2.y; i++) {
                     System.out.println("swapping " + x + " " + i);
                     toSwap.add(new Square(x,i,squares[x][i].getColorNum()));
                     squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
                 }
+                direction = 0;
+            }
+            //swap down
+            else {
+                for (int i = s1.y - 1; i >= s2.y; i--) {
+                    System.out.println("swapping " + x + " " + i);
+                    toSwap.add(new Square(x,i,squares[x][i].getColorNum()));
+                    squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
+                }
+                direction = 1;
             }
         }
         else {
@@ -221,6 +225,7 @@ public class Grid extends InputAdapter{
                     toSwap.add(new Square(i,y,squares[i][y].getColorNum()));
                     squares[i][y].swapColor(haveRed, haveBlue, haveYellow);
                 }
+                direction = 2;
             }
             //swap right
             else {
@@ -230,11 +235,14 @@ public class Grid extends InputAdapter{
                     toSwap.add(new Square(i,y,squares[i][y].getColorNum()));
                     squares[i][y].swapColor(haveRed, haveBlue, haveYellow);
                 }
+                direction = 3;
             }
         }
         //start checking for matches and removing
         System.out.println("finished swapping");
     }
+
+    public int getDirection() {return direction;}
 
     //should be called after swapLines and updateColumns
     public boolean checkMatches() {

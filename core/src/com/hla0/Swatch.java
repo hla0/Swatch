@@ -75,14 +75,12 @@ public class Swatch extends Game {
 			}
 		}
 
-		//TODO right removal of swapped squares
-		//TODO render one at a time and add direction
 		//render the old color on top of the swapped square for transition
-		for (int i = 0; i < swapped.size(); i++) {
+		if (swapped.size() > 0) {
 			//need to replace 0 with direction
-			swapped.get(i).renderSwapped(renderer,0);
-			if (swapped.get(i).width <= 0 || swapped.get(i).height <= 0) {
-				swapped.remove(i);
+			swapped.get(0).renderSwapped(renderer,grid.getDirection());
+			if (swapped.get(0).width <= 0 || swapped.get(0).height <= 0) {
+				swapped.remove(0);
 			}
 		}
 		grid.update();
