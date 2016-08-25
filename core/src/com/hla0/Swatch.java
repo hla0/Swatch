@@ -95,7 +95,29 @@ public class Swatch extends Game {
 
 	public void renderGridUI() {
 		//TODO add leading zeros
-		CharSequence score = "0000" + grid.getScore();
+		int s = grid.getScore();
+		CharSequence score = "" + s;
+		if (s < 100000) {
+			score = "0" + score;
+		}
+		if (s < 10000) {
+			score = "0" + score;
+		}
+		if (s < 1000) {
+			score = "0" + score;
+		}
+		if (s < 100) {
+			score = "0" + score;
+		}
+		if (s < 10) {
+			score = "0" + score;
+		}
+		if (s < 1) {
+			score = "0" + score;
+		}
+		if (s == 0) {
+			score = "000000";
+		}
 		font.setColor(Color.WHITE);
 		font.getData().setScale(3,3);
 		font.draw(spriteBatch,score,200,200);
