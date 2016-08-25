@@ -7,6 +7,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -48,7 +49,9 @@ public class SwatchScreen extends InputAdapter implements Screen{
         grid = new Grid(viewport, level);
         renderer = new ShapeRenderer();
         font = new BitmapFont();
+        font.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
         spriteBatch = new SpriteBatch();
+        stars = Gdx.files.local("levelStars.txt");
         complete = Gdx.files.local("levelsComplete.txt");
         if (Gdx.files.local("levelsComplete.txt").exists()) {
             String data = complete.readString();
@@ -232,8 +235,8 @@ public class SwatchScreen extends InputAdapter implements Screen{
         renderGrid();
         //TODO find better solution to hide new squares at top
         //temporary solution
-        renderer.setColor(0, 0, 0, 1);
-        renderer.rect(0, Constants.bottomPadding + Constants.gridSize * (Constants.boxSize + Constants.margin) + Constants.margin, 660, Constants.topPadding);
+        //renderer.setColor(0, 0, 0, 1);
+        //renderer.rect(0, Constants.bottomPadding + Constants.gridSize * (Constants.boxSize + Constants.margin) + Constants.margin, 660, Constants.topPadding);
         renderGridUI();
         if (grid.checkObjectives()) {
             if (grid.level > levelsComplete) {
@@ -328,9 +331,33 @@ public class SwatchScreen extends InputAdapter implements Screen{
         grid.update();
     }
 
+    //change spacing depending on number of objectives
     public void renderGridUI() {
-        //TODO add leading zeros
-        int s = grid.getScore();
+        font.setColor(Color.WHITE);
+        //objectives
+        int numObjectives = 0;
+
+        for (int i = 0; i < Constants.numColors; i++) {
+            if (grid.colorObjectives[i] > 0 && i >= 2) {
+                renderer.setColor(Square.getColor(i));
+                int xPos = (int)(numObjectives * Constants.boxSize * 1.5 + Constants.margin * 1.5);
+                int yPos = worldHeight - Constants.boxSize * 2;
+                renderer.rect(xPos, yPos, Constants.margin, Constants.margin);
+                font.getData().setScale(2,2);
+                font.draw(spriteBatch,grid.colorDestroyed[i] + "/" + grid.colorObjectives[i],xPos,yPos - Constants.boxSize);
+                System.out.println("Height: " + worldHeight);
+                numObjectives++;
+            }
+        }
+
+
+        //score
+        font.getData().setScale(3,3);
+        font.draw(spriteBatch,leadingZeros(grid.getScore()),200,200);
+    }
+
+    //can make more succinct
+    public CharSequence leadingZeros(int s) {
         CharSequence score = "" + s;
         if (s < 100000) {
             score = "0" + score;
@@ -353,10 +380,9 @@ public class SwatchScreen extends InputAdapter implements Screen{
         if (s == 0) {
             score = "000000";
         }
-        font.setColor(Color.WHITE);
-        font.getData().setScale(3,3);
-        font.draw(spriteBatch,score,200,200);
+        return score;
     }
+
 
     public void renderWin() {
         //temporary win screen

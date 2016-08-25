@@ -121,11 +121,8 @@ public class Grid{
     public void removeSquare(Square s) {
         animating = true;
         if (s != null && s.getColorNum() >= 0) {
-            colorDestroyed[s.getColorNum()]++;
             columnChanged[s.x] = true;
-            if (s.getColorNum() > 0) {
-                colorDestroyed[s.getColorNum()]++;
-            }
+            colorDestroyed[s.getColorNum()]++;
             totalDestroyed++;
             score += 100;
             if (score > Constants.maxScore) {

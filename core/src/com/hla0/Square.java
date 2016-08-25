@@ -53,62 +53,55 @@ public class Square {
 
     public void setColor(int c) {
         //colors except black and white from row 700 of https://www.materialui.co/colors
+        color = getColor(c);
         switch (c) {
             //black
             case 0:
                 haveRed = true;
                 haveBlue = true;
                 haveYellow = true;
-                color = new Color(66/255f, 66/255f, 66/255f, 1);
                 break;
             //white
             case 1:
                 haveRed = false;
                 haveBlue = false;
                 haveYellow = false;
-                color = new Color(245/255f, 245/255f, 245/255f, 1);
                 break;
             //red
             case 2:
                 haveRed = true;
                 haveBlue = false;
                 haveYellow = false;
-                color = new Color(211/255f, 47/255f, 47/255f, 1);
                 break;
             //blue
             case 3:
                 haveRed = false;
                 haveBlue = true;
                 haveYellow = false;
-                color = new Color(25/255f, 118/255f, 210/255f, 1);
                 break;
             //yellow
             case 4:
                 haveRed = false;
                 haveBlue = false;
                 haveYellow = true;
-                color = new Color(251/255f, 192/255f, 45/255f, 1);
                 break;
             //green
             case 5:
                 haveRed = false;
                 haveBlue = true;
                 haveYellow = true;
-                color = new Color(56/255f, 142/255f, 60/255f, 1);
                 break;
             //orange
             case 6:
                 haveRed = true;
                 haveBlue = false;
                 haveYellow = true;
-                color = new Color(245/255f, 124/255f, 0/255f, 1);
                 break;
             //purple
             case 7:
                 haveRed = true;
                 haveBlue = true;
                 haveYellow = false;
-                color = new Color(81/255f, 45/255f, 168/255f, 1);
                 break;
             default:
                 haveRed = false;
@@ -116,12 +109,43 @@ public class Square {
                 haveYellow = false;
                 colorNum = -1;
                 //background color
-                color = new Color(0,0,0,1);
+                color = getColor(-1);
                 break;
         }
     }
     public Color getColor() {
         return color;
+    }
+
+    public static Color getColor(int i) {
+    switch (i) {
+        //black
+        case 0:
+            return new Color(66 / 255f, 66 / 255f, 66 / 255f, 1);
+        //white
+        case 1:
+            return new Color(245 / 255f, 245 / 255f, 245 / 255f, 1);
+        //red
+        case 2:
+            return new Color(211 / 255f, 47 / 255f, 47 / 255f, 1);
+        //blue
+        case 3:
+            return new Color(25 / 255f, 118 / 255f, 210 / 255f, 1);
+        //yellow
+        case 4:
+            return new Color(251 / 255f, 192 / 255f, 45 / 255f, 1);
+        //green
+        case 5:
+            return new Color(56 / 255f, 142 / 255f, 60 / 255f, 1);
+        //orange
+        case 6:
+            return new Color(245 / 255f, 124 / 255f, 0 / 255f, 1);
+        //purple
+        case 7:
+            return new Color(81 / 255f, 45 / 255f, 168 / 255f, 1);
+        default:
+            return new Color(0, 0, 0, 1);
+        }
     }
     public int getColorNum() { return colorNum; }
     public int getColorNum(boolean r, boolean b, boolean y) {
@@ -190,7 +214,7 @@ public class Square {
     //draw based on position on screen
     public void render(ShapeRenderer r) {
         //render shadow
-        if (getColorNum() >= 0) {
+        if (getColorNum() >= 0 && pos.y < Constants.bottomPadding + Constants.margin + (Constants.boxSize + Constants.margin) * Constants.gridSize) {
             r.setColor(new Color(Constants.shadowColor, Constants.shadowColor, Constants.shadowColor, 0.5f));
             r.rect(pos.x + 2, pos.y - 2, Constants.boxSize, Constants.boxSize);
             r.setColor(getColor());
