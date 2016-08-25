@@ -344,7 +344,11 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 int yPos = worldHeight - Constants.boxSize * 2;
                 renderer.rect(xPos, yPos, Constants.margin, Constants.margin);
                 font.getData().setScale(2,2);
-                font.draw(spriteBatch,grid.colorDestroyed[i] + "/" + grid.colorObjectives[i],xPos,yPos - Constants.boxSize);
+                int destroyed = grid.colorDestroyed[i];
+                if (destroyed > grid.colorObjectives[i]) {
+                    destroyed = grid.colorObjectives[i];
+                }
+                font.draw(spriteBatch,destroyed + "/" + grid.colorObjectives[i],xPos,yPos - Constants.boxSize);
                 System.out.println("Height: " + worldHeight);
                 numObjectives++;
             }
