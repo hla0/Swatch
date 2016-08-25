@@ -24,6 +24,8 @@ public class Grid extends InputAdapter{
     int totalDestroyed;
     int moves;
     int direction;
+    int animatedScore;
+    int score;
     //y screen index where new squares would be added
     int top;
     ArrayList<Square> toDelete;
@@ -44,6 +46,8 @@ public class Grid extends InputAdapter{
         toDelete = new ArrayList<Square>();
         toSwap = new ArrayList<Square>();
         loadLevel(level);
+        score = 0;
+        animatedScore = 0;
         direction = -1;
     }
 
@@ -98,6 +102,10 @@ public class Grid extends InputAdapter{
             columnChanged[s.x] = true;
             colorDestroyed[s.getColorNum()]++;
             totalDestroyed++;
+            score += 100;
+            if (score > Constants.maxScore) {
+                score = Constants.maxScore;
+            }
             //check white
             if (s.getColorNum() == 1) {
                 if (squares[s.x][s.y] != null) {
@@ -376,12 +384,18 @@ public class Grid extends InputAdapter{
                 Square s = squares[i][j];
                 if (s != null) {
                     if ((s.getHorizontalMatch() >= 3 || s.getVerticalMatch() >= 3)) {
+                        score += 100;
+                        if (score > Constants.maxScore) {
+                            score = Constants.maxScore;
+                        }
                         removeSquare(squares[i][j]);
                     }
                 }
             }
         }
     }
+
+    public int getScore() { return animatedScore; }
 
 
     public ArrayList<Square> getDeleted() {
@@ -511,6 +525,12 @@ public class Grid extends InputAdapter{
                     updateColumns();
                 }
             }
+        }
+        if (animatedScore < score) {
+            animatedScore += 51;
+        }
+        else {
+            animatedScore = score;
         }
     }
 

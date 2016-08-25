@@ -6,6 +6,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -20,6 +22,8 @@ public class Swatch extends Game {
 	Grid grid;
 	OrthographicCamera camera;
 	Viewport viewport;
+	BitmapFont font;
+	SpriteBatch spriteBatch;
 
 	//TODO Add separate screens and move current functions into relevant screen
 	@Override
@@ -33,6 +37,8 @@ public class Swatch extends Game {
 				camera);
 		grid = new Grid(width,height, viewport, level);
 		renderer = new ShapeRenderer();
+		font = new BitmapFont();
+		spriteBatch = new SpriteBatch();
 		Gdx.input.setInputProcessor(grid);
 	}
 
@@ -42,13 +48,16 @@ public class Swatch extends Game {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		viewport.apply();
 		renderer.setProjectionMatrix(camera.combined);
+		spriteBatch.setProjectionMatrix(camera.combined);
 		renderer.begin(ShapeType.Filled);
 		renderGrid();
 		//TODO find better solution to hide new squares at top
 		//temporary solution
 		renderer.setColor(0,0,0,1);
 		renderer.rect(0,Constants.bottomPadding + 10 * (Constants.boxSize + Constants.margin) + Constants.margin,330,Constants.topPadding);
+		spriteBatch.begin();
 		renderGridUI();
+		spriteBatch.end();
 		renderer.end();
 
 	}
@@ -85,7 +94,11 @@ public class Swatch extends Game {
 	}
 
 	public void renderGridUI() {
-
+		//TODO add leading zeros
+		CharSequence score = "0000" + grid.getScore();
+		font.setColor(Color.WHITE);
+		font.getData().setScale(3,3);
+		font.draw(spriteBatch,score,200,200);
 	}
 
 
@@ -102,6 +115,7 @@ public class Swatch extends Game {
 	@Override
 	public void dispose () {
 		renderer.dispose();
+		spriteBatch.dispose();
 		super.dispose();
 	}
 }

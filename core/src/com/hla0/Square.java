@@ -216,21 +216,21 @@ public class Square {
         switch (dir) {
             case 0:
                 //animate up
-                height -= Constants.shrinkVelocity;
-                pos.y += Constants.shrinkVelocity;
+                height -= Constants.swapVelocity;
+                pos.y += Constants.swapVelocity;
                 break;
             case 1:
                 //animate down
-                height -= Constants.shrinkVelocity;
+                height -= Constants.swapVelocity;
                 break;
             case 2:
                 //animate left
-                width -= Constants.shrinkVelocity;
+                width -= Constants.swapVelocity;
                 break;
             case 3:
                 //animate right
-                width -= Constants.shrinkVelocity;
-                pos.x += Constants.shrinkVelocity;
+                width -= Constants.swapVelocity;
+                pos.x += Constants.swapVelocity;
                 break;
         }
         r.rect(pos.x,pos.y,width,height);
