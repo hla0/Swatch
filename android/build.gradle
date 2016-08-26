@@ -24,7 +24,7 @@ android {
     }
     defaultConfig {
         applicationId "com.hla0"
-        minSdkVersion 8
+        minSdkVersion 9
         targetSdkVersion 24
     }
     buildTypes {
@@ -140,4 +140,5 @@ idea {
     }
 }
 dependencies {
+    compile 'com.google.android.gms:play-services:9.4.0'
 }
