@@ -278,7 +278,9 @@ public class SwatchScreen extends InputAdapter implements Screen{
             }
             System.out.println("Completed Level");
             //prompt for next level or level select
-            switchScreen(4);
+            if (!grid.isAnimating()) {
+                switchScreen(4);
+            }
         }
         if (grid.checkFail()) {
             System.out.println("Lost");
