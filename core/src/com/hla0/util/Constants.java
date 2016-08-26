@@ -1,19 +1,19 @@
 package com.hla0.util;
 
 public class Constants {
-    public static final int boxSize = 40;
-    public static final int margin = boxSize / 2;
-    public static final int topPadding = margin * 15;
-    public static final int bottomPadding = margin * 15;
-    public static final int leftPadding = margin;
-    public static final int rightPadding = margin;
-    public static final int numColors = 8;
-    public static final int velocity = 17;
-    public static final int gridSize = 8;
-    public static final float shrinkVelocity = 5;
-    public static final float swapVelocity = 8;
-    public static final float shadowColor = 97/255f;
-    public static final int maxScore = 999999;
-    public static final int maxLevels = 25;
-    public static final int screenAcceleration = 1;
+    public static final int BOX_SIZE = 40;
+    public static final int MARGIN = BOX_SIZE / 2;
+    public static final int TOP_PADDING = MARGIN * 15;
+    public static final int BOTTOM_PADDING = MARGIN * 15;
+    public static final int LEFT_PADDING = MARGIN;
+    public static final int RIGHT_PADDING = MARGIN;
+    public static final int NUMBER_COLORS = 8;
+    public static final int FALL_VELOCITY = 17;
+    public static final int GRID_SIZE = 8;
+    public static final float SHRINK_VELOCITY = 5;
+    public static final float SWAP_VELOCITY = 8;
+    public static final float SHADOW_COLOR = 97/255f;
+    public static final int MAX_SCORE = 999999;
+    public static final int MAX_LEVEL = 20;
+    public static final int SCREEN_ACCELERATION = 1;
 }

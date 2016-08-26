@@ -30,13 +30,13 @@ public class Grid{
     int[][] levelMap;
 
     Grid (Viewport viewport, int level) {
-        squares = new Square[Constants.gridSize][Constants.gridSize];
-        levelMap = new int[Constants.gridSize][Constants.gridSize];
-        columnChanged = new boolean[Constants.gridSize];
-        colorDestroyed = new int[Constants.numColors];
-        colorObjectives = new int[Constants.numColors];
+        squares = new Square[Constants.GRID_SIZE][Constants.GRID_SIZE];
+        levelMap = new int[Constants.GRID_SIZE][Constants.GRID_SIZE];
+        columnChanged = new boolean[Constants.GRID_SIZE];
+        colorDestroyed = new int[Constants.NUMBER_COLORS];
+        colorObjectives = new int[Constants.NUMBER_COLORS];
         this.viewport = viewport;
-        top = Constants.bottomPadding + (Constants.gridSize + 1) * (Constants.boxSize + Constants.margin);
+        top = Constants.BOTTOM_PADDING + (Constants.GRID_SIZE + 1) * (Constants.BOX_SIZE + Constants.MARGIN);
         animating = false;
         moves = 0;
         totalDestroyed = 0;
@@ -54,7 +54,7 @@ public class Grid{
         this.level = level;
         //different amount of moves per level
         moves = 20;
-        for (int i = 0; i < Constants.numColors; i++) {
+        for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
             colorDestroyed[i] = 0;
             //TODO add different objectives for each level
             colorObjectives[i] = 5;
@@ -62,8 +62,8 @@ public class Grid{
         }
         //set levelMap up then generate
         //currently allowing full grid to be filled
-        for (int i = 0; i < Constants.gridSize; i++) {
-            for (int j = 0; j < Constants.gridSize; j++) {
+        for (int i = 0; i < Constants.GRID_SIZE; i++) {
+            for (int j = 0; j < Constants.GRID_SIZE; j++) {
                 levelMap[i][j] = (int) (Math.random() * 10) / 9;
             }
         }
@@ -84,10 +84,10 @@ public class Grid{
         int colorLeft = -1;
         int colorUp = -1;
         int randomColor;
-        for (int i = 0; i < Constants.gridSize; i++) {
-            for (int j = 0; j < Constants.gridSize; j++) {
+        for (int i = 0; i < Constants.GRID_SIZE; i++) {
+            for (int j = 0; j < Constants.GRID_SIZE; j++) {
                 if (levelMap[i][j] == 0) {
-                    randomColor = (int) (Math.random() * Constants.numColors);
+                    randomColor = (int) (Math.random() * Constants.NUMBER_COLORS);
                     if (i > 1) {
                         if (squares[i - 1][j].getColorNum() == squares[i - 2][j].getColorNum()) {
                             colorLeft = squares[i - 1][j].getColorNum();
@@ -99,7 +99,7 @@ public class Grid{
                         }
                     }
                     while (randomColor == colorLeft || randomColor == colorUp) {
-                        randomColor = (int) (Math.random() * Constants.numColors);
+                        randomColor = (int) (Math.random() * Constants.NUMBER_COLORS);
                     }
                     squares[i][j] = new Square(i, j, randomColor);
                 }
@@ -124,8 +124,8 @@ public class Grid{
             colorDestroyed[s.getColorNum()]++;
             totalDestroyed++;
             score += 100;
-            if (score > Constants.maxScore) {
-                score = Constants.maxScore;
+            if (score > Constants.MAX_SCORE) {
+                score = Constants.MAX_SCORE;
             }
             //check white
             if (s.getColorNum() == 1) {
@@ -133,13 +133,13 @@ public class Grid{
                     toDelete.add(squares[s.x][s.y]);
                 }
                 squares[s.x][s.y] = null;
-                if (s.x + 1 < Constants.gridSize) {
+                if (s.x + 1 < Constants.GRID_SIZE) {
                     removeSquare(squares[s.x + 1][s.y]);
                 }
                 if (s.x > 0) {
                     removeSquare(squares[s.x - 1][s.y]);
                 }
-                if (s.y + 1 < Constants.gridSize) {
+                if (s.y + 1 < Constants.GRID_SIZE) {
                     removeSquare(squares[s.x][s.y + 1]);
                 }
                 if (s.y > 0) {
@@ -156,7 +156,7 @@ public class Grid{
 
     //rearrange column so that blocks have fallen
     public void updateColumns() {
-        for (int i = 0; i < Constants.gridSize; i++) {
+        for (int i = 0; i < Constants.GRID_SIZE; i++) {
             if (columnChanged[i]) {
                 updateColumn(i);
                 columnChanged[i] = false;
@@ -178,14 +178,14 @@ public class Grid{
         animating = true;
         boolean above = true;
         int squareCount = 0;
-        for (int i = 0; i < Constants.gridSize; i++) {
+        for (int i = 0; i < Constants.GRID_SIZE; i++) {
             if (squares[col][i] == null) {
                 //try finding squares above
                 if (above) {
                     Square s = findSquareAbove(col, i);
                     //did not find square above
                     if (s == null) {
-                        generateSquare(col,i,top + squareCount * (Constants.boxSize + Constants.margin));
+                        generateSquare(col,i,top + squareCount * (Constants.BOX_SIZE + Constants.MARGIN));
                         squareCount++;
                         above = false;
                     }
@@ -199,7 +199,7 @@ public class Grid{
                 }
                 //no squares above
                 else {
-                    generateSquare(col,i,top + squareCount * (Constants.boxSize + Constants.margin));
+                    generateSquare(col,i,top + squareCount * (Constants.BOX_SIZE + Constants.MARGIN));
                     squareCount++;
                 }
                 //can add parameters to animate fall or swap
@@ -210,7 +210,7 @@ public class Grid{
 
     public Square findSquareAbove(int col, int index) {
         Square s = null;
-        for (int i = index + 1; i < Constants.gridSize; i++) {
+        for (int i = index + 1; i < Constants.GRID_SIZE; i++) {
             if (squares[col][i] != null && squares[col][i].getColorNum() >= 0) {
                 return squares[col][i];
             }
@@ -301,13 +301,13 @@ public class Grid{
     //should be called after swapLines and updateColumns
     public boolean checkMatches() {
         boolean match = false;
-        for (int i = 0; i < Constants.gridSize; i++) {
+        for (int i = 0; i < Constants.GRID_SIZE; i++) {
             if (scanHorizontal(i)) {
                 match = true;
                 System.out.println("Found horizontal match on row " + i);
             }
         }
-        for (int i = 0; i < Constants.gridSize; i++) {
+        for (int i = 0; i < Constants.GRID_SIZE; i++) {
             if (scanVertical(i)) {
                 match = true;
                 System.out.println("Found vertical match on column " + i);
@@ -326,7 +326,7 @@ public class Grid{
         Square right1 = null;
         Square right2 = null;
 
-        for (int i = 0; i < Constants.gridSize; i++) {
+        for (int i = 0; i < Constants.GRID_SIZE; i++) {
             Square curSquare = squares[i][row];
             if (curSquare != null) {
                 count = 1;
@@ -338,10 +338,10 @@ public class Grid{
                     if (i - 1 >= 0) {
                         left1 = squares[i - 1][row];
                     }
-                    if (i + 2 < Constants.gridSize) {
+                    if (i + 2 < Constants.GRID_SIZE) {
                         right2 = squares[i + 2][row];
                     }
-                    if (i + 1 < Constants.gridSize) {
+                    if (i + 1 < Constants.GRID_SIZE) {
                         right1 = squares[i + 1][row];
                     }
                     if (left1 != null && left1.getColorNum() == curColor) {
@@ -382,16 +382,16 @@ public class Grid{
         Square down1 = null;
         Square down2 = null;
 
-        for (int i = 0; i < Constants.gridSize; i++) {
+        for (int i = 0; i < Constants.GRID_SIZE; i++) {
             Square curSquare = squares[col][i];
             if (curSquare != null) {
                 count = 1;
                 curColor = curSquare.getColorNum();
                 if (curColor >= 0) {
-                    if (i + 2 < Constants.gridSize) {
+                    if (i + 2 < Constants.GRID_SIZE) {
                         up2 = squares[col][i + 2];
                     }
-                    if (i + 1 < Constants.gridSize) {
+                    if (i + 1 < Constants.GRID_SIZE) {
                         up1 = squares[col][i + 1];
                     }
                     if (i - 2 >= 0) {
@@ -430,14 +430,14 @@ public class Grid{
 
     //TODO if squares have a certain criteria (match horizontal and vertical) match 4 or 5
     public void removeMatches() {
-        for (int i = 0; i < Constants.gridSize; i++) {
-            for (int j = 0; j < Constants.gridSize; j++) {
+        for (int i = 0; i < Constants.GRID_SIZE; i++) {
+            for (int j = 0; j < Constants.GRID_SIZE; j++) {
                 Square s = squares[i][j];
                 if (s != null) {
                     if ((s.getHorizontalMatch() >= 3 || s.getVerticalMatch() >= 3)) {
                         score += 100;
-                        if (score > Constants.maxScore) {
-                            score = Constants.maxScore;
+                        if (score > Constants.MAX_SCORE) {
+                            score = Constants.MAX_SCORE;
                         }
                         removeSquare(squares[i][j]);
                     }
@@ -464,9 +464,9 @@ public class Grid{
         if (toSwap.size() > 0) {
             return true;
         }
-        for (int i = 0; i < Constants.gridSize; i++) {
+        for (int i = 0; i < Constants.GRID_SIZE; i++) {
             if (columnChanged[i]) {
-                for (int j = 0; j < Constants.gridSize; j++) {
+                for (int j = 0; j < Constants.GRID_SIZE; j++) {
                     if (squares[i][j] != null && squares[i][j].isAnimating()) {
                         return true;
                     }
@@ -544,7 +544,7 @@ public class Grid{
     }
 
     public boolean checkObjectives() {
-        for (int i = 0; i < Constants.numColors; i++) {
+        for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
             if (colorObjectives[i] > colorDestroyed[i]) {
                 return false;
             }

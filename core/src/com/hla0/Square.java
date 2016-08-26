@@ -33,8 +33,8 @@ public class Square {
         selected = false;
         animating = false;
         colorNum = c;
-        width = Constants.boxSize;
-        height = Constants.boxSize;
+        width = Constants.BOX_SIZE;
+        height = Constants.BOX_SIZE;
         horizontalMatch = 0;
         verticalMatch = 0;
         selected = false;
@@ -44,11 +44,11 @@ public class Square {
 
 
     public int screenConvertX(int x) {
-        return x * (Constants.boxSize + Constants.margin) + Constants.margin + Constants.leftPadding;
+        return x * (Constants.BOX_SIZE + Constants.MARGIN) + Constants.MARGIN + Constants.LEFT_PADDING;
     }
 
     public int screenConvertY(int y) {
-        return y * (Constants.boxSize + Constants.margin) + Constants.bottomPadding + Constants.margin;
+        return y * (Constants.BOX_SIZE + Constants.MARGIN) + Constants.BOTTOM_PADDING + Constants.MARGIN;
     }
 
     public void setColor(int c) {
@@ -201,10 +201,10 @@ public class Square {
     //if pos does not match x and y on grid move down
     public void update() {
         if (pos.y > screenConvertY(y)) {
-            pos.y -= Constants.velocity;
+            pos.y -= Constants.FALL_VELOCITY;
         }
         else if (pos.y < screenConvertY(y)) {
-            pos.y = screenConvertY(y) + Constants.velocity;
+            pos.y = screenConvertY(y) + Constants.FALL_VELOCITY;
         }
         else {
             animating = false;
@@ -214,29 +214,29 @@ public class Square {
     //draw based on position on screen
     public void render(ShapeRenderer r) {
         //render shadow
-        if (getColorNum() >= 0 && pos.y < Constants.bottomPadding + Constants.margin + (Constants.boxSize + Constants.margin) * Constants.gridSize) {
-            r.setColor(new Color(Constants.shadowColor, Constants.shadowColor, Constants.shadowColor, 0.5f));
-            r.rect(pos.x + 2, pos.y - 2, Constants.boxSize, Constants.boxSize);
+        if (getColorNum() >= 0 && pos.y < Constants.BOTTOM_PADDING + Constants.MARGIN + (Constants.BOX_SIZE + Constants.MARGIN) * Constants.GRID_SIZE) {
+            r.setColor(new Color(Constants.SHADOW_COLOR, Constants.SHADOW_COLOR, Constants.SHADOW_COLOR, 0.5f));
+            r.rect(pos.x + 2, pos.y - 2, Constants.BOX_SIZE, Constants.BOX_SIZE);
             r.setColor(getColor());
-            r.rect(pos.x, pos.y, Constants.boxSize, Constants.boxSize);
+            r.rect(pos.x, pos.y, Constants.BOX_SIZE, Constants.BOX_SIZE);
         }
 
         //TODO properly animate selected
         if (selected) {
             r.setColor(new Color(1,1,1,0.5f));
-            r.rect(pos.x + Constants.margin/2,pos.y + Constants.margin/2,Constants.boxSize - Constants.margin,Constants.boxSize - Constants.margin);
+            r.rect(pos.x + Constants.MARGIN/2,pos.y + Constants.MARGIN/2,Constants.BOX_SIZE - Constants.MARGIN,Constants.BOX_SIZE - Constants.MARGIN);
         }
     }
 
     public void renderDeleted(ShapeRenderer r) {
-        width -= Constants.shrinkVelocity;
-        height -= Constants.shrinkVelocity;
-        pos.x += Constants.shrinkVelocity / 2;
-        pos.y += Constants.shrinkVelocity / 2;
+        width -= Constants.SHRINK_VELOCITY;
+        height -= Constants.SHRINK_VELOCITY;
+        pos.x += Constants.SHRINK_VELOCITY / 2;
+        pos.y += Constants.SHRINK_VELOCITY / 2;
 
         //render shadow
         if (getColorNum() >= 0) {
-            r.setColor(new Color(Constants.shadowColor, Constants.shadowColor, Constants.shadowColor, 0.5f));
+            r.setColor(new Color(Constants.SHADOW_COLOR, Constants.SHADOW_COLOR, Constants.SHADOW_COLOR, 0.5f));
             r.rect(pos.x + 2, pos.y - 2, width, height);
             r.setColor(getColor());
             r.rect(pos.x,pos.y,width,height);
@@ -249,21 +249,21 @@ public class Square {
             switch (dir) {
                 case 0:
                     //animate up
-                    height -= Constants.swapVelocity;
-                    pos.y += Constants.swapVelocity;
+                    height -= Constants.SWAP_VELOCITY;
+                    pos.y += Constants.SWAP_VELOCITY;
                     break;
                 case 1:
                     //animate down
-                    height -= Constants.swapVelocity;
+                    height -= Constants.SWAP_VELOCITY;
                     break;
                 case 2:
                     //animate left
-                    width -= Constants.swapVelocity;
+                    width -= Constants.SWAP_VELOCITY;
                     break;
                 case 3:
                     //animate right
-                    width -= Constants.swapVelocity;
-                    pos.x += Constants.swapVelocity;
+                    width -= Constants.SWAP_VELOCITY;
+                    pos.x += Constants.SWAP_VELOCITY;
                     break;
             }
         r.rect(pos.x,pos.y,width,height);

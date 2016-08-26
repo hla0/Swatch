@@ -34,8 +34,8 @@ public class SwatchScreen extends InputAdapter implements Screen{
         camera = new OrthographicCamera();
         int level = 1;
         //490,790
-        worldWidth = Constants.leftPadding + Constants.rightPadding + Constants.gridSize * (Constants.boxSize + Constants.margin) + Constants.margin;
-        worldHeight = Constants.gridSize * (Constants.boxSize + Constants.margin) + Constants.topPadding + Constants.bottomPadding + Constants.margin;
+        worldWidth = Constants.LEFT_PADDING + Constants.RIGHT_PADDING + Constants.GRID_SIZE * (Constants.BOX_SIZE + Constants.MARGIN) + Constants.MARGIN;
+        worldHeight = Constants.GRID_SIZE * (Constants.BOX_SIZE + Constants.MARGIN) + Constants.TOP_PADDING + Constants.BOTTOM_PADDING + Constants.MARGIN;
         viewport = new FitViewport(worldWidth,worldHeight,camera);
         grid = new Grid(viewport, level);
         r = new Renderer(this,worldWidth,worldHeight,grid);
@@ -163,9 +163,9 @@ public class SwatchScreen extends InputAdapter implements Screen{
         if (!animating) {
             Vector2 v = transformToGrid(viewport.unproject(new Vector2(screenX, screenY)));
             boolean withinGrid = false;
-            //removes margins from grid with some flexibility for slightly off touches
+            //removes MARGINs from grid with some flexibility for slightly off touches
             if (v.x % 1 >= .07 && v.x % 1 <= .93 && v.y % 1 >= .07 && v.y % 1 <= .93) {
-                if (v.x >= Constants.gridSize || v.x < 0 || v.y >= Constants.gridSize || v.y < 0) {
+                if (v.x >= Constants.GRID_SIZE || v.x < 0 || v.y >= Constants.GRID_SIZE || v.y < 0) {
                     System.out.println("Outside grid");
                     withinGrid = false;
                 } else {
@@ -183,8 +183,8 @@ public class SwatchScreen extends InputAdapter implements Screen{
     }
 
     public Vector2 transformToGrid(Vector2 v1) {
-        Vector2 v = new Vector2((v1.x - Constants.leftPadding - (Constants.margin / 2))/(Constants.boxSize + Constants.margin),
-                (v1.y - Constants.bottomPadding - (Constants.margin / 2)) / (Constants.boxSize + Constants.margin));
+        Vector2 v = new Vector2((v1.x - Constants.LEFT_PADDING - (Constants.MARGIN / 2))/(Constants.BOX_SIZE + Constants.MARGIN),
+                (v1.y - Constants.BOTTOM_PADDING - (Constants.MARGIN / 2)) / (Constants.BOX_SIZE + Constants.MARGIN));
         return v;
     }
 

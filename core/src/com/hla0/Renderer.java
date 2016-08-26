@@ -48,7 +48,7 @@ public class Renderer {
         }
         else {
             String string = "";
-            for (int i = 0; i < Constants.maxLevels; i++) {
+            for (int i = 0; i < Constants.MAX_LEVEL; i++) {
                 string += "0";
             }
             stars.writeString(string,false);
@@ -64,7 +64,7 @@ public class Renderer {
             yVelocity = 0;
         }
         else {
-            yVelocity += Constants.screenAcceleration;
+            yVelocity += Constants.SCREEN_ACCELERATION;
             yPos += yVelocity;
             if (yPos > worldHeight) {
                 animating = false;
@@ -204,7 +204,7 @@ public class Renderer {
             String data = stars.readString();
             if (data.length() == 0) {
                 String s = "";
-                for (int i = 0; i < Constants.maxLevels; i++) {
+                for (int i = 0; i < Constants.MAX_LEVEL; i++) {
                     s += "0";
                 }
                 stars.writeString(s,false);
@@ -212,7 +212,7 @@ public class Renderer {
         }
         else {
             String s = "";
-            for (int i = 0; i < Constants.maxLevels; i++) {
+            for (int i = 0; i < Constants.MAX_LEVEL; i++) {
                 s += "0";
             }
             stars.writeString(s,false);
@@ -224,7 +224,7 @@ public class Renderer {
                 int index = i + j * 4;
                 if (Gdx.files.local("levelStars.txt").exists()) {
                     String s = stars.readString();
-                    if (s.length() >= Constants.maxLevels) {
+                    if (s.length() >= Constants.MAX_LEVEL) {
                         numStars = Integer.parseInt("" + stars.readString().charAt(index));
                     }
                     else {
@@ -243,9 +243,9 @@ public class Renderer {
                 else {
                     renderer.setColor(Color.WHITE);
                 }
-                int xPos = i * Constants.boxSize * 3 + Constants.margin * 2;
-                int yPos = worldHeight * 3 / 4 - j * Constants.boxSize * 3 + Constants.margin;
-                renderer.rect(xPos,yPos + y, Constants.boxSize * 2,Constants.boxSize * 2);
+                int xPos = i * Constants.BOX_SIZE * 3 + Constants.MARGIN * 2;
+                int yPos = worldHeight * 3 / 4 - j * Constants.BOX_SIZE * 3 + Constants.MARGIN;
+                renderer.rect(xPos,yPos + y, Constants.BOX_SIZE * 2,Constants.BOX_SIZE * 2);
                 renderer.end();
 
                 spriteBatch.begin();
@@ -296,11 +296,11 @@ public class Renderer {
         if (Gdx.files.local("levelStars.txt").exists()) {
             String s = "";
             String sLine = stars.readString();
-            stars.writeString(sLine.substring(0,grid.level) + "1" + sLine.substring(grid.level+1,Constants.maxLevels),false);
+            stars.writeString(sLine.substring(0,grid.level) + "1" + sLine.substring(grid.level+1,Constants.MAX_LEVEL),false);
         }
         else {
             String s = "";
-            for (int i = 0; i < Constants.maxLevels; i++) {
+            for (int i = 0; i < Constants.MAX_LEVEL; i++) {
                 if (grid.level == i) {
                     s += "1";
                     //add star amount
@@ -315,8 +315,8 @@ public class Renderer {
         Square[][] squares = grid.getSquares();
         ArrayList<Square> deleted = grid.getDeleted();
         ArrayList<Square> swapped = grid.getSwapped();
-        for (int i = 0; i < Constants.gridSize; i++) {
-            for (int j = 0; j < Constants.gridSize; j++) {
+        for (int i = 0; i < Constants.GRID_SIZE; i++) {
+            for (int j = 0; j < Constants.GRID_SIZE; j++) {
                 if (squares[i][j] != null) {
                     if (deleted.size() == 0 && swapped.size() == 0) {
                         squares[i][j].update();
@@ -349,18 +349,18 @@ public class Renderer {
         int numObjectives = 0;
 
         //TODO add moves left and menu button
-        for (int i = 0; i < Constants.numColors; i++) {
+        for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
             if (grid.colorObjectives[i] > 0) {
                 renderer.setColor(Square.getColor(i));
-                int xPos = (int)(numObjectives * Constants.boxSize * 1.5 + Constants.margin * 1.5 + Constants.leftPadding);
-                int yPos = worldHeight - Constants.boxSize * 4;
-                renderer.rect(xPos, yPos, Constants.margin, Constants.margin);
+                int xPos = (int)(numObjectives * Constants.BOX_SIZE * 1.5 + Constants.MARGIN * 1.5 + Constants.LEFT_PADDING);
+                int yPos = worldHeight - Constants.BOX_SIZE * 4;
+                renderer.rect(xPos, yPos, Constants.MARGIN, Constants.MARGIN);
                 font.getData().setScale(2,2);
                 int destroyed = grid.colorDestroyed[i];
                 if (destroyed > grid.colorObjectives[i]) {
                     destroyed = grid.colorObjectives[i];
                 }
-                font.draw(spriteBatch,destroyed + "/" + grid.colorObjectives[i],xPos - 5,yPos - Constants.boxSize);
+                font.draw(spriteBatch,destroyed + "/" + grid.colorObjectives[i],xPos - 5,yPos - Constants.BOX_SIZE);
                 numObjectives++;
             }
         }
