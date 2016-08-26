@@ -53,7 +53,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
         if (Gdx.files.local("levelsComplete.txt").exists()) {
             String data = complete.readString();
             System.out.println("File data: " + data);
-            level = Integer.parseInt(complete.readString());
+            levelsComplete = Integer.parseInt(complete.readString());
         }
         else {
             String s = "";
@@ -230,6 +230,14 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 }
                 else {
                     numStars = 0;
+                }
+                if (index + 1 > levelsComplete + 1) {
+                    renderer.setColor(Color.BLACK);
+                    font.setColor(Color.WHITE);
+                }
+                else {
+                    renderer.setColor(Color.WHITE);
+                    font.setColor(Color.BLACK);
                 }
                 int xPos = i * Constants.boxSize * 3 + Constants.margin * 2;
                 int yPos = worldHeight * 3 / 4 - j * Constants.boxSize * 3 + Constants.margin;
