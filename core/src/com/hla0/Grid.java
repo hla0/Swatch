@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hla0.util.Constants;
 
-import java.math.*;
 import java.util.ArrayList;
 
 public class Grid{
@@ -466,19 +465,15 @@ public class Grid{
             return true;
         }
         for (int i = 0; i < Constants.gridSize; i++) {
-            for (int j = 0; j < Constants.gridSize; j++) {
-                if (squares[i][j] != null && squares[i][j].isAnimating()) {
-                    return true;
+            if (columnChanged[i]) {
+                for (int j = 0; j < Constants.gridSize; j++) {
+                    if (squares[i][j] != null && squares[i][j].isAnimating()) {
+                        return true;
+                    }
                 }
             }
         }
         return false;
-    }
-
-    public Vector2 transformToGrid(Vector2 v1) {
-        Vector2 v = new Vector2((v1.x - Constants.leftPadding - (Constants.margin / 2))/(Constants.boxSize + Constants.margin),
-                (v1.y - Constants.bottomPadding - (Constants.margin / 2)) / (Constants.boxSize + Constants.margin));
-        return v;
     }
 
     //where there is selected = *; change status of the variable within square

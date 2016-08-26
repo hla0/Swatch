@@ -118,33 +118,33 @@ public class Square {
     }
 
     public static Color getColor(int i) {
-    switch (i) {
-        //black
-        case 0:
-            return new Color(66 / 255f, 66 / 255f, 66 / 255f, 1);
-        //white
-        case 1:
-            return new Color(245 / 255f, 245 / 255f, 245 / 255f, 1);
-        //red
-        case 2:
-            return new Color(211 / 255f, 47 / 255f, 47 / 255f, 1);
-        //blue
-        case 3:
-            return new Color(25 / 255f, 118 / 255f, 210 / 255f, 1);
-        //yellow
-        case 4:
-            return new Color(251 / 255f, 192 / 255f, 45 / 255f, 1);
-        //green
-        case 5:
-            return new Color(56 / 255f, 142 / 255f, 60 / 255f, 1);
-        //orange
-        case 6:
-            return new Color(245 / 255f, 124 / 255f, 0 / 255f, 1);
-        //purple
-        case 7:
-            return new Color(81 / 255f, 45 / 255f, 168 / 255f, 1);
-        default:
-            return new Color(0, 0, 0, 1);
+        switch (i) {
+            //black
+            case 0:
+                return new Color(66 / 255f, 66 / 255f, 66 / 255f, 1);
+            //white
+            case 1:
+                return new Color(245 / 255f, 245 / 255f, 245 / 255f, 1);
+            //red
+            case 2:
+                return new Color(211 / 255f, 47 / 255f, 47 / 255f, 1);
+            //blue
+            case 3:
+                return new Color(25 / 255f, 118 / 255f, 210 / 255f, 1);
+            //yellow
+            case 4:
+                return new Color(251 / 255f, 192 / 255f, 45 / 255f, 1);
+            //green
+            case 5:
+                return new Color(56 / 255f, 142 / 255f, 60 / 255f, 1);
+            //orange
+            case 6:
+                return new Color(245 / 255f, 124 / 255f, 0 / 255f, 1);
+            //purple
+            case 7:
+                return new Color(81 / 255f, 45 / 255f, 168 / 255f, 1);
+            default:
+                return new Color(0, 0, 0, 1);
         }
     }
     public int getColorNum() { return colorNum; }
@@ -246,26 +246,26 @@ public class Square {
     public void renderSwapped(ShapeRenderer r, int dir, int index) {
         r.setColor(getColor());
         if (index == 0)
-        switch (dir) {
-            case 0:
-                //animate up
-                height -= Constants.swapVelocity;
-                pos.y += Constants.swapVelocity;
-                break;
-            case 1:
-                //animate down
-                height -= Constants.swapVelocity;
-                break;
-            case 2:
-                //animate left
-                width -= Constants.swapVelocity;
-                break;
-            case 3:
-                //animate right
-                width -= Constants.swapVelocity;
-                pos.x += Constants.swapVelocity;
-                break;
-        }
+            switch (dir) {
+                case 0:
+                    //animate up
+                    height -= Constants.swapVelocity;
+                    pos.y += Constants.swapVelocity;
+                    break;
+                case 1:
+                    //animate down
+                    height -= Constants.swapVelocity;
+                    break;
+                case 2:
+                    //animate left
+                    width -= Constants.swapVelocity;
+                    break;
+                case 3:
+                    //animate right
+                    width -= Constants.swapVelocity;
+                    pos.x += Constants.swapVelocity;
+                    break;
+            }
         r.rect(pos.x,pos.y,width,height);
     }
 

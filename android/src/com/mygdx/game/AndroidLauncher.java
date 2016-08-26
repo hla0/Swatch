@@ -1,10 +1,10 @@
-package com.hla0;
+package com.mygdx.game;
 
 import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.hla0.Swatch;
+import com.mygdx.game.Swatch;
 
 public class AndroidLauncher extends AndroidApplication {
 	@Override

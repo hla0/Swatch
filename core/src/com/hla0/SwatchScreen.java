@@ -3,28 +3,21 @@ package com.hla0;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hla0.util.Constants;
-
-import java.util.ArrayList;
 
 public class SwatchScreen extends InputAdapter implements Screen{
     public static final String TAG = SwatchScreen.class.getName();
     ShapeRenderer renderer;
     Grid grid;
     OrthographicCamera camera;
-    Viewport viewport;
+    FitViewport viewport;
     BitmapFont font;
     SpriteBatch spriteBatch;
     int curScreen;
@@ -43,13 +36,9 @@ public class SwatchScreen extends InputAdapter implements Screen{
         //490,790
         worldWidth = Constants.leftPadding + Constants.rightPadding + Constants.gridSize * (Constants.boxSize + Constants.margin) + Constants.margin;
         worldHeight = Constants.gridSize * (Constants.boxSize + Constants.margin) + Constants.topPadding + Constants.bottomPadding + Constants.margin;
-        viewport = new StretchViewport(worldWidth,worldHeight,camera);
+        viewport = new FitViewport(worldWidth,worldHeight,camera);
         grid = new Grid(viewport, level);
-        renderer = new ShapeRenderer();
-        font = new BitmapFont();
-        font.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
-        spriteBatch = new SpriteBatch();
-        r = new Renderer(this,renderer,spriteBatch,font,worldWidth,worldHeight,grid);
+        r = new Renderer(this,worldWidth,worldHeight,grid);
         animating = false;
         curScreen = 0;
     }
@@ -66,9 +55,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         viewport.apply();
-        renderer.setProjectionMatrix(camera.combined);
-        spriteBatch.setProjectionMatrix(camera.combined);
-        animating = r.render(curScreen,parentScreen, animating);
+        animating = r.render(curScreen,parentScreen, animating,camera);
     }
 
     /**
@@ -107,26 +94,24 @@ public class SwatchScreen extends InputAdapter implements Screen{
         if (!animating) {
             switch (curScreen) {
                 case 0:
-                    //choose levelSelect
-                    //switchScreen(1);
-                    //TODO choose mode
-                    //switchScreen(2);
-                    //choose settings
-                    //temporary
-                    if (viewport.unproject(new Vector2(screenX,screenY)).x > worldWidth/2) {
-                        System.out.println("settings");
-                        switchScreen(3);
+                    if (splashTouch(screenX,screenY)) {
+                        return true;
                     }
-                    else {
-                        switchScreen(1);
-                    }
+
                     break;
                 case 1:
-                    grid.loadLevel(2);
+                    grid.loadLevel(1);
                     switchScreen(2);
                     break;
                 case 2:
-                    return gameTouch(screenX, screenY);
+                    if (gameTouch(screenX, screenY)) {
+                        return true;
+                    }
+                    else {
+                        //for testing
+                        //switchScreen(3);
+                    }
+                    break;
                 case 3:
                     //settings
                     System.out.println("out of settings");
@@ -153,15 +138,30 @@ public class SwatchScreen extends InputAdapter implements Screen{
         }
         return false;
     }
-
+    public boolean splashTouch(int screenX, int screenY) {
+        //choose levelSelect
+        //switchScreen(1);
+        //TODO choose mode
+        //switchScreen(2);
+        //choose settings
+        //temporary
+        if (viewport.unproject(new Vector2(screenX,screenY)).x > worldWidth/2) {
+            System.out.println("settings");
+            switchScreen(3);
+        }
+        else {
+            switchScreen(1);
+        }
+        return true;
+    }
 
     public boolean gameTouch(int screenX, int screenY) {
         //do not process touches when grid is animating
-        if (grid.animating) {
-            grid.animating = grid.isAnimating();
+        if (animating) {
+            animating = grid.isAnimating();
         }
-        if (!grid.animating) {
-            Vector2 v = grid.transformToGrid(viewport.unproject(new Vector2(screenX, screenY)));
+        if (!animating) {
+            Vector2 v = transformToGrid(viewport.unproject(new Vector2(screenX, screenY)));
             boolean withinGrid = false;
             //removes margins from grid with some flexibility for slightly off touches
             if (v.x % 1 >= .07 && v.x % 1 <= .93 && v.y % 1 >= .07 && v.y % 1 <= .93) {
@@ -170,7 +170,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
                     withinGrid = false;
                 } else {
                     System.out.println("Obtained grid coordinates: (" + (int) v.x + ", " + (int) v.y + ")");
-                    grid.processTouch((int) v.x, (int) v.y);
+                    grid.processTouch((int)v.x,(int) v.y);
                     withinGrid = true;
                 }
             } else {
@@ -182,6 +182,11 @@ public class SwatchScreen extends InputAdapter implements Screen{
         return false;
     }
 
+    public Vector2 transformToGrid(Vector2 v1) {
+        Vector2 v = new Vector2((v1.x - Constants.leftPadding - (Constants.margin / 2))/(Constants.boxSize + Constants.margin),
+                (v1.y - Constants.bottomPadding - (Constants.margin / 2)) / (Constants.boxSize + Constants.margin));
+        return v;
+    }
 
     public void switchScreen(int screen) {
         parentScreen = curScreen;

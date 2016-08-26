@@ -3,17 +3,15 @@ package com.hla0;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.hla0.util.Constants;
 
 import java.util.ArrayList;
 
-/**
- * Created by aft99 on 8/25/2016.
- */
 public class Renderer {
     ShapeRenderer renderer;
     SpriteBatch spriteBatch;
@@ -27,17 +25,20 @@ public class Renderer {
     int levelsComplete;
     SwatchScreen swatchScreen;
     Grid grid;
+    boolean animating;
 
-    Renderer(SwatchScreen s, ShapeRenderer r, SpriteBatch sb, BitmapFont f, int w, int h, Grid g) {
+    Renderer(SwatchScreen s,int w, int h, Grid g) {
         swatchScreen = s;
-        renderer = r;
-        spriteBatch = sb;
-        font = f;
         yPos = 0;
         yVelocity = 0;
         worldWidth = w;
         worldHeight = h;
+        animating = false;
         grid = g;
+        renderer = new ShapeRenderer();
+        font = new BitmapFont();
+        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        spriteBatch = new SpriteBatch();
         stars = Gdx.files.local("levelStars.txt");
         complete = Gdx.files.local("levelsComplete.txt");
         if (Gdx.files.local("levelsComplete.txt").exists()) {
@@ -54,7 +55,10 @@ public class Renderer {
             levelsComplete = 0;
         }
     }
-    public boolean render(int curScreen, int parentScreen, boolean animating) {
+    public boolean render(int curScreen, int parentScreen, boolean animating,OrthographicCamera camera) {
+        renderer.setProjectionMatrix(camera.combined);
+        spriteBatch.setProjectionMatrix(camera.combined);
+        this.animating = animating;
         if (!animating) {
             yPos = 0;
             yVelocity = 0;
@@ -82,39 +86,38 @@ public class Renderer {
             case 2:
                 renderGame();
                 if (animating) {
-                    //temporary
-                    /*
-                    if (parentScreen == 2) {
-                        renderer.begin(ShapeRenderer.ShapeType.Filled);
-                        renderer.setColor(Color.TEAL);
-                        renderer.rect(0,0,worldWidth,worldHeight);
-                        renderer.end();
-                    }
-                    */
                     renderScreen(parentScreen,yPos);
                 }
                 break;
             case 3:
                 System.out.println("in settings");
-                renderSettings(0);
+                if (parentScreen != 2) {
+                    renderSettings(0,false);
+                }
                 if (animating) {
                     renderScreen(parentScreen,yPos);
                 }
+                if (parentScreen == 2) {
+                    renderSettings(yPos,true);
+                }
+
                 //switchScreen(parentScreen);
                 break;
             case 4:
+                //not animating currently
+                renderWin(yPos);
                 if (animating) {
                     renderGame();
                 }
-                renderWin(yPos);
                 break;
             case 5:
+                renderLose(yPos);
                 if (animating) {
                     renderGame();
                 }
-                renderLose(yPos);
                 break;
         }
+        this.animating = animating;
         return animating;
     }
 
@@ -131,7 +134,7 @@ public class Renderer {
                 renderGame();
                 break;
             case 3:
-                renderSettings(y);
+                renderSettings(y,false);
                 break;
             case 4:
                 //might be off since it is going down
@@ -143,10 +146,10 @@ public class Renderer {
         }
     }
 
-
+    //TODO image with surronnding a solid color that matches background
     public void renderSplashScreen (int y) {
         renderer.begin(ShapeRenderer.ShapeType.Filled);
-        renderer.setColor(Color.TEAL);
+        renderer.setColor(Color.GOLD);
         renderer.rect(0,y,worldWidth,worldHeight - y);
         System.out.println(y);
         renderer.end();
@@ -156,24 +159,46 @@ public class Renderer {
         font.draw(spriteBatch,"Swatch",200,500 + y);
         spriteBatch.end();
     }
-
-    public void renderSettings(int y) {
-        renderer.begin(ShapeRenderer.ShapeType.Filled);
-        renderer.setColor(Color.TAN);
-        renderer.rect(0,y,worldWidth,worldHeight);
-        renderer.end();
-        spriteBatch.begin();
-        font.setColor(Color.WHITE);
-        font.getData().setScale(3,3);
-        font.draw(spriteBatch,"Settings",200,500 + y);
-        spriteBatch.end();
+    //
+    public void renderSettings(int y, boolean down) {
+        if (!animating) {
+            renderer.begin(ShapeRenderer.ShapeType.Filled);
+            renderer.setColor(Color.TAN);
+            renderer.rect(0, 0, worldWidth, worldHeight);
+            renderer.end();
+            spriteBatch.begin();
+            font.setColor(Color.WHITE);
+            font.getData().setScale(3, 3);
+            font.draw(spriteBatch, "Settings", 200, 500);
+            spriteBatch.end();
+        }
+        else {
+            if (down) {
+                renderer.begin(ShapeRenderer.ShapeType.Filled);
+                renderer.setColor(Color.TAN);
+                renderer.rect(0, worldHeight - y, worldWidth, worldHeight);
+                renderer.end();
+                spriteBatch.begin();
+                font.setColor(Color.WHITE);
+                font.getData().setScale(3, 3);
+                font.draw(spriteBatch, "Settings", 200, worldHeight - y + 500);
+                spriteBatch.end();
+            } else {
+                renderer.begin(ShapeRenderer.ShapeType.Filled);
+                renderer.setColor(Color.TAN);
+                renderer.rect(0, y, worldWidth, worldHeight);
+                renderer.end();
+                spriteBatch.begin();
+                font.setColor(Color.WHITE);
+                font.getData().setScale(3, 3);
+                font.draw(spriteBatch, "Settings", 200, 500 + y);
+                spriteBatch.end();
+            }
+        }
     }
     //render level numbers and stars onto squares
     public void renderLevelSelect(int y) {
         //need to separate into two loops to put text in box
-        renderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        spriteBatch.begin();
         stars = Gdx.files.local("levelStars.txt");
         if (Gdx.files.local("levelStars.txt").exists()) {
             String data = stars.readString();
@@ -194,8 +219,6 @@ public class Renderer {
             levelsComplete = 0;
         }
         int numStars = 0;
-        //set the color of levelCompleted + 1 and lower to be brighter
-        renderer.setColor(Color.WHITE);
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 5; j++) {
                 int index = i + j * 4;
@@ -213,6 +236,19 @@ public class Renderer {
                 else {
                     numStars = 0;
                 }
+                renderer.begin(ShapeRenderer.ShapeType.Filled);
+                if (index + 1 > levelsComplete + 1) {
+                    renderer.setColor(Color.BLACK);
+                }
+                else {
+                    renderer.setColor(Color.WHITE);
+                }
+                int xPos = i * Constants.boxSize * 3 + Constants.margin * 2;
+                int yPos = worldHeight * 3 / 4 - j * Constants.boxSize * 3 + Constants.margin;
+                renderer.rect(xPos,yPos + y, Constants.boxSize * 2,Constants.boxSize * 2);
+                renderer.end();
+
+                spriteBatch.begin();
                 if (index + 1 > levelsComplete + 1) {
                     renderer.setColor(Color.BLACK);
                     font.setColor(Color.WHITE);
@@ -221,16 +257,11 @@ public class Renderer {
                     renderer.setColor(Color.WHITE);
                     font.setColor(Color.BLACK);
                 }
-                int xPos = i * Constants.boxSize * 3 + Constants.margin * 2;
-                int yPos = worldHeight * 3 / 4 - j * Constants.boxSize * 3 + Constants.margin;
-                renderer.rect(xPos,yPos + y, Constants.boxSize * 2,Constants.boxSize * 2);
                 CharSequence curLevel = "" + (index + 1);
-                font.setColor(Color.BLACK);
                 font.draw(spriteBatch,curLevel,xPos,yPos + y);
+                spriteBatch.end();
             }
         }
-        spriteBatch.end();
-        renderer.end();
     }
 
     public void renderGame() {
@@ -243,37 +274,41 @@ public class Renderer {
                 levelsComplete = grid.level;
                 complete.writeString("" + levelsComplete,false);
             }
-            //check stars
-            //update stars
-            stars = Gdx.files.local("levelStars.txt");
-            if (Gdx.files.local("levelStars.txt").exists()) {
-                String s = "";
-                String sLine = stars.readString();
-                stars.writeString(sLine.substring(0,grid.level) + "1" + sLine.substring(grid.level+1,Constants.maxLevels),false);
-            }
-            else {
-                String s = "";
-                for (int i = 0; i < Constants.maxLevels; i++) {
-                    if (grid.level == i) {
-                        s += "1";
-                        //add star amount
-                    }
-                    s += "0";
-                }
-                stars.writeString(s,false);
-            }
+            processStars();
             System.out.println("Completed Level");
             //prompt for next level or level select
             if (!grid.isAnimating()) {
                 swatchScreen.switchScreen(4);
             }
         }
-        if (grid.checkFail()) {
+        else if (grid.checkFail()) {
             System.out.println("Lost");
             swatchScreen.switchScreen(5);
         }
         spriteBatch.end();
         renderer.end();
+    }
+
+    public void processStars() {
+        //check stars
+        //update stars
+        stars = Gdx.files.local("levelStars.txt");
+        if (Gdx.files.local("levelStars.txt").exists()) {
+            String s = "";
+            String sLine = stars.readString();
+            stars.writeString(sLine.substring(0,grid.level) + "1" + sLine.substring(grid.level+1,Constants.maxLevels),false);
+        }
+        else {
+            String s = "";
+            for (int i = 0; i < Constants.maxLevels; i++) {
+                if (grid.level == i) {
+                    s += "1";
+                    //add star amount
+                }
+                s += "0";
+            }
+            stars.writeString(s,false);
+        }
     }
 
     public void renderGrid() {
@@ -366,27 +401,27 @@ public class Renderer {
 
     public void renderWin(int y) {
         renderer.begin(ShapeRenderer.ShapeType.Filled);
-        renderer.setColor(Color.TEAL);
-        renderer.rect(0,y,worldWidth,worldHeight - y);
+        renderer.setColor(Color.CHARTREUSE);
+        renderer.rect(0,y,worldWidth,worldHeight);
         renderer.end();
         //temporary win screen
         spriteBatch.begin();
         font.setColor(Color.WHITE);
         font.getData().setScale(3,3);
-        font.draw(spriteBatch,"You win",200,200);
+        font.draw(spriteBatch,"You win",200,200 + y);
         spriteBatch.end();
     }
 
     public void renderLose(int y) {
         renderer.begin(ShapeRenderer.ShapeType.Filled);
-        renderer.setColor(Color.TEAL);
-        renderer.rect(0,y,worldWidth,worldHeight - y);
+        renderer.setColor(Color.CHARTREUSE);
+        renderer.rect(0,y,worldWidth,worldHeight);
         renderer.end();
         //temporary lose screen
         spriteBatch.begin();
         font.setColor(Color.WHITE);
         font.getData().setScale(3,3);
-        font.draw(spriteBatch,"You lose",200,200);
+        font.draw(spriteBatch,"You lose",200,200 + y);
         spriteBatch.end();
     }
 }
