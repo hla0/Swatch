@@ -1,12 +1,13 @@
 package com.hla0;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hla0.util.Constants;
 
 import java.util.ArrayList;
 
-public class Grid{
+public class Grid {
     private Square[][] squares;
     Square selected;
     Square selected2;
@@ -29,7 +30,7 @@ public class Grid{
     int level;
     int[][] levelMap;
 
-    Grid (Viewport viewport, int level) {
+    Grid(Viewport viewport, int level) {
         squares = new Square[Constants.GRID_SIZE][Constants.GRID_SIZE];
         levelMap = new int[Constants.GRID_SIZE][Constants.GRID_SIZE];
         columnChanged = new boolean[Constants.GRID_SIZE];
@@ -53,11 +54,11 @@ public class Grid{
         reset();
         this.level = level;
         //different amount of moves per level
-        moves = 20;
+        moves = 10;
         for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
             colorDestroyed[i] = 0;
             //TODO add different objectives for each level
-            colorObjectives[i] = 5;
+            colorObjectives[i] = 2;
             System.out.println("Color " + i + ":" + colorDestroyed[i] + "/" + colorObjectives[i]);
         }
         //set levelMap up then generate
@@ -102,8 +103,7 @@ public class Grid{
                         randomColor = (int) (Math.random() * Constants.NUMBER_COLORS);
                     }
                     squares[i][j] = new Square(i, j, randomColor);
-                }
-                else {
+                } else {
                     //create specific square
                     squares[i][j] = new Square(i, j, -1);
                 }
@@ -168,7 +168,7 @@ public class Grid{
         if (level < 5) {
             //TODO specific levels will generate smaller set of colors
         }
-        squares[x][y] = new Square(x,y,(int)(Math.random() * 8));
+        squares[x][y] = new Square(x, y, (int) (Math.random() * 8));
         squares[x][y].pos.y = yPos;
     }
 
@@ -185,7 +185,7 @@ public class Grid{
                     Square s = findSquareAbove(col, i);
                     //did not find square above
                     if (s == null) {
-                        generateSquare(col,i,top + squareCount * (Constants.BOX_SIZE + Constants.MARGIN));
+                        generateSquare(col, i, top + squareCount * (Constants.BOX_SIZE + Constants.MARGIN));
                         squareCount++;
                         above = false;
                     }
@@ -193,13 +193,13 @@ public class Grid{
                     //moving square down and removing old copy
                     else {
                         squares[s.x][s.y] = null;
-                        s.moveTo(col,i);
+                        s.moveTo(col, i);
                         squares[col][i] = s;
                     }
                 }
                 //no squares above
                 else {
-                    generateSquare(col,i,top + squareCount * (Constants.BOX_SIZE + Constants.MARGIN));
+                    generateSquare(col, i, top + squareCount * (Constants.BOX_SIZE + Constants.MARGIN));
                     squareCount++;
                 }
                 //can add parameters to animate fall or swap
@@ -235,8 +235,7 @@ public class Grid{
                     System.out.println("swapping " + x + " " + i);
                     if (squares[x][i].getColorNum() < 0) {
 
-                    }
-                    else {
+                    } else {
                         toSwap.add(new Square(x, i, squares[x][i].getColorNum()));
                         squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
                     }
@@ -249,16 +248,14 @@ public class Grid{
                     System.out.println("swapping " + x + " " + i);
                     if (squares[x][i].getColorNum() < 0) {
 
-                    }
-                    else {
+                    } else {
                         toSwap.add(new Square(x, i, squares[x][i].getColorNum()));
                         squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
                     }
                 }
                 direction = 1;
             }
-        }
-        else {
+        } else {
             int y = s1.y;
             System.out.println("y are equal" + s1.y + " " + s2.y);
             //swap left
@@ -268,8 +265,7 @@ public class Grid{
                     System.out.println("swapping " + i + " " + y);
                     if (squares[i][y].getColorNum() < 0) {
 
-                    }
-                    else {
+                    } else {
                         toSwap.add(new Square(i, y, squares[i][y].getColorNum()));
                         squares[i][y].swapColor(haveRed, haveBlue, haveYellow);
                     }
@@ -283,8 +279,7 @@ public class Grid{
                     System.out.println("swapping " + i + " " + y);
                     if (squares[i][y].getColorNum() < 0) {
 
-                    }
-                    else {
+                    } else {
                         toSwap.add(new Square(i, y, squares[i][y].getColorNum()));
                         squares[i][y].swapColor(haveRed, haveBlue, haveYellow);
                     }
@@ -296,7 +291,9 @@ public class Grid{
         System.out.println("finished swapping");
     }
 
-    public int getDirection() {return direction;}
+    public int getDirection() {
+        return direction;
+    }
 
     //should be called after swapLines and updateColumns
     public boolean checkMatches() {
@@ -446,7 +443,9 @@ public class Grid{
         }
     }
 
-    public int getScore() { return animatedScore; }
+    public int getScore() {
+        return animatedScore;
+    }
 
 
     public ArrayList<Square> getDeleted() {
@@ -458,18 +457,13 @@ public class Grid{
     }
 
     public boolean isAnimating() {
-        if (toDelete.size() > 0) {
-            return true;
-        }
-        if (toSwap.size() > 0) {
+        if (toDelete.size() > 0 || toSwap.size() > 0 || score > animatedScore) {
             return true;
         }
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
-            if (columnChanged[i]) {
-                for (int j = 0; j < Constants.GRID_SIZE; j++) {
-                    if (squares[i][j] != null && squares[i][j].isAnimating()) {
-                        return true;
-                    }
+            for (int j = 0; j < Constants.GRID_SIZE; j++) {
+                if (squares[i][j] != null && squares[i][j].isAnimating()) {
+                    return true;
                 }
             }
         }
@@ -489,17 +483,14 @@ public class Grid{
                 removeSquare(squares[x][y]);
                 updateColumns();
                 moves--;
-            }
-            else {
+            } else {
                 selected = squares[x][y];
                 squares[x][y].setSelect(true);
             }
-        }
-        else {
+        } else {
             if (squares[x][y].getColorNum() < 0) {
 
-            }
-            else {
+            } else {
                 //same square
                 if (selected.getX() == x && selected.getY() == y) {
                     selected = null;
@@ -552,7 +543,9 @@ public class Grid{
         return true;
     }
 
-    public boolean checkFail() {return moves <= 0;}
+    public boolean checkFail() {
+        return moves <= 0;
+    }
 
 
     void update() {
@@ -566,11 +559,41 @@ public class Grid{
             }
         }
         if (animatedScore < score) {
-            animatedScore += 51;
-        }
-        else {
+            if (moves > 0) {
+                animatedScore += 31;
+            } else {
+                animatedScore += 71;
+            }
+        } else {
             animatedScore = score;
         }
+    }
+
+    public void render(ShapeRenderer renderer) {
+        for(int i = 0; i<Constants.GRID_SIZE; i++) {
+            for (int j = 0; j < Constants.GRID_SIZE; j++) {
+                if (squares[i][j] != null) {
+                    if (toDelete.size() == 0 && toSwap.size() == 0) {
+                        squares[i][j].update();
+                    }
+                    squares[i][j].render(renderer);
+                }
+            }
+        }
+        for(int i = toDelete.size() - 1; i>=0; i--) {
+            toDelete.get(i).renderDeleted(renderer);
+            if (toDelete.get(i).width < 0) {
+                toDelete.remove(i);
+            }
+        }
+        //render the old color on top of the swapped square for transition
+        for(int i = toSwap.size() - 1; i>=0; i--) {
+            toSwap.get(i).renderSwapped(renderer,getDirection(), i);
+            if (toSwap.get(0).width < 0 || toSwap.get(0).height < 0) {
+                toSwap.remove(0);
+            }
+        }
+        update();
     }
 
 }

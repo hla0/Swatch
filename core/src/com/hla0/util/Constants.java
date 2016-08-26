@@ -8,7 +8,8 @@ public class Constants {
     public static final int LEFT_PADDING = MARGIN;
     public static final int RIGHT_PADDING = MARGIN;
     public static final int NUMBER_COLORS = 8;
-    public static final int FALL_VELOCITY = 17;
+    public static final int GRAVITY = 2;
+    public static final int MAX_VELOCITY = 12;
     public static final int GRID_SIZE = 8;
     public static final float SHRINK_VELOCITY = 5;
     public static final float SWAP_VELOCITY = 8;

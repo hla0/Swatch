@@ -312,34 +312,7 @@ public class Renderer {
     }
 
     public void renderGrid() {
-        Square[][] squares = grid.getSquares();
-        ArrayList<Square> deleted = grid.getDeleted();
-        ArrayList<Square> swapped = grid.getSwapped();
-        for (int i = 0; i < Constants.GRID_SIZE; i++) {
-            for (int j = 0; j < Constants.GRID_SIZE; j++) {
-                if (squares[i][j] != null) {
-                    if (deleted.size() == 0 && swapped.size() == 0) {
-                        squares[i][j].update();
-                    }
-                    squares[i][j].render(renderer);
-                }
-            }
-        }
-        for (int i = deleted.size() - 1; i >= 0; i--) {
-            deleted.get(i).renderDeleted(renderer);
-            if (deleted.get(i).width < 0) {
-                deleted.remove(i);
-            }
-        }
-
-        //render the old color on top of the swapped square for transition
-        for (int i = swapped.size() - 1; i >= 0; i--) {
-            swapped.get(i).renderSwapped(renderer,grid.getDirection(),i);
-            if (swapped.get(0).width < 0 || swapped.get(0).height < 0) {
-                swapped.remove(0);
-            }
-        }
-        grid.update();
+        grid.render(renderer);
     }
 
     //change spacing depending on number of objectives

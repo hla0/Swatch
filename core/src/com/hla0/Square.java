@@ -24,7 +24,7 @@ public class Square {
     int horizontalMatch;
     int verticalMatch;
     boolean animating;
-
+    int velocity;
     Square(int x, int y, int c) {
         this.x = x;
         this.y = y;
@@ -38,6 +38,7 @@ public class Square {
         horizontalMatch = 0;
         verticalMatch = 0;
         selected = false;
+        velocity = 0;
         setColor(c);
     }
 
@@ -201,12 +202,19 @@ public class Square {
     //if pos does not match x and y on grid move down
     public void update() {
         if (pos.y > screenConvertY(y)) {
-            pos.y -= Constants.FALL_VELOCITY;
+            velocity += Constants.GRAVITY;
+            if (velocity > Constants.MAX_VELOCITY) {
+                velocity = Constants.MAX_VELOCITY;
+            }
+            pos.y -= velocity;
         }
-        else if (pos.y < screenConvertY(y)) {
-            pos.y = screenConvertY(y) + Constants.FALL_VELOCITY;
+        else if (pos.y < screenConvertY(y) - 10) {
+            pos.y = screenConvertY(y) + velocity;
+            velocity -= Constants.GRAVITY * 3;
         }
         else {
+            pos.y = screenConvertY(y);
+            velocity = 0;
             animating = false;
         }
     }
