@@ -1,14 +1,95 @@
 package com.hla0;
+import com.hla0.Screens.LevelSelectScreen;
+import com.hla0.Screens.SettingsScreen;
+import com.hla0.util.Constants;
+import com.hla0.Screens.SwatchScreen;
+import com.hla0.Screens.SplashScreen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Swatch extends Game {
-	SwatchScreen swatchScreen;
-	public void create() {
-		swatchScreen = new SwatchScreen();
-		Gdx.input.setInputProcessor(swatchScreen);
-		setScreen(swatchScreen);
+	public SpriteBatch batch;
+	public static final int worldWidth = Constants.LEFT_PADDING + Constants.RIGHT_PADDING + Constants.GRID_SIZE * (Constants.BOX_SIZE + Constants.MARGIN) + Constants.MARGIN;
+	public static final int worldHeight = Constants.GRID_SIZE * (Constants.BOX_SIZE + Constants.MARGIN) + Constants.TOP_PADDING + Constants.BOTTOM_PADDING + Constants.MARGIN;
+	int parentScreen;
+	int curScreen;
+	private SwatchScreen swatchScreen;
+	private SplashScreen splashScreen;
+	private SettingsScreen settingsScreen;
+	private LevelSelectScreen levelSelectScreen;
+	InputMultiplexer im;
+	@Override
+	public void create () {
+		curScreen = 0;
+		parentScreen = -1;
+		batch = new SpriteBatch();
+		swatchScreen = new SwatchScreen(this);
+		splashScreen = new SplashScreen(this);
+		settingsScreen = new SettingsScreen(this);
+		levelSelectScreen = new LevelSelectScreen(this);
+
+		im = new InputMultiplexer();
+		im.addProcessor(splashScreen);
+		im.addProcessor(levelSelectScreen);
+		im.addProcessor(swatchScreen);
+		im.addProcessor(settingsScreen);
+		setScreen(splashScreen);
+		Gdx.input.setInputProcessor(im);
+	}
+
+	public void setScreen(int screen, int parent) {
+		switch (screen) {
+			case 0:
+				setScreen(splashScreen);
+				break;
+			case 1:
+				setScreen(levelSelectScreen);
+				break;
+			case 2:
+				setScreen(swatchScreen);
+				break;
+			case 3:
+				setScreen(settingsScreen);
+				break;
+		}
+		//reset all the screens besides the screen switched to
+		//resetScreens();
+		parentScreen = parent;
+		curScreen = screen;
+	}
+
+	@Override
+	public void render () {
+		super.render();
+	}
+
+	@Override
+	public void dispose () {
+		batch.dispose();
+	}
+
+	public int getParentScreen() {return parentScreen;}
+
+	public int getCurScreen() {return curScreen;}
+	public void render(int i) {
+		float delta = Gdx.graphics.getDeltaTime();
+		switch (i) {
+			case 0:
+				splashScreen.render(delta);
+				break;
+			case 1:
+				levelSelectScreen.render(delta);
+				break;
+			case 2:
+				swatchScreen.render(delta);
+				break;
+			case 3:
+				settingsScreen.render(delta);
+				break;
+		}
 	}
 
 }

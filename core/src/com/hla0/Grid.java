@@ -30,7 +30,7 @@ public class Grid {
     int level;
     int[][] levelMap;
 
-    Grid(Viewport viewport, int level) {
+    public Grid(Viewport viewport, int level) {
         squares = new Square[Constants.GRID_SIZE][Constants.GRID_SIZE];
         levelMap = new int[Constants.GRID_SIZE][Constants.GRID_SIZE];
         columnChanged = new boolean[Constants.GRID_SIZE];
@@ -111,10 +111,6 @@ public class Grid {
         }
     }
 
-    Square[][] getSquares() {
-        return squares;
-    }
-
     //deletions (depends on mode) match 3 and explode with white
     //remove the Square from the grid
     public void removeSquare(Square s) {
@@ -167,6 +163,7 @@ public class Grid {
     public void generateSquare(int x, int y, float yPos) {
         if (level < 5) {
             //TODO specific levels will generate smaller set of colors
+            System.out.println("should be tutorial");
         }
         squares[x][y] = new Square(x, y, (int) (Math.random() * 8));
         squares[x][y].pos.y = yPos;
@@ -209,13 +206,12 @@ public class Grid {
     }
 
     public Square findSquareAbove(int col, int index) {
-        Square s = null;
         for (int i = index + 1; i < Constants.GRID_SIZE; i++) {
             if (squares[col][i] != null && squares[col][i].getColorNum() >= 0) {
                 return squares[col][i];
             }
         }
-        return s;
+        return null;
     }
 
     //modifying colors
@@ -234,7 +230,7 @@ public class Grid {
                 for (int i = s1.y + 1; i <= s2.y; i++) {
                     System.out.println("swapping " + x + " " + i);
                     if (squares[x][i].getColorNum() < 0) {
-
+                        System.out.println("swapping empty square");
                     } else {
                         toSwap.add(new Square(x, i, squares[x][i].getColorNum()));
                         squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
@@ -247,7 +243,7 @@ public class Grid {
                 for (int i = s1.y - 1; i >= s2.y; i--) {
                     System.out.println("swapping " + x + " " + i);
                     if (squares[x][i].getColorNum() < 0) {
-
+                        System.out.println("swapping empty square");
                     } else {
                         toSwap.add(new Square(x, i, squares[x][i].getColorNum()));
                         squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
@@ -264,7 +260,7 @@ public class Grid {
                 for (int i = s1.x - 1; i >= s2.x; i--) {
                     System.out.println("swapping " + i + " " + y);
                     if (squares[i][y].getColorNum() < 0) {
-
+                        System.out.println("swapping empty square");
                     } else {
                         toSwap.add(new Square(i, y, squares[i][y].getColorNum()));
                         squares[i][y].swapColor(haveRed, haveBlue, haveYellow);
@@ -278,7 +274,7 @@ public class Grid {
                 for (int i = s1.x + 1; i <= s2.x; i++) {
                     System.out.println("swapping " + i + " " + y);
                     if (squares[i][y].getColorNum() < 0) {
-
+                        System.out.println("swapping empty square");
                     } else {
                         toSwap.add(new Square(i, y, squares[i][y].getColorNum()));
                         squares[i][y].swapColor(haveRed, haveBlue, haveYellow);
@@ -315,8 +311,6 @@ public class Grid {
     }
 
     public boolean scanHorizontal(int row) {
-        int curColor = -1;
-        int count = 0;
         boolean match = false;
         Square left1 = null;
         Square left2 = null;
@@ -326,8 +320,8 @@ public class Grid {
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             Square curSquare = squares[i][row];
             if (curSquare != null) {
-                count = 1;
-                curColor = curSquare.getColorNum();
+                int count = 1;
+                int curColor = curSquare.getColorNum();
                 if (curColor >= 0) {
                     if (i - 2 >= 0) {
                         left2 = squares[i - 2][row];
@@ -359,7 +353,6 @@ public class Grid {
                         match = true;
                     }
                 }
-                count = 0;
                 left1 = null;
                 left2 = null;
                 right1 = null;
@@ -371,8 +364,6 @@ public class Grid {
 
 
     public boolean scanVertical(int col) {
-        int curColor = -1;
-        int count = 0;
         boolean match = false;
         Square up1 = null;
         Square up2 = null;
@@ -382,8 +373,8 @@ public class Grid {
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             Square curSquare = squares[col][i];
             if (curSquare != null) {
-                count = 1;
-                curColor = curSquare.getColorNum();
+                int count = 1;
+                int curColor = curSquare.getColorNum();
                 if (curColor >= 0) {
                     if (i + 2 < Constants.GRID_SIZE) {
                         up2 = squares[col][i + 2];
@@ -415,11 +406,10 @@ public class Grid {
                         match = true;
                     }
                 }
-                count = 0;
                 up1 = null;
                 up2 = null;
                 down1 = null;
-                down1 = null;
+                down2 = null;
             }
         }
         return match;
@@ -446,15 +436,8 @@ public class Grid {
     public int getScore() {
         return animatedScore;
     }
-
-
-    public ArrayList<Square> getDeleted() {
-        return toDelete;
-    }
-
-    public ArrayList<Square> getSwapped() {
-        return toSwap;
-    }
+    public int getColorDestroyed(int i) {return colorDestroyed[i];}
+    public int getColorObjectives(int i) {return colorObjectives[i];}
 
     public boolean isAnimating() {
         if (toDelete.size() > 0 || toSwap.size() > 0 || score > animatedScore) {
@@ -476,7 +459,7 @@ public class Grid {
         if (selected == null) {
             //square is empty
             if (squares[x][y].getColorNum() < 0) {
-
+                System.out.println("touched empty");
             }
             //square is white
             else if (squares[x][y].getColorNum() == 1) {
@@ -489,7 +472,7 @@ public class Grid {
             }
         } else {
             if (squares[x][y].getColorNum() < 0) {
-
+                System.out.println("touched empty");
             } else {
                 //same square
                 if (selected.getX() == x && selected.getY() == y) {
@@ -547,7 +530,6 @@ public class Grid {
         return moves <= 0;
     }
 
-
     void update() {
         if (animating) {
             animating = isAnimating();
@@ -562,7 +544,7 @@ public class Grid {
             if (moves > 0) {
                 animatedScore += 31;
             } else {
-                animatedScore += 71;
+                animatedScore += 91;
             }
         } else {
             animatedScore = score;
@@ -570,7 +552,7 @@ public class Grid {
     }
 
     public void render(ShapeRenderer renderer) {
-        for(int i = 0; i<Constants.GRID_SIZE; i++) {
+        for(int i = 0; i < Constants.GRID_SIZE; i++) {
             for (int j = 0; j < Constants.GRID_SIZE; j++) {
                 if (squares[i][j] != null) {
                     if (toDelete.size() == 0 && toSwap.size() == 0) {

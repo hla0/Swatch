@@ -12,7 +12,6 @@ public class Square {
     //indices in the grid
     int x;
     int y;
-    int type;
     boolean haveRed;
     boolean haveBlue;
     boolean haveYellow;
@@ -29,7 +28,6 @@ public class Square {
         this.x = x;
         this.y = y;
         pos = new Vector2(screenConvertX(x),screenConvertY(y));
-        this.type = type;
         selected = false;
         animating = false;
         colorNum = c;
@@ -175,7 +173,7 @@ public class Square {
             return 1;
         }
 
-    };
+    }
     public void swapColor(boolean r, boolean b,boolean y) {
         if (r) {
             invertRed();
