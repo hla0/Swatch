@@ -44,7 +44,7 @@ public class Square {
 
 
     public int screenConvertX(int x) {
-        return x * (Constants.boxSize + Constants.margin) + Constants.margin;
+        return x * (Constants.boxSize + Constants.margin) + Constants.margin + Constants.leftPadding;
     }
 
     public int screenConvertY(int y) {

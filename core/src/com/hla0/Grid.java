@@ -476,7 +476,7 @@ public class Grid{
     }
 
     public Vector2 transformToGrid(Vector2 v1) {
-        Vector2 v = new Vector2((v1.x - (Constants.margin / 2))/(Constants.boxSize + Constants.margin),
+        Vector2 v = new Vector2((v1.x - Constants.leftPadding - (Constants.margin / 2))/(Constants.boxSize + Constants.margin),
                 (v1.y - Constants.bottomPadding - (Constants.margin / 2)) / (Constants.boxSize + Constants.margin));
         return v;
     }
