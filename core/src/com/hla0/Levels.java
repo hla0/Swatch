@@ -3,6 +3,7 @@ package com.hla0;
 import com.hla0.util.Constants;
 
 import java.util.Collection;
+import java.util.regex.Matcher;
 
 public class Levels {
 
@@ -59,6 +60,16 @@ public class Levels {
         return (int)(Math.random() * 8);
     }
 
+    public static int availableType(int level) {
+        if (level > 0) {
+            if (Math.random() * 10 > 9) {
+                //anchor type
+                return 1;
+            }
+        }
+        return 0;
+    }
+
     //TODO create different level maps
     public static int[][] getLevelMap(int level) {
         int[][] randomLevelMap = new int[Constants.GRID_SIZE][Constants.GRID_SIZE];
@@ -85,6 +96,17 @@ public class Levels {
                         ,{0,0,0,0,0,0,0,0}
                         ,{0,0,0,0,0,0,0,0}};
                 return levelMap2;
+            case 4:
+                int[][] levelMap4 =
+                        {{1,0,0,0,0,0,0,1}
+                        ,{0,1,0,0,0,0,1,0}
+                        ,{0,0,1,0,0,1,0,0}
+                        ,{0,0,0,1,1,0,0,0}
+                        ,{0,0,0,1,1,0,0,0}
+                        ,{0,0,1,0,0,1,0,0}
+                        ,{0,1,0,0,0,0,1,0}
+                        ,{1,0,0,0,0,0,0,1}};
+                return levelMap4;
             case 5:
                 int[][] levelMap5 =
                         {{0,0,1,0,0,1,0,0}

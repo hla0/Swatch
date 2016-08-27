@@ -49,14 +49,14 @@ public class Swatch extends Game {
 		for (int i = 0; i < 4; i++) {
 			render(i);
 		}
+		//TODO file should hold setting details
+		music = true;
+		sound = true;
 		menu = Gdx.audio.newMusic(Gdx.files.internal("menu.mp3"));
 		swatch = Gdx.audio.newMusic(Gdx.files.internal("game.mp3"));
 		setScreen(0,-1);
 		Gdx.input.setInputProcessor(im);
 
-		//TODO file should hold setting details
-		music = true;
-		sound = true;
 
 	}
 

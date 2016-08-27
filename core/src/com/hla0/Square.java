@@ -26,6 +26,7 @@ public class Square {
     int velocity;
     int time;
     int score;
+    int type;
     //TODO create anchor type that is rendered as circle
     //still has color and can match but will not be destroyed except at bottom of screen
     Square(int x, int y, int c) {
@@ -44,6 +45,12 @@ public class Square {
         selected = false;
         velocity = 0;
         setColor(c);
+        type = 0;
+    }
+
+    Square (int x, int y, int c, int t) {
+        this(x,y,c);
+        type = t;
     }
 
     public void addScore (int s) {
@@ -199,6 +206,7 @@ public class Square {
         colorNum = getColorNum(haveRed,haveBlue,haveYellow);
         setColor(getColorNum(haveRed, haveBlue, haveYellow));
     }
+    public int getType() {return type;}
     public int getX() { return x; }
     public int getY() { return y; }
     public void moveTo(int x, int y) {this.x = x; this.y = y;}
@@ -234,9 +242,19 @@ public class Square {
         //render shadow
         if (getColorNum() >= 0 && pos.y < Constants.BOTTOM_PADDING + Constants.MARGIN + (Constants.BOX_SIZE + Constants.MARGIN) * Constants.GRID_SIZE) {
             r.setColor(new Color(Constants.SHADOW_COLOR, Constants.SHADOW_COLOR, Constants.SHADOW_COLOR, 0.5f));
-            r.rect(pos.x + 2, pos.y - 2, Constants.BOX_SIZE, Constants.BOX_SIZE);
+            if (type == 0) {
+                r.rect(pos.x + 2, pos.y - 2, Constants.BOX_SIZE, Constants.BOX_SIZE);
+            }
+            else if (type == 1) {
+                r.ellipse(pos.x + 2, pos.y - 2, Constants.BOX_SIZE, Constants.BOX_SIZE);
+            }
             r.setColor(getColor());
-            r.rect(pos.x, pos.y, Constants.BOX_SIZE, Constants.BOX_SIZE);
+            if (type == 0) {
+                r.rect(pos.x, pos.y, Constants.BOX_SIZE, Constants.BOX_SIZE);
+            }
+            else if (type == 1) {
+                r.ellipse(pos.x,pos.y,Constants.BOX_SIZE,Constants.BOX_SIZE);
+            }
         }
 
         if (selected) {
@@ -244,7 +262,7 @@ public class Square {
             int change = (int)(Math.sin(time/10) * Constants.MARGIN/2);
             r.setColor(new Color(1,1,1,0.4f));
             //r.ellipse(pos.x,pos.y,Constants.BOX_SIZE + change / 2,Constants.BOX_SIZE + change / 2);
-            r.rect(pos.x - change / 2,pos.y - change/2,Constants.BOX_SIZE + change,Constants.BOX_SIZE + change);
+            r.rect(pos.x - change / 2, pos.y - change / 2, Constants.BOX_SIZE + change, Constants.BOX_SIZE + change);
         }
         else {
             time = 0;
@@ -263,9 +281,19 @@ public class Square {
         //render shadow
         if (getColorNum() >= 0) {
             r.setColor(new Color(Constants.SHADOW_COLOR, Constants.SHADOW_COLOR, Constants.SHADOW_COLOR, 0.5f));
-            r.rect(pos.x + 2, pos.y - 2, width, height);
+            if (type == 0) {
+                r.rect(pos.x + 2, pos.y - 2, width, height);
+            }
+            else if (type == 1) {
+                r.ellipse(pos.x + 2, pos.y - 2, width, height);
+            }
             r.setColor(getColor());
-            r.rect(pos.x,pos.y,width,height);
+            if (type == 0) {
+                r.rect(pos.x, pos.y, width, height);
+            }
+            else if (type == 1) {
+                r.ellipse(pos.x, pos.y, width, height);
+            }
         }
     }
 
@@ -292,8 +320,13 @@ public class Square {
                     pos.x += Constants.SWAP_VELOCITY;
                     break;
             }
-        r.rect(pos.x,pos.y,width,height);
-    }
+        if (type == 0) {
+            r.rect(pos.x, pos.y, width, height);
+        }
+        else if (type == 1) {
+            r.ellipse(pos.x, pos.y, width, height);
+        }
+     }
 
     public void setHorizontalMatch(int m) {horizontalMatch = m;}
     public void setVerticalMatch(int m) {verticalMatch = m;}

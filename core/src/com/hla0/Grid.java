@@ -126,7 +126,7 @@ public class Grid {
     //deletions (depends on mode) match 3 and explode with white
     //remove the Square from the grid
     public void removeSquare(Square s) {
-        if (s != null) {
+        if (s != null && s.getType() != 1) {
             animating = true;
             if (!checkFail()) {
                 s.addScore(100);
@@ -178,12 +178,22 @@ public class Grid {
     }
 
     public void generateSquare(int x, int y, float yPos) {
-        squares[x][y] = new Square(x, y, Levels.availableColor(level));
+        if (y < 4) {
+            squares[x][y] = new Square(x, y, Levels.availableColor(level));
+        }
+        else {
+            squares[x][y] = new Square(x, y, Levels.availableColor(level), Levels.availableType(level));
+        }
         squares[x][y].pos.y = yPos;
     }
 
     public void generateSquare(int x, int y, float yPos, int color) {
-        squares[x][y] = new Square(x, y, color);
+        if (y < 4) {
+            squares[x][y] = new Square(x, y, color);
+        }
+        else{
+            squares[x][y] = new Square(x, y, color, Levels.availableType(level));
+        }
         squares[x][y].pos.y = yPos;
     }
 
@@ -250,7 +260,7 @@ public class Grid {
                     if (squares[x][i].getColorNum() < 0) {
                         System.out.println("swapping empty square");
                     } else {
-                        toSwap.add(new Square(x, i, squares[x][i].getColorNum()));
+                        toSwap.add(new Square(x, i, squares[x][i].getColorNum(),squares[x][i].getType()));
                         squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
                     }
                 }
@@ -263,7 +273,7 @@ public class Grid {
                     if (squares[x][i].getColorNum() < 0) {
                         System.out.println("swapping empty square");
                     } else {
-                        toSwap.add(new Square(x, i, squares[x][i].getColorNum()));
+                        toSwap.add(new Square(x, i, squares[x][i].getColorNum(),squares[x][i].getType()));
                         squares[x][i].swapColor(haveRed, haveBlue, haveYellow);
                     }
                 }
@@ -280,7 +290,7 @@ public class Grid {
                     if (squares[i][y].getColorNum() < 0) {
                         System.out.println("swapping empty square");
                     } else {
-                        toSwap.add(new Square(i, y, squares[i][y].getColorNum()));
+                        toSwap.add(new Square(i, y, squares[i][y].getColorNum(),squares[i][y].getType()));
                         squares[i][y].swapColor(haveRed, haveBlue, haveYellow);
                     }
                 }
@@ -294,7 +304,7 @@ public class Grid {
                     if (squares[i][y].getColorNum() < 0) {
                         System.out.println("swapping empty square");
                     } else {
-                        toSwap.add(new Square(i, y, squares[i][y].getColorNum()));
+                        toSwap.add(new Square(i, y, squares[i][y].getColorNum(),squares[i][y].getType()));
                         squares[i][y].swapColor(haveRed, haveBlue, haveYellow);
                     }
                 }
@@ -434,13 +444,27 @@ public class Grid {
         return match;
     }
 
+    //TODO remove anchors
+    public boolean removeAnchors() {
+        for (int i = 0; i < Constants.GRID_SIZE; i++) {
+            if (squares[i][0].getType() == 1) {
+                columnChanged[i] = true;
+                squares[i][0].addScore(1000);
+                toDelete.add(squares[i][0]);
+                squares[i][0] = null;
+                return true;
+            }
+        }
+        return false;
+    }
+
     //TODO if squares have a certain criteria (match horizontal and vertical) match 4 or 5
     public void removeMatches() {
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             for (int j = 0; j < Constants.GRID_SIZE; j++) {
 
                 Square s = squares[i][j];
-                if (s != null) {
+                if (s != null && s.getType() != 1) {
                     if (!checkFail()) {
                         //add the current score to the new square when creating new squares
                         if (s.getHorizontalMatch() >= 3) {
@@ -455,7 +479,9 @@ public class Grid {
                     }
 
                     if ((s.getHorizontalMatch() >= 3 || s.getVerticalMatch() >= 3)) {
-                        removeSquare(squares[i][j]);
+                        if (squares[i][j].getType() == 0) {
+                            removeSquare(squares[i][j]);
+                        }
                     }
                 }
             }
@@ -487,7 +513,7 @@ public class Grid {
         boolean onX = false;
         if (selected == null) {
             //square is empty
-            if (squares[x][y].getColorNum() < 0) {
+            if (squares[x][y].getColorNum() < 0 || squares[x][y].getType() == 1) {
                 System.out.println("touched empty");
             }
             //square is white
@@ -580,7 +606,7 @@ public class Grid {
                 if (soundRemove) {
                     soundRemove = false;
                 }
-                if (checkMatches()) {
+                if (checkMatches() || removeAnchors()) {
                     updateColumns();
                 }
             }
