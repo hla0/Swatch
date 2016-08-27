@@ -175,7 +175,9 @@ public class SplashScreen extends InputAdapter implements Screen{
             if (pos.x > -90 && pos.x < 90) {
                 System.out.println("in box");
                 startPressed = true;
-                buttonPress.play();
+                if (game.isSound()) {
+                    buttonPress.play();
+                }
                 nextScreen = 1;
                 exit = true;
             }
@@ -183,7 +185,9 @@ public class SplashScreen extends InputAdapter implements Screen{
             exit = true;
             settingsPressed = true;
             System.out.println("settings");
-            buttonPress.play();
+            if (game.isSound()) {
+                buttonPress.play();
+            }
             nextScreen = 3;
         }
 

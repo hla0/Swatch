@@ -28,6 +28,8 @@ public class Swatch extends Game {
 	InputMultiplexer im;
 	Music menu;
 	Music swatch;
+	boolean music;
+	boolean sound;
 	@Override
 	public void create () {
 		curScreen = 0;
@@ -52,21 +54,29 @@ public class Swatch extends Game {
 		setScreen(0,-1);
 		Gdx.input.setInputProcessor(im);
 
+		//TODO file should hold setting details
+		music = true;
+		sound = true;
+
 	}
 
 	public void setScreen(int screen, int parent) {
 		switch (screen) {
 			case 0:
-				swatch.stop();
-				menu.play();
-				menu.setLooping(true);
+				if (isMusic()) {
+					swatch.stop();
+					menu.play();
+					menu.setLooping(true);
+				}
 				setScreen(splashScreen);
 				splashScreen.start();
 				break;
 			case 1:
-				swatch.stop();
-				menu.play();
-				menu.setLooping(true);
+				if (isMusic()) {
+					swatch.stop();
+					menu.play();
+					menu.setLooping(true);
+				}
 				setScreen(levelSelectScreen);
 				levelSelectScreen.start();
 				break;
@@ -74,13 +84,27 @@ public class Swatch extends Game {
 				//play game music instead
 				//might need the swatch screen to stop music on win/lose and restart
 				//might have music with swatchscreen itself
-				menu.stop();
-				swatch.play();
-				swatch.setLooping(true);
+				if (isMusic()) {
+					menu.stop();
+					swatch.play();
+					swatch.setLooping(true);
+				}
 				setScreen(swatchScreen);
 				swatchScreen.start();
 				break;
 			case 3:
+				if (isMusic()) {
+					if (getParentScreen() == 2) {
+						menu.stop();
+						swatch.play();
+						swatch.setLooping(true);
+					}
+					else {
+						swatch.stop();
+						menu.play();
+						menu.setLooping(true);
+					}
+				}
 				setScreen(settingsScreen);
 				settingsScreen.start();
 				break;
@@ -106,6 +130,27 @@ public class Swatch extends Game {
 		menu.dispose();
 		swatch.dispose();
 		renderer.dispose();
+	}
+
+	//settings file
+	public void toggleMusic() {
+		music = !music;
+		if (!music) {
+			menu.stop();
+			swatch.stop();
+		}
+	}
+
+	public void toggleSound() {
+		sound = !sound;
+	}
+	public boolean isMusic () {
+		return music;
+	}
+
+
+	public boolean isSound() {
+		return sound;
 	}
 
 	public int getParentScreen() {return parentScreen;}

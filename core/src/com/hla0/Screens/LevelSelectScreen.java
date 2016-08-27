@@ -160,7 +160,9 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
         if (game.getCurScreen() == 1) {
             exit = true;
             //if touched level
-            buttonPress.play();
+            if (game.isSound()) {
+                buttonPress.play();
+            }
             nextScreen = 2;
             return true;
         }

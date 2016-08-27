@@ -26,7 +26,8 @@ public class Square {
     int velocity;
     int time;
     int score;
-
+    //TODO create anchor type that is rendered as circle
+    //still has color and can match but will not be destroyed except at bottom of screen
     Square(int x, int y, int c) {
         time = 0;
         score = 0;
@@ -238,7 +239,6 @@ public class Square {
             r.rect(pos.x, pos.y, Constants.BOX_SIZE, Constants.BOX_SIZE);
         }
 
-        //TODO properly animate selected
         if (selected) {
             time++;
             int change = (int)(Math.sin(time/10) * Constants.MARGIN/2);

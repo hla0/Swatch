@@ -45,7 +45,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
         camera = new OrthographicCamera();
         int level = 1;
         viewport = new FitViewport(Swatch.worldWidth,Swatch.worldHeight,camera);
-        grid = new Grid(viewport, level);
+        grid = new Grid(viewport, level, game);
         font = new BitmapFont();
         font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         curScreen = 0;
@@ -110,7 +110,9 @@ public class SwatchScreen extends InputAdapter implements Screen{
             case 2:
                 //renderWin();
                 if (enter) {
-                    win.play();
+                    if (game.isSound()) {
+                        win.play();
+                    }
                     System.out.println("entered win");
                     enter = false;
                 }
@@ -129,7 +131,9 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 //renderLose();
                 if (enter) {
                     System.out.println("entered lose");
-                    lose.play();
+                    if (game.isSound()) {
+                        lose.play();
+                    }
                     enter = false;
                 }
                 else if (exit) {
@@ -202,6 +206,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 numberObj++;
             }
         }
+        //TODO check other int[] array for objectives and add into numberObj such as anchor
         for (int i = 0; i < numberObj; i++) {
             int index = colorsObj[i];
             game.renderer.begin(ShapeRenderer.ShapeType.Filled);

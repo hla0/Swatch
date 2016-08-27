@@ -10,6 +10,7 @@ import com.hla0.util.Constants;
 import java.util.ArrayList;
 
 public class Grid {
+    Swatch game;
     private Square[][] squares;
     Square selected;
     Square selected2;
@@ -35,7 +36,8 @@ public class Grid {
     Sound remove;
     Sound select;
 
-    public Grid(Viewport viewport, int level) {
+    public Grid(Viewport viewport, int level, Swatch g) {
+        game = g;
         soundRemove = false;
         squares = new Square[Constants.GRID_SIZE][Constants.GRID_SIZE];
         levelMap = new int[Constants.GRID_SIZE][Constants.GRID_SIZE];
@@ -311,6 +313,7 @@ public class Grid {
     public boolean checkMatches() {
         boolean match = false;
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
+            //TODO count number of matches in each method to calculate combo
             if (scanHorizontal(i)) {
                 match = true;
                 System.out.println("Found horizontal match on row " + i);
@@ -493,7 +496,9 @@ public class Grid {
                 updateColumns();
                 moves--;
             } else {
-                select.play();
+                if (game.isSound()) {
+                    select.play();
+                }
                 selected = squares[x][y];
                 squares[x][y].setSelect(true);
             }
@@ -518,7 +523,9 @@ public class Grid {
                 }
                 //not in the same row or column
                 else {
-                    select.play();
+                    if (game.isSound()) {
+                        select.play();
+                    }
                     squares[selected.x][selected.y].setSelect(false);
                     selected = null;
                     //square is white
@@ -564,7 +571,9 @@ public class Grid {
             animating = isAnimating();
             //finished animating
             if (!soundRemove && toDelete.size() > 0) {
-                remove.play();
+                if (game.isSound()) {
+                    remove.play();
+                }
                 soundRemove = true;
             }
             if (!animating) {
@@ -610,7 +619,9 @@ public class Grid {
             if (toSwap.get(0).width < 0 || toSwap.get(0).height < 0) {
                 toSwap.remove(0);
                 //TODO change sound to swap sound
-                select.setPitch(select.play(),i + 1);
+                if (game.isSound()) {
+                    select.play();
+                }
             }
         }
         update();
