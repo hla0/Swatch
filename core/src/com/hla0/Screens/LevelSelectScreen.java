@@ -3,6 +3,7 @@ package com.hla0.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -27,7 +28,7 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
     String levelStars;
     boolean enter;
     boolean exit;
-
+    Sound buttonPress;
     public LevelSelectScreen (Swatch g) {
         game = g;
         camera = new OrthographicCamera();
@@ -41,6 +42,8 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
         System.out.println(levelStars);
         enter = true;
         exit = false;
+        //find a better button sound
+        buttonPress = Gdx.audio.newSound(Gdx.files.internal("button.wav"));
         nextScreen = -1;
     }
 
@@ -156,6 +159,7 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
         if (game.getCurScreen() == 1) {
             exit = true;
             //if touched level
+            buttonPress.play();
             nextScreen = 2;
             return true;
         }

@@ -1,8 +1,10 @@
 package com.hla0.Screens;
 
+import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -27,7 +29,12 @@ public class SplashScreen extends InputAdapter implements Screen{
     boolean exit;
     float alpha;
     float time;
+    Sound buttonPress;
+    boolean startPressed;
+    boolean settingsPressed;
     public SplashScreen (Swatch g) {
+        startPressed = false;
+        settingsPressed = false;
         time = 0;
         game = g;
         camera = new OrthographicCamera();
@@ -38,6 +45,8 @@ public class SplashScreen extends InputAdapter implements Screen{
         viewport = new FitViewport(Swatch.worldWidth,Swatch.worldHeight,camera);
         enter = true;
         exit = false;
+        //TODO find a better button sound
+        buttonPress = Gdx.audio.newSound(Gdx.files.internal("button.wav"));
         alpha = 1;
     }
 
@@ -50,6 +59,8 @@ public class SplashScreen extends InputAdapter implements Screen{
         nextScreen = -1;
         alpha = 1;
         enter = true;
+        startPressed = false;
+        settingsPressed = false;
     }
 
     @Override
@@ -61,7 +72,7 @@ public class SplashScreen extends InputAdapter implements Screen{
     public void render() {
         game.batch.setProjectionMatrix(camera.combined);
         if (exit) {
-            System.out.println("Exiting splash");
+            //System.out.println("Exiting splash");
             renderExit();
         }
         else {
@@ -74,13 +85,23 @@ public class SplashScreen extends InputAdapter implements Screen{
                         (int)(Math.sin(-i * 45 + time / 45) * 6 * Constants.BOX_SIZE) - Constants.BOX_SIZE/2,
                         Constants.BOX_SIZE, Constants.BOX_SIZE);
             }
+
+            //if button not pressed
+            if (!startPressed) {
+                game.renderer.setColor(0/255f,172/255f,193/255f,1);
+            }
+            //pressed
+            else {
+                game.renderer.setColor(0/255f, 131/255f, 143/255f, 1);
+            }
+            game.renderer.rect(-Constants.BOX_SIZE * 4 / 2,-Constants.BOX_SIZE * 3 - texture.getHeight(),Constants.BOX_SIZE * 4, Constants.BOX_SIZE * 3 / 2);
             game.renderer.end();
             game.batch.begin();
             game.batch.draw(texture, -texture.getWidth()/2, -texture.getHeight()/2);
             game.batch.end();
         }
         if (enter) {
-            System.out.println("Entering splash");
+            //System.out.println("Entering splash");
             renderEnter();
         }
     }
@@ -101,6 +122,15 @@ public class SplashScreen extends InputAdapter implements Screen{
                     ((int)(Math.sin(-i * 45 + time / 45) * 6 * Constants.BOX_SIZE) - Constants.BOX_SIZE/2) + yPos,
                     Constants.BOX_SIZE, Constants.BOX_SIZE);
         }
+        if (startPressed) {
+            game.renderer.setColor(0 / 255f, 131 / 255f, 143 / 255f, 1);
+        }
+        else {
+            game.renderer.setColor(0/255f,172/255f,193/255f,1);
+        }
+        game.renderer.rect(-Constants.BOX_SIZE * 4 / 2,-Constants.BOX_SIZE * 3 - texture.getHeight() + yPos,Constants.BOX_SIZE * 4, Constants.BOX_SIZE * 3 / 2);
+        //TODO animate settings leaving
+        if (settingsPressed) {} else {}
         game.renderer.end();
         game.batch.begin();
         game.batch.draw(texture, -texture.getWidth()/2, -texture.getHeight()/2 + yPos);
@@ -114,7 +144,7 @@ public class SplashScreen extends InputAdapter implements Screen{
             //game.renderer.rect(-Swatch.worldWidth/2,-Swatch.worldHeight/2,Swatch.worldWidth,Swatch.worldHeight);
             alpha -= Constants.FADE_SPEED;
             game.renderer.end();
-            System.out.println("Alpha: " + alpha);
+            //System.out.println("Alpha: " + alpha);
         }
         else {
             enter = false;
@@ -125,31 +155,37 @@ public class SplashScreen extends InputAdapter implements Screen{
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (game.getCurScreen() == 0) {
-            splashTouch(screenX,screenY);
+            splashTouch(viewport.unproject(new Vector2(screenX,screenY)),true);
             return true;
         }
         return false;
     }
 
-    public boolean splashTouch(int screenX, int screenY) {
+    public boolean splashTouch(Vector2 pos, boolean down) {
         //choose levelSelect
         //switchScreen(1);
         //TODO choose mode
         //switchScreen(2);
         //choose settings
         //temporary
-        System.out.println(viewport.unproject(new Vector2(screenX,screenY)).x + ", " + viewport.unproject(new Vector2(screenX,screenY)).y);
-
-        if (viewport.unproject(new Vector2(screenX,screenY)).x > 0) {
+       // -Constants.BOX_SIZE * 4 / 2,-Constants.BOX_SIZE * 3 - texture.getHeight(),Constants.BOX_SIZE * 4, Constants.BOX_SIZE * 3 / 2
+        //System.out.println("in box");
+        if (pos.y > -390 && pos.y < -390 + Constants.BOX_SIZE * 3 / 2) {
+            if (pos.x > -90 && pos.x < 90) {
+                System.out.println("in box");
+                startPressed = true;
+                buttonPress.play();
+                nextScreen = 1;
+                exit = true;
+            }
+        } else {
             exit = true;
+            settingsPressed = true;
             System.out.println("settings");
+            buttonPress.play();
             nextScreen = 3;
         }
-        else {
-            exit = true;
-            //level select
-            nextScreen = 1;
-        }
+
         return true;
     }
     public void start() {enter = true; alpha = 1;}

@@ -564,7 +564,7 @@ public class Grid {
             if (moves > 0) {
                 animatedScore += 51;
             } else {
-                animatedScore += 151;
+                animatedScore += 251;
             }
         } else {
             animatedScore = score;
