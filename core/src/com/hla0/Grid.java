@@ -49,17 +49,16 @@ public class Grid {
         direction = -1;
     }
 
-    //TODO parse JSON for level details in future
     public void loadLevel(int level) {
         reset();
         this.level = level;
         //different amount of moves per level
-        moves = 30;
+        moves = 7;
         for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
             colorDestroyed[i] = 0;
             //TODO add different objectives for each level
             if (i > 1) {
-                colorObjectives[i] = 1;
+                colorObjectives[i] = 3;
             }
             System.out.println("Color " + i + ":" + colorDestroyed[i] + "/" + colorObjectives[i]);
         }
@@ -114,41 +113,58 @@ public class Grid {
         }
     }
 
+    public void removeSquares() {
+        for (int i = 0; i < Constants.GRID_SIZE; i++) {
+            for (int j = 0; j < Constants.GRID_SIZE; j++) {
+                if (squares[i][j] != null && squares[i][j].getColorNum() >= 0) {
+                    removeSquare(squares[i][j]);
+                }
+            }
+        }
+    }
+
+
     //deletions (depends on mode) match 3 and explode with white
     //remove the Square from the grid
     public void removeSquare(Square s) {
-        animating = true;
-        if (s != null && s.getColorNum() >= 0) {
-            columnChanged[s.x] = true;
-            colorDestroyed[s.getColorNum()]++;
-            totalDestroyed++;
-            score += 100;
-            if (score > Constants.MAX_SCORE) {
-                score = Constants.MAX_SCORE;
+
+        if (s != null) {
+            animating = true;
+            if (!checkFail()) {
+                s.addScore(100);
+                score += s.getScore();
             }
-            //check white
-            if (s.getColorNum() == 1) {
-                if (squares[s.x][s.y] != null) {
-                    toDelete.add(squares[s.x][s.y]);
+            if (s.getColorNum() >= 0) {
+                columnChanged[s.x] = true;
+                colorDestroyed[s.getColorNum()]++;
+                totalDestroyed++;
+                if (score > Constants.MAX_SCORE) {
+                    score = Constants.MAX_SCORE;
                 }
-                squares[s.x][s.y] = null;
-                if (s.x + 1 < Constants.GRID_SIZE) {
-                    removeSquare(squares[s.x + 1][s.y]);
+                //check white
+                if (s.getColorNum() == 1) {
+                    if (squares[s.x][s.y] != null) {
+                        toDelete.add(squares[s.x][s.y]);
+                    }
+                    squares[s.x][s.y] = null;
+                    if (s.x + 1 < Constants.GRID_SIZE) {
+                        removeSquare(squares[s.x + 1][s.y]);
+                    }
+                    if (s.x > 0) {
+                        removeSquare(squares[s.x - 1][s.y]);
+                    }
+                    if (s.y + 1 < Constants.GRID_SIZE) {
+                        removeSquare(squares[s.x][s.y + 1]);
+                    }
+                    if (s.y > 0) {
+                        removeSquare(squares[s.x][s.y - 1]);
+                    }
+                } else {
+                    if (squares[s.x][s.y] != null) {
+                        toDelete.add(squares[s.x][s.y]);
+                    }
+                    squares[s.x][s.y] = null;
                 }
-                if (s.x > 0) {
-                    removeSquare(squares[s.x - 1][s.y]);
-                }
-                if (s.y + 1 < Constants.GRID_SIZE) {
-                    removeSquare(squares[s.x][s.y + 1]);
-                }
-                if (s.y > 0) {
-                    removeSquare(squares[s.x][s.y - 1]);
-                }
-            } else {
-                if (squares[s.x][s.y] != null) {
-                    toDelete.add(squares[s.x][s.y]);
-                }
-                squares[s.x][s.y] = null;
             }
         }
     }
@@ -431,13 +447,23 @@ public class Grid {
     public void removeMatches() {
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             for (int j = 0; j < Constants.GRID_SIZE; j++) {
+
                 Square s = squares[i][j];
                 if (s != null) {
-                    if ((s.getHorizontalMatch() >= 3 || s.getVerticalMatch() >= 3)) {
-                        score += 100;
-                        if (score > Constants.MAX_SCORE) {
-                            score = Constants.MAX_SCORE;
+                    if (!checkFail()) {
+                        //add the current score to the new square when creating new squares
+                        if (s.getHorizontalMatch() >= 3) {
+                            squares[i][j].addScore(-(s.getHorizontalMatch() - 6) * 100);
                         }
+                        else if (s.getVerticalMatch() >= 3) {
+                            squares[i][j].addScore(-(s.getVerticalMatch() - 6) * 100);
+                        }
+                        else if (s.getHorizontalMatch() >= 3 && s.getVerticalMatch() >= 3) {
+                            squares[i][j].addScore(300);
+                        }
+                    }
+
+                    if ((s.getHorizontalMatch() >= 3 || s.getVerticalMatch() >= 3)) {
                         removeSquare(squares[i][j]);
                     }
                 }
@@ -554,7 +580,7 @@ public class Grid {
         }
         if (animatedScore < score) {
             if (moves > 0) {
-                animatedScore += 31;
+                animatedScore += 51;
             } else {
                 animatedScore += 91;
             }
@@ -575,7 +601,7 @@ public class Grid {
             }
         }
         for(int i = toDelete.size() - 1; i>=0; i--) {
-            toDelete.get(i).renderDeleted(renderer);
+            toDelete.get(i).renderDeleted(renderer,checkFail());
             if (toDelete.get(i).width < 0) {
                 toDelete.remove(i);
             }

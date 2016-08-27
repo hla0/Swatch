@@ -25,8 +25,11 @@ public class Square {
     boolean animating;
     int velocity;
     int time;
+    int score;
+
     Square(int x, int y, int c) {
         time = 0;
+        score = 0;
         this.x = x;
         this.y = y;
         pos = new Vector2(screenConvertX(x),screenConvertY(y));
@@ -42,7 +45,13 @@ public class Square {
         setColor(c);
     }
 
+    public void addScore (int s) {
+        score += s;
+    }
 
+    public int getScore() {
+        return score;
+    }
 
     public int screenConvertX(int x) {
         return x * (Constants.BOX_SIZE + Constants.MARGIN) + Constants.MARGIN + Constants.LEFT_PADDING;
@@ -242,7 +251,10 @@ public class Square {
         }
     }
 
-    public void renderDeleted(ShapeRenderer r) {
+    public void renderDeleted(ShapeRenderer r, boolean lose) {
+        if (!lose) {
+            //render score on top
+        }
         width -= Constants.SHRINK_VELOCITY;
         height -= Constants.SHRINK_VELOCITY;
         pos.x += Constants.SHRINK_VELOCITY / 2;

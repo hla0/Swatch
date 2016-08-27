@@ -138,7 +138,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 break;
 
         }
-        if (gameState == 0) {
+        if (gameState == 0 && !grid.isAnimating()) {
             if (grid.checkObjectives()) {
                 if (grid.getLevel() > levelsComplete) {
                     levelsComplete = grid.getLevel();
@@ -155,6 +155,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
             } else if (grid.checkFail()) {
                 System.out.println("Lost");
                 gameState = 3;
+                grid.removeSquares();
                 enter = true;
             }
         }
