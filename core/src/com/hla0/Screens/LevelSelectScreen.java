@@ -18,25 +18,26 @@ import com.hla0.util.Constants;
 public class LevelSelectScreen extends InputAdapter implements Screen{
     FileHandle stars;
     FileHandle complete;
-    ShapeRenderer renderer;
     OrthographicCamera camera;
     FitViewport viewport;
     BitmapFont font;
     Swatch game;
     int levelsComplete;
     String levelStars;
+    boolean enter;
+
     public LevelSelectScreen (Swatch g) {
         game = g;
         camera = new OrthographicCamera();
         viewport = new FitViewport(Swatch.worldWidth,Swatch.worldHeight,camera);
-        renderer = new ShapeRenderer();
-        renderer.setProjectionMatrix(camera.combined);
+        game.renderer.setProjectionMatrix(camera.combined);
         game.batch.setProjectionMatrix(camera.combined);
         font = new BitmapFont();
         font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         parseCompleteFile(complete);
         levelStars = parseStarFile(stars);
         System.out.println(levelStars);
+        enter = true;
     }
 
     private void parseCompleteFile(FileHandle complete) {
@@ -100,38 +101,43 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         viewport.apply();
-        renderer.setProjectionMatrix(camera.combined);
+        render();
+    }
+
+    public void render() {
+        game.renderer.setProjectionMatrix(camera.combined);
         game.batch.setProjectionMatrix(camera.combined);
-        renderer.begin(ShapeRenderer.ShapeType.Filled);
-        renderer.end();
+        game.renderer.begin(ShapeRenderer.ShapeType.Filled);
+        game.renderer.end();
         renderLevelSelect();
     }
+
 
     //render level numbers and stars onto squares
     public void renderLevelSelect() {
         //need to separate into two loops to put text in box
         for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 5; j++) {
+            for (int j = 0; j < 6; j++) {
                 int index = i + j * 4;
                 //int numStars = Integer.parseInt(levelStars.substring(index,index+1));
-                renderer.begin(ShapeRenderer.ShapeType.Filled);
+                game.renderer.begin(ShapeRenderer.ShapeType.Filled);
                 if (index + 1 > levelsComplete + 1) {
-                    renderer.setColor(Color.BLACK);
+                    game.renderer.setColor(Color.BLACK);
                 }
                 else {
-                    renderer.setColor(Color.WHITE);
+                    game.renderer.setColor(Color.WHITE);
                 }
                 int xPos = (i * Constants.BOX_SIZE * 3 + Constants.MARGIN * 2) - Swatch.worldWidth / 2;
                 int yPos = j * Constants.BOX_SIZE * 3 + Constants.MARGIN * 2 - Swatch.worldHeight / 4;
-                renderer.rect(xPos,yPos, Constants.BOX_SIZE * 2,Constants.BOX_SIZE * 2);
-                renderer.end();
+                game.renderer.rect(xPos,yPos, Constants.BOX_SIZE * 2,Constants.BOX_SIZE * 2);
+                game.renderer.end();
                 game.batch.begin();
                 if (index + 1 > levelsComplete + 1) {
-                    renderer.setColor(Color.BLACK);
+                    game.renderer.setColor(Color.BLACK);
                     font.setColor(Color.WHITE);
                 }
                 else {
-                    renderer.setColor(Color.WHITE);
+                    game.renderer.setColor(Color.WHITE);
                     font.setColor(Color.BLACK);
                 }
                 CharSequence curLevel = "" + (index + 1);
@@ -147,6 +153,6 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
     @Override public void hide() {}
     @Override
     public void dispose() {
-        renderer.dispose();
     }
+    public void start() {enter = true;}
 }

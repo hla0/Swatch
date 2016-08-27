@@ -15,6 +15,7 @@ public class Constants {
     public static final float SWAP_VELOCITY = 8;
     public static final float SHADOW_COLOR = 97/255f;
     public static final int MAX_SCORE = 999999;
-    public static final int MAX_LEVEL = 20;
+    public static final int MAX_LEVEL = 24;
     public static final int SCREEN_ACCELERATION = 1;
+    public static final float FADE_SPEED = .00001f;
 }

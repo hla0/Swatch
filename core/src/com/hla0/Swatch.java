@@ -1,4 +1,5 @@
 package com.hla0;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.hla0.Screens.LevelSelectScreen;
 import com.hla0.Screens.SettingsScreen;
 import com.hla0.util.Constants;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Swatch extends Game {
 	public SpriteBatch batch;
+	public ShapeRenderer renderer;
 	public static final int worldWidth = Constants.LEFT_PADDING + Constants.RIGHT_PADDING + Constants.GRID_SIZE * (Constants.BOX_SIZE + Constants.MARGIN) + Constants.MARGIN;
 	public static final int worldHeight = Constants.GRID_SIZE * (Constants.BOX_SIZE + Constants.MARGIN) + Constants.TOP_PADDING + Constants.BOTTOM_PADDING + Constants.MARGIN;
 	int parentScreen;
@@ -26,6 +28,7 @@ public class Swatch extends Game {
 		curScreen = 0;
 		parentScreen = -1;
 		batch = new SpriteBatch();
+		renderer = new ShapeRenderer();
 		swatchScreen = new SwatchScreen(this);
 		splashScreen = new SplashScreen(this);
 		settingsScreen = new SettingsScreen(this);
@@ -36,6 +39,9 @@ public class Swatch extends Game {
 		im.addProcessor(levelSelectScreen);
 		im.addProcessor(swatchScreen);
 		im.addProcessor(settingsScreen);
+		for (int i = 0; i < 4; i++) {
+			render(i);
+		}
 		setScreen(splashScreen);
 		Gdx.input.setInputProcessor(im);
 	}
@@ -44,15 +50,19 @@ public class Swatch extends Game {
 		switch (screen) {
 			case 0:
 				setScreen(splashScreen);
+				splashScreen.start();
 				break;
 			case 1:
 				setScreen(levelSelectScreen);
+				levelSelectScreen.start();
 				break;
 			case 2:
 				setScreen(swatchScreen);
+				swatchScreen.start();
 				break;
 			case 3:
 				setScreen(settingsScreen);
+				settingsScreen.start();
 				break;
 		}
 		//reset all the screens besides the screen switched to
@@ -75,21 +85,21 @@ public class Swatch extends Game {
 
 	public int getCurScreen() {return curScreen;}
 	public void render(int i) {
-		float delta = Gdx.graphics.getDeltaTime();
 		switch (i) {
 			case 0:
-				splashScreen.render(delta);
+				splashScreen.render();
 				break;
 			case 1:
-				levelSelectScreen.render(delta);
+				levelSelectScreen.render();
 				break;
 			case 2:
-				swatchScreen.render(delta);
+				swatchScreen.render();
 				break;
 			case 3:
-				settingsScreen.render(delta);
+				settingsScreen.render();
 				break;
 		}
 	}
+
 
 }

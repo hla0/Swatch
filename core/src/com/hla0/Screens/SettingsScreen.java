@@ -16,11 +16,11 @@ import com.hla0.Swatch;
  * Created by aft99 on 8/26/2016.
  */
 public class SettingsScreen extends InputAdapter implements Screen {
-    ShapeRenderer renderer;
     OrthographicCamera camera;
     FitViewport viewport;
     BitmapFont font;
     Swatch game;
+    boolean enter;
 
     public SettingsScreen (Swatch g) {
         game = g;
@@ -28,14 +28,14 @@ public class SettingsScreen extends InputAdapter implements Screen {
         viewport = new FitViewport(game.worldWidth, game.worldHeight, camera);
         font = new BitmapFont();
         font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        renderer = new ShapeRenderer();
+        enter = true;
     }
 
     public void renderSettings() {
-        renderer.begin(ShapeRenderer.ShapeType.Filled);
-        renderer.setColor(Color.TAN);
-        renderer.rect(-Swatch.worldWidth/2,-Swatch.worldHeight/2, Swatch.worldWidth, Swatch.worldHeight);
-        renderer.end();
+        game.renderer.begin(ShapeRenderer.ShapeType.Filled);
+        game.renderer.setColor(Color.TAN);
+        game.renderer.rect(-Swatch.worldWidth/2,-Swatch.worldHeight/2, Swatch.worldWidth, Swatch.worldHeight);
+        game.renderer.end();
         game.batch.begin();
         font.setColor(Color.WHITE);
         font.getData().setScale(3, 3);
@@ -51,18 +51,23 @@ public class SettingsScreen extends InputAdapter implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        render();
+    }
+
+    public void render() {
         viewport.apply();
-        renderer.setProjectionMatrix(camera.combined);
+        game.renderer.setProjectionMatrix(camera.combined);
         game.batch.setProjectionMatrix(camera.combined);
         renderSettings();
     }
+
     @Override public void resize(int width, int height) {viewport.update(width,height);}
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}
     @Override
     public void dispose() {
-        renderer.dispose();
     }
 
     @Override
@@ -76,5 +81,7 @@ public class SettingsScreen extends InputAdapter implements Screen {
             return false;
         }
     }
+
+    public void start() {enter = true;}
 
 }

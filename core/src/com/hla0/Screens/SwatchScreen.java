@@ -20,7 +20,6 @@ import com.hla0.util.Constants;
 
 public class SwatchScreen extends InputAdapter implements Screen{
     public static final String TAG = SwatchScreen.class.getName();
-    ShapeRenderer renderer;
     Grid grid;
     OrthographicCamera camera;
     FitViewport viewport;
@@ -29,19 +28,20 @@ public class SwatchScreen extends InputAdapter implements Screen{
     int levelsComplete;
     int parentScreen;
     FileHandle complete;
+    boolean enter;
     Swatch game;
 
     public SwatchScreen(Swatch g) {
         game = g;
         parentScreen = -1;
         camera = new OrthographicCamera();
-        renderer = new ShapeRenderer();
         int level = 1;
         viewport = new FitViewport(Swatch.worldWidth,Swatch.worldHeight,camera);
         grid = new Grid(viewport, level);
         font = new BitmapFont();
         font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         curScreen = 0;
+        enter = true;
     }
 
     @Override
@@ -55,15 +55,17 @@ public class SwatchScreen extends InputAdapter implements Screen{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        renderer.setProjectionMatrix(camera.combined);
-        game.batch.setProjectionMatrix(camera.combined);
         viewport.apply();
-        renderer.begin(ShapeRenderer.ShapeType.Filled);
-        grid.render(renderer);
-        renderer.end();
+        render();
+    }
+    public void render() {
+        game.renderer.setProjectionMatrix(camera.combined);
+        game.batch.setProjectionMatrix(camera.combined);
+        game.renderer.begin(ShapeRenderer.ShapeType.Filled);
+        grid.render(game.renderer);
+        game.renderer.end();
         renderGridUI();
-
-        /*
+         /*
         if (grid.checkObjectives()) {
             if (grid.level > levelsComplete) {
                 levelsComplete = grid.level;
@@ -115,17 +117,17 @@ public class SwatchScreen extends InputAdapter implements Screen{
         //TODO add moves left and menu button
         for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
             if (grid.getColorObjectives(i) > 0) {
-                renderer.begin(ShapeRenderer.ShapeType.Filled);
-                renderer.setColor(Square.getColor(i));
+                game.renderer.begin(ShapeRenderer.ShapeType.Filled);
+                game.renderer.setColor(Square.getColor(i));
                 int xPos = (int)(numObjectives * Constants.BOX_SIZE * 1.5 + Constants.MARGIN * 1.5 + Constants.LEFT_PADDING);
                 int yPos = Swatch.worldHeight - Constants.BOX_SIZE * 4;
-                renderer.rect(xPos, yPos, Constants.MARGIN, Constants.MARGIN);
+                game.renderer.rect(xPos, yPos, Constants.MARGIN, Constants.MARGIN);
                 font.getData().setScale(2,2);
                 int destroyed = grid.getColorDestroyed(i);
                 if (destroyed > grid.getColorObjectives(i)) {
                     destroyed = grid.getColorObjectives(i);
                 }
-                renderer.end();
+                game.renderer.end();
                 game.batch.begin();
 
                 font.draw(game.batch,destroyed + "/" + grid.getColorObjectives(i),xPos - 5,yPos - Constants.BOX_SIZE);
@@ -223,4 +225,5 @@ public class SwatchScreen extends InputAdapter implements Screen{
         return new Vector2((v1.x - Constants.LEFT_PADDING - (Constants.MARGIN / 2))/(Constants.BOX_SIZE + Constants.MARGIN),
                 (v1.y - Constants.BOTTOM_PADDING - (Constants.MARGIN / 2)) / (Constants.BOX_SIZE + Constants.MARGIN));
     }
+    public void start() {enter = true;}
 }
