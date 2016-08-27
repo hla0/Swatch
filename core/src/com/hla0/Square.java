@@ -165,7 +165,7 @@ public class Square {
         else if (r && !b && !y) {
             return 2;
         }
-        else if (!r && b && !y) {
+        else if (r && !b && y) {
             return 3;
         }
         else if (!r && !b && y) {
@@ -174,7 +174,7 @@ public class Square {
         else if (!r && b && y) {
             return 5;
         }
-        else if (r && !b && y) {
+        else if (!r && b && !y) {
             return 6;
         }
         else if (r && b && !y) {
