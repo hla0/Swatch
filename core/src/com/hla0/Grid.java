@@ -526,7 +526,6 @@ public class Grid {
         }
         //second square on same row or column is clicked
         if (selected2 != null) {
-            //TODO maybe check if ones in between are empty
             swapLineColors(selected, selected2, onX);
             updateColumns();
             moves--;

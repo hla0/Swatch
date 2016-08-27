@@ -5,20 +5,7 @@ import com.hla0.util.Constants;
 import java.util.Collection;
 
 public class Levels {
-    //TODO create different level maps
-    public static int[][] getLevelMap(int level) {
-        int[][] levelMap = new int[Constants.GRID_SIZE][Constants.GRID_SIZE];
-        //temporary
-        if (level > 0) {
-            //set levelMap up then generate
-            for (int i = 0; i < Constants.GRID_SIZE; i++) {
-                for (int j = 0; j < Constants.GRID_SIZE; j++) {
-                    levelMap[i][j] = (int) (Math.random() * 10) / 9;
-                }
-            }
-        }
-        return levelMap;
-    }
+
     //TODO add different moves for each level
     public static int getNumberMoves(int level) {
         if (level < 10)
@@ -70,6 +57,46 @@ public class Levels {
             return (int)(Math.random() * 6) + 2;
         }
         return (int)(Math.random() * 8);
+    }
+
+    //TODO create different level maps
+    public static int[][] getLevelMap(int level) {
+        int[][] randomLevelMap = new int[Constants.GRID_SIZE][Constants.GRID_SIZE];
+        switch (level) {
+            case 1:
+                int[][] levelMap1 =
+                        {{0,0,0,0,0,0,0,0}
+                        ,{0,0,0,0,0,0,0,0}
+                        ,{0,0,0,0,0,0,0,0}
+                        ,{0,0,0,0,0,0,0,0}
+                        ,{0,0,0,0,0,0,0,0}
+                        ,{0,0,0,0,0,0,0,0}
+                        ,{0,0,0,0,0,0,0,0}
+                        ,{0,0,0,0,0,0,0,0}};
+                return levelMap1;
+            case 2:
+                int[][] levelMap2 =
+                        {{0,0,0,0,0,0,0,0}
+                        ,{0,0,0,0,0,0,0,0}
+                        ,{0,0,0,0,0,0,0,0}
+                        ,{0,0,0,0,0,0,0,0}
+                        ,{0,0,0,0,0,0,0,0}
+                        ,{0,0,0,0,0,0,0,0}
+                        ,{0,0,0,0,0,0,0,0}
+                        ,{0,0,0,0,0,0,0,0}};
+                return levelMap2;
+        }
+        //temporary
+        if (level > 0) {
+            //set levelMap up then generate
+            for (int i = 0; i < Constants.GRID_SIZE; i++) {
+                for (int j = 0; j < Constants.GRID_SIZE; j++) {
+                    randomLevelMap[i][j] = (int) (Math.random() * 10) / 9;
+                }
+            }
+        }
+
+        return randomLevelMap;
     }
 
 
