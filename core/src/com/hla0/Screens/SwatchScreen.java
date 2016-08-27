@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.hla0.Grid;
+import com.hla0.Levels;
 import com.hla0.Square;
 import com.hla0.Swatch;
 import com.hla0.util.Constants;
@@ -169,15 +170,12 @@ public class SwatchScreen extends InputAdapter implements Screen{
         if (Gdx.files.local("levelStars.txt").exists()) {
             String s = "";
             String sLine = stars.readString();
-            stars.writeString(sLine.substring(0,grid.getLevel()) + "1" + sLine.substring(grid.getLevel() + 1,Constants.MAX_LEVEL),false);
+            String insert = Levels.numStars(grid.getScore(),grid.getLevel());
+            stars.writeString(sLine.substring(0,grid.getLevel()) + insert + sLine.substring(grid.getLevel() + 1,Constants.MAX_LEVEL),false);
         }
         else {
             String s = "";
             for (int i = 0; i < Constants.MAX_LEVEL; i++) {
-                if (grid.getLevel() == i) {
-                    s += "1";
-                    //add star amount
-                }
                 s += "0";
             }
             stars.writeString(s,false);

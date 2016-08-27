@@ -35,7 +35,6 @@ public class Grid {
         levelMap = new int[Constants.GRID_SIZE][Constants.GRID_SIZE];
         columnChanged = new boolean[Constants.GRID_SIZE];
         colorDestroyed = new int[Constants.NUMBER_COLORS];
-        colorObjectives = new int[Constants.NUMBER_COLORS];
         this.viewport = viewport;
         top = Constants.BOTTOM_PADDING + (Constants.GRID_SIZE + 1) * (Constants.BOX_SIZE + Constants.MARGIN);
         animating = false;
@@ -53,22 +52,12 @@ public class Grid {
         reset();
         this.level = level;
         //different amount of moves per level
-        moves = 7;
+        moves = Levels.getNumberMoves(level);
+        colorObjectives = Levels.getColorObjectives(level);
         for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
             colorDestroyed[i] = 0;
-            //TODO add different objectives for each level
-            if (i > 1) {
-                colorObjectives[i] = 3;
-            }
-            System.out.println("Color " + i + ":" + colorDestroyed[i] + "/" + colorObjectives[i]);
         }
-        //set levelMap up then generate
-        //currently allowing full grid to be filled
-        for (int i = 0; i < Constants.GRID_SIZE; i++) {
-            for (int j = 0; j < Constants.GRID_SIZE; j++) {
-                levelMap[i][j] = (int) (Math.random() * 10) / 9;
-            }
-        }
+        levelMap = Levels.getLevelMap(level);
         //currently set to random
         generateWithoutChains();
     }
@@ -89,7 +78,7 @@ public class Grid {
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             for (int j = 0; j < Constants.GRID_SIZE; j++) {
                 if (levelMap[i][j] == 0) {
-                    randomColor = (int) (Math.random() * Constants.NUMBER_COLORS);
+                    randomColor = Levels.availableColor(level);
                     if (i > 1) {
                         if (squares[i - 1][j].getColorNum() == squares[i - 2][j].getColorNum()) {
                             colorLeft = squares[i - 1][j].getColorNum();
@@ -180,19 +169,11 @@ public class Grid {
     }
 
     public void generateSquare(int x, int y, float yPos) {
-        if (level < 5) {
-            //TODO specific levels will generate smaller set of colors
-            System.out.println("should be tutorial");
-        }
-        squares[x][y] = new Square(x, y, (int) (Math.random() * 8));
+        squares[x][y] = new Square(x, y, Levels.availableColor(level));
         squares[x][y].pos.y = yPos;
     }
 
     public void generateSquare(int x, int y, float yPos, int color) {
-        if (level < 5) {
-            //TODO specific levels will generate smaller set of colors
-            System.out.println("should be tutorial");
-        }
         squares[x][y] = new Square(x, y, color);
         squares[x][y].pos.y = yPos;
     }
@@ -561,6 +542,8 @@ public class Grid {
                 return false;
             }
         }
+        score += moves * 1500;
+        moves = 0;
         return true;
     }
 
