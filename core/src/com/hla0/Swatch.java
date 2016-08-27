@@ -1,4 +1,6 @@
 package com.hla0;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.hla0.Screens.LevelSelectScreen;
@@ -24,6 +26,8 @@ public class Swatch extends Game {
 	private SettingsScreen settingsScreen;
 	private LevelSelectScreen levelSelectScreen;
 	InputMultiplexer im;
+	Music menu;
+	Music swatch;
 	@Override
 	public void create () {
 		curScreen = 0;
@@ -43,21 +47,36 @@ public class Swatch extends Game {
 		for (int i = 0; i < 4; i++) {
 			render(i);
 		}
-		setScreen(splashScreen);
+		menu = Gdx.audio.newMusic(Gdx.files.internal("menu.mp3"));
+		swatch = Gdx.audio.newMusic(Gdx.files.internal("game.mp3"));
+		setScreen(0,-1);
 		Gdx.input.setInputProcessor(im);
+
 	}
 
 	public void setScreen(int screen, int parent) {
 		switch (screen) {
 			case 0:
+				swatch.stop();
+				menu.play();
+				menu.setLooping(true);
 				setScreen(splashScreen);
 				splashScreen.start();
 				break;
 			case 1:
+				swatch.stop();
+				menu.play();
+				menu.setLooping(true);
 				setScreen(levelSelectScreen);
 				levelSelectScreen.start();
 				break;
 			case 2:
+				//play game music instead
+				//might need the swatch screen to stop music on win/lose and restart
+				//might have music with swatchscreen itself
+				menu.stop();
+				swatch.play();
+				swatch.setLooping(true);
 				setScreen(swatchScreen);
 				swatchScreen.start();
 				break;
@@ -84,6 +103,9 @@ public class Swatch extends Game {
 	@Override
 	public void dispose () {
 		batch.dispose();
+		menu.dispose();
+		swatch.dispose();
+		renderer.dispose();
 	}
 
 	public int getParentScreen() {return parentScreen;}

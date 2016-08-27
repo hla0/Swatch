@@ -43,7 +43,7 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
         enter = true;
         exit = false;
         //find a better button sound
-        buttonPress = Gdx.audio.newSound(Gdx.files.internal("button.wav"));
+        buttonPress = Gdx.audio.newSound(Gdx.files.internal("select.wav"));
         nextScreen = -1;
     }
 
@@ -93,6 +93,7 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
         exit = false;
         parseCompleteFile(complete);
         levelStars = parseStarFile(stars);
+        buttonPress = Gdx.audio.newSound(Gdx.files.internal("select.wav"));
     }
     @Override
     public void render(float delta) {
@@ -174,7 +175,7 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
     @Override public void resume() {}
     @Override public void hide() {}
     @Override
-    public void dispose() {
+    public void dispose() {buttonPress.dispose();
     }
     public void start() {enter = true;}
 }

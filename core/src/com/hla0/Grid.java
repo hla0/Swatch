@@ -1,5 +1,7 @@
 package com.hla0;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -26,11 +28,15 @@ public class Grid {
     int top;
     ArrayList<Square> toDelete;
     ArrayList<Square> toSwap;
+    public boolean soundRemove;
     //was animating but finished
     int level;
     int[][] levelMap;
+    Sound remove;
+    Sound select;
 
     public Grid(Viewport viewport, int level) {
+        soundRemove = false;
         squares = new Square[Constants.GRID_SIZE][Constants.GRID_SIZE];
         levelMap = new int[Constants.GRID_SIZE][Constants.GRID_SIZE];
         columnChanged = new boolean[Constants.GRID_SIZE];
@@ -46,6 +52,8 @@ public class Grid {
         score = 0;
         animatedScore = 0;
         direction = -1;
+        select = Gdx.audio.newSound(Gdx.files.internal("select.wav"));
+        remove = Gdx.audio.newSound(Gdx.files.internal("remove.wav"));
     }
 
     public void loadLevel(int level) {
@@ -116,7 +124,6 @@ public class Grid {
     //deletions (depends on mode) match 3 and explode with white
     //remove the Square from the grid
     public void removeSquare(Square s) {
-
         if (s != null) {
             animating = true;
             if (!checkFail()) {
@@ -486,6 +493,7 @@ public class Grid {
                 updateColumns();
                 moves--;
             } else {
+                select.play();
                 selected = squares[x][y];
                 squares[x][y].setSelect(true);
             }
@@ -510,6 +518,7 @@ public class Grid {
                 }
                 //not in the same row or column
                 else {
+                    select.play();
                     squares[selected.x][selected.y].setSelect(false);
                     selected = null;
                     //square is white
@@ -554,7 +563,14 @@ public class Grid {
         if (animating) {
             animating = isAnimating();
             //finished animating
+            if (!soundRemove && toDelete.size() > 0) {
+                remove.play();
+                soundRemove = true;
+            }
             if (!animating) {
+                if (soundRemove) {
+                    soundRemove = false;
+                }
                 if (checkMatches()) {
                     updateColumns();
                 }
@@ -564,7 +580,7 @@ public class Grid {
             if (moves > 0) {
                 animatedScore += 51;
             } else {
-                animatedScore += 251;
+                animatedScore += 451;
             }
         } else {
             animatedScore = score;
@@ -593,6 +609,8 @@ public class Grid {
             toSwap.get(i).renderSwapped(renderer,getDirection(), i);
             if (toSwap.get(0).width < 0 || toSwap.get(0).height < 0) {
                 toSwap.remove(0);
+                //TODO change sound to swap sound
+                select.setPitch(select.play(),i + 1);
             }
         }
         update();

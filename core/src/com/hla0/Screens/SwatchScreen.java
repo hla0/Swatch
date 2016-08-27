@@ -3,6 +3,7 @@ package com.hla0.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -35,6 +36,8 @@ public class SwatchScreen extends InputAdapter implements Screen{
     //game 0, settings 1, win 2, lose 3
     int gameState;
     Swatch game;
+    Sound win;
+    Sound lose;
 
     public SwatchScreen(Swatch g) {
         game = g;
@@ -49,6 +52,8 @@ public class SwatchScreen extends InputAdapter implements Screen{
         gameState = 0;
         enter = true;
         exit = false;
+        win = Gdx.audio.newSound(Gdx.files.internal("win.mp3"));
+        lose = Gdx.audio.newSound(Gdx.files.internal("lose.wav"));
     }
 
     @Override
@@ -105,6 +110,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
             case 2:
                 //renderWin();
                 if (enter) {
+                    win.play();
                     System.out.println("entered win");
                     enter = false;
                 }
@@ -123,6 +129,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 //renderLose();
                 if (enter) {
                     System.out.println("entered lose");
+                    lose.play();
                     enter = false;
                 }
                 else if (exit) {

@@ -46,7 +46,7 @@ public class SplashScreen extends InputAdapter implements Screen{
         enter = true;
         exit = false;
         //TODO find a better button sound
-        buttonPress = Gdx.audio.newSound(Gdx.files.internal("button.wav"));
+        buttonPress = Gdx.audio.newSound(Gdx.files.internal("select.wav"));
         alpha = 1;
     }
 
@@ -61,6 +61,7 @@ public class SplashScreen extends InputAdapter implements Screen{
         enter = true;
         startPressed = false;
         settingsPressed = false;
+        buttonPress = Gdx.audio.newSound(Gdx.files.internal("select.wav"));
     }
 
     @Override
@@ -150,7 +151,7 @@ public class SplashScreen extends InputAdapter implements Screen{
             enter = false;
         }
     }
-    @Override public void resize(int width, int height) {viewport.update(width,height);} @Override public void pause() {}@Override public void resume() {}@Override public void hide() {}@Override public void dispose() {}
+    @Override public void resize(int width, int height) {viewport.update(width,height);} @Override public void pause() {}@Override public void resume() {}@Override public void hide() {}@Override public void dispose() {buttonPress.dispose();}
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
