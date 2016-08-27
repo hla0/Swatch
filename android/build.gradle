@@ -19,6 +19,9 @@ android {
         minSdkVersion 8
         targetSdkVersion 24
     }
+    lintOptions { 
+        checkReleaseBuilds false
+    }
 }
 
 
