@@ -54,12 +54,12 @@ public class Grid {
         reset();
         this.level = level;
         //different amount of moves per level
-        moves = 2;
+        moves = 30;
         for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
             colorDestroyed[i] = 0;
             //TODO add different objectives for each level
             if (i > 1) {
-                colorObjectives[i] = 20;
+                colorObjectives[i] = 1;
             }
             System.out.println("Color " + i + ":" + colorDestroyed[i] + "/" + colorObjectives[i]);
         }
@@ -104,10 +104,11 @@ public class Grid {
                     while (randomColor == colorLeft || randomColor == colorUp) {
                         randomColor = (int) (Math.random() * Constants.NUMBER_COLORS);
                     }
-                    squares[i][j] = new Square(i, j, randomColor);
+                    generateSquare(i,j,top + j * (Constants.BOX_SIZE + Constants.MARGIN),randomColor);
                 } else {
+                    //TODO check level map for other types besides blank
                     //create specific square
-                    squares[i][j] = new Square(i, j, -1);
+                    generateSquare(i,j,top + j * (Constants.BOX_SIZE + Constants.MARGIN),-1);
                 }
             }
         }
@@ -168,6 +169,15 @@ public class Grid {
             System.out.println("should be tutorial");
         }
         squares[x][y] = new Square(x, y, (int) (Math.random() * 8));
+        squares[x][y].pos.y = yPos;
+    }
+
+    public void generateSquare(int x, int y, float yPos, int color) {
+        if (level < 5) {
+            //TODO specific levels will generate smaller set of colors
+            System.out.println("should be tutorial");
+        }
+        squares[x][y] = new Square(x, y, color);
         squares[x][y].pos.y = yPos;
     }
 
@@ -529,7 +539,7 @@ public class Grid {
     }
 
     public boolean checkFail() {
-        return moves <= 0;
+        return moves == 0;
     }
 
     void update() {

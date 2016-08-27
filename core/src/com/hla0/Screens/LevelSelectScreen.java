@@ -49,7 +49,7 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
         if (Gdx.files.local("levelsComplete.txt").exists()) {
             String data = complete.readString();
             System.out.println("File data: " + data);
-            levelsComplete = Integer.parseInt(complete.readString());
+            levelsComplete = Integer.parseInt(data);
         }
         else {
             levelsComplete = 0;
@@ -88,6 +88,8 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
     @Override public void show() {
         enter = true;
         exit = false;
+        parseCompleteFile(complete);
+        levelStars = parseStarFile(stars);
     }
     @Override
     public void render(float delta) {

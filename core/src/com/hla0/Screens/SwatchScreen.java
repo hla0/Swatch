@@ -65,16 +65,27 @@ public class SwatchScreen extends InputAdapter implements Screen{
         game.renderer.setProjectionMatrix(camera.combined);
         game.batch.setProjectionMatrix(camera.combined);
         //when entering game
-        //if (gameState == 0 && enter) {}
-        if (gameState == 0)
-            enter = false;
-        game.renderer.begin(ShapeRenderer.ShapeType.Filled);
-        grid.render(game.renderer);
-        game.renderer.end();
-        renderGridUI();
-
+        if (!enter && !exit || gameState != 0) {
+            game.renderer.begin(ShapeRenderer.ShapeType.Filled);
+            grid.render(game.renderer);
+            game.renderer.end();
+            renderGridUI();
+        }
         switch(gameState) {
-            //all three should act on enter and exit
+            case 0:
+                //transition from other screens
+                if (enter) {
+                    System.out.println("entered game");
+                    gameState = 0;
+                    //renderEnter();
+                    enter = false;
+                }
+                else if (exit) {
+                    System.out.println("exited game");
+                    exit = false;
+                }
+                break;
+            //all three render over grid
             case 1:
                 //renderSettings();
                 if (enter) {
@@ -83,6 +94,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 }
                 else if (exit) {
                     System.out.println("exited Settings");
+                    gameState = 0;
                     exit = false;
                 }
                 else {
@@ -97,6 +109,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 }
                 else if (exit) {
                     System.out.println("exited win");
+                    //might need to switch to level select or splash or replay
                     grid.loadLevel(grid.getLevel() + 1);
                     gameState = 0;
                     exit = false;
@@ -114,6 +127,8 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 else if (exit) {
                     System.out.println("exited lose");
                     exit = false;
+                    //temporary
+                    //might need to switch to level select or splash
                     grid.loadLevel(grid.getLevel());
                     gameState = 0;
                 }
@@ -127,6 +142,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
             if (grid.checkObjectives()) {
                 if (grid.getLevel() > levelsComplete) {
                     levelsComplete = grid.getLevel();
+                    complete = Gdx.files.local("levelsComplete.txt");
                     complete.writeString("" + levelsComplete, false);
                 }
                 processStars();
@@ -142,7 +158,6 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 enter = true;
             }
         }
-
     }
 
 
@@ -255,19 +270,17 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 case 0:
                     gameTouch(screenX,screenY);
                     break;
+                //temporary since might need to process nextScreen
                 case 1:
                     //from settings
-                    gameState = 0;
                     exit = true;
                     break;
                 case 2:
                     //from win
-                    gameState = 0;
                     exit = true;
                     break;
                 case 3:
                     //from lose
-                    gameState = 0;
                     exit = true;
                     break;
             }
