@@ -24,7 +24,9 @@ public class Square {
     int verticalMatch;
     boolean animating;
     int velocity;
+    int time;
     Square(int x, int y, int c) {
+        time = 0;
         this.x = x;
         this.y = y;
         pos = new Vector2(screenConvertX(x),screenConvertY(y));
@@ -72,11 +74,11 @@ public class Square {
                 haveBlue = false;
                 haveYellow = false;
                 break;
-            //blue
+            //orange
             case 3:
-                haveRed = false;
-                haveBlue = true;
-                haveYellow = false;
+                haveRed = true;
+                haveBlue = false;
+                haveYellow = true;
                 break;
             //yellow
             case 4:
@@ -90,11 +92,11 @@ public class Square {
                 haveBlue = true;
                 haveYellow = true;
                 break;
-            //orange
+            //blue
             case 6:
-                haveRed = true;
-                haveBlue = false;
-                haveYellow = true;
+                haveRed = false;
+                haveBlue = true;
+                haveYellow = false;
                 break;
             //purple
             case 7:
@@ -127,18 +129,18 @@ public class Square {
             //red
             case 2:
                 return new Color(211 / 255f, 47 / 255f, 47 / 255f, 1);
-            //blue
+            //orange
             case 3:
-                return new Color(25 / 255f, 118 / 255f, 210 / 255f, 1);
+                return new Color(245 / 255f, 124 / 255f, 0 / 255f, 1);
             //yellow
             case 4:
                 return new Color(251 / 255f, 192 / 255f, 45 / 255f, 1);
             //green
             case 5:
                 return new Color(56 / 255f, 142 / 255f, 60 / 255f, 1);
-            //orange
+            //blue
             case 6:
-                return new Color(245 / 255f, 124 / 255f, 0 / 255f, 1);
+                return new Color(25 / 255f, 118 / 255f, 210 / 255f, 1);
             //purple
             case 7:
                 return new Color(81 / 255f, 45 / 255f, 168 / 255f, 1);
@@ -229,8 +231,14 @@ public class Square {
 
         //TODO properly animate selected
         if (selected) {
-            r.setColor(new Color(1,1,1,0.5f));
-            r.rect(pos.x + Constants.MARGIN/2,pos.y + Constants.MARGIN/2,Constants.BOX_SIZE - Constants.MARGIN,Constants.BOX_SIZE - Constants.MARGIN);
+            time++;
+            int change = (int)(Math.sin(time/10) * Constants.MARGIN/2);
+            r.setColor(new Color(1,1,1,0.4f));
+            //r.ellipse(pos.x,pos.y,Constants.BOX_SIZE + change / 2,Constants.BOX_SIZE + change / 2);
+            r.rect(pos.x - change / 2,pos.y - change/2,Constants.BOX_SIZE + change,Constants.BOX_SIZE + change);
+        }
+        else {
+            time = 0;
         }
     }
 

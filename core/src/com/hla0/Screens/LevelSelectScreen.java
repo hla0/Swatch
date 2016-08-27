@@ -23,8 +23,10 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
     BitmapFont font;
     Swatch game;
     int levelsComplete;
+    int nextScreen;
     String levelStars;
     boolean enter;
+    boolean exit;
 
     public LevelSelectScreen (Swatch g) {
         game = g;
@@ -38,6 +40,8 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
         levelStars = parseStarFile(stars);
         System.out.println(levelStars);
         enter = true;
+        exit = false;
+        nextScreen = -1;
     }
 
     private void parseCompleteFile(FileHandle complete) {
@@ -81,35 +85,33 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
         return data;
     }
 
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (game.getCurScreen() == 1) {
-            game.setScreen(2,1);
-            return true;
-        }
-        else {
-            return false;
-        }
+    @Override public void show() {
+        enter = true;
+        exit = false;
     }
-
-
-    @Override public void show() {}
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, .5f, .5f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         viewport.apply();
         render();
     }
 
     public void render() {
-        game.renderer.setProjectionMatrix(camera.combined);
-        game.batch.setProjectionMatrix(camera.combined);
-        game.renderer.begin(ShapeRenderer.ShapeType.Filled);
-        game.renderer.end();
-        renderLevelSelect();
+        if (enter) {
+            System.out.println("entering level select");
+            enter = false;
+        }
+        else if (exit) {
+            System.out.println("exiting level select");
+            game.setScreen(2,1);
+            exit = false;
+        }
+        else {
+            game.renderer.setProjectionMatrix(camera.combined);
+            game.batch.setProjectionMatrix(camera.combined);
+            game.renderer.begin(ShapeRenderer.ShapeType.Filled);
+            game.renderer.end();
+            renderLevelSelect();
+        }
     }
 
 
@@ -146,6 +148,20 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
             }
         }
     }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (game.getCurScreen() == 1) {
+            exit = true;
+            //if touched level
+            nextScreen = 2;
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
 
     @Override public void resize(int width, int height) {viewport.update(width,height);}
     @Override public void pause() {}

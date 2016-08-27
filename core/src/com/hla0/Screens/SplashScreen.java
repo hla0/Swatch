@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.hla0.Square;
 import com.hla0.Swatch;
 import com.hla0.util.Constants;
 
@@ -19,28 +20,31 @@ public class SplashScreen extends InputAdapter implements Screen{
     private Texture texture;
     private Viewport viewport;
     private OrthographicCamera camera;
-    boolean screenTransition;
-    ShapeRenderer renderer;
     int yPos;
     int yVelocity;
     int nextScreen;
     boolean enter;
+    boolean exit;
     float alpha;
+    float time;
     public SplashScreen (Swatch g) {
-        renderer = new ShapeRenderer();
+        time = 0;
         game = g;
         camera = new OrthographicCamera();
-        texture = new Texture("Swatch Splash Icon.png");
+        //texture = new Texture("badlogic.jpg");
+        texture = new Texture("splash_icon.png");
         //viewport = new ScreenViewport(camera);
         //viewport = new StretchViewport(Swatch.worldWidth,Swatch.worldHeight,camera);
         viewport = new FitViewport(Swatch.worldWidth,Swatch.worldHeight,camera);
         enter = true;
+        exit = false;
         alpha = 1;
     }
 
     @Override
     public void show() {
-        screenTransition = false;
+        time = 0;
+        exit = false;
         yPos = 0;
         yVelocity = 0;
         nextScreen = -1;
@@ -50,48 +54,67 @@ public class SplashScreen extends InputAdapter implements Screen{
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, .5f, .5f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         viewport.apply();
         render();
     }
 
     public void render() {
         game.batch.setProjectionMatrix(camera.combined);
-        if (enter) {
-            renderEnter();
-        }
-        if (screenTransition) {
-            renderScreenTransition();
+        if (exit) {
+            System.out.println("Exiting splash");
+            renderExit();
         }
         else {
+            time++;
+            game.renderer.begin(ShapeRenderer.ShapeType.Filled);
+            for (int i = 0; i < 6; i++) {
+                //draw rotating squares
+                game.renderer.setColor(Square.getColor(i + 2));
+                game.renderer.rect((int)(Math.cos(-i * 45 + time / 45) * 6 * Constants.BOX_SIZE) - Constants.BOX_SIZE/2,
+                        (int)(Math.sin(-i * 45 + time / 45) * 6 * Constants.BOX_SIZE) - Constants.BOX_SIZE/2,
+                        Constants.BOX_SIZE, Constants.BOX_SIZE);
+            }
+            game.renderer.end();
             game.batch.begin();
-            game.batch.draw(texture, -Swatch.worldWidth/2, -Swatch.worldHeight / 5);
+            game.batch.draw(texture, -texture.getWidth()/2, -texture.getHeight()/2);
             game.batch.end();
+        }
+        if (enter) {
+            System.out.println("Entering splash");
+            renderEnter();
         }
     }
 
-    public void renderScreenTransition() {
-
+    public void renderExit() {
         yVelocity += Constants.SCREEN_ACCELERATION;
         yPos += yVelocity;
         //game.render(nextScreen);
         if (yPos > Swatch.worldHeight) {
-            screenTransition = false;
+            exit = false;
             game.setScreen(nextScreen,0);
         }
+        game.renderer.begin(ShapeRenderer.ShapeType.Filled);
+        for (int i = 0; i < 6; i++) {
+            //draw rotating squares
+            game.renderer.setColor(Square.getColor(i + 2));
+            game.renderer.rect((int)(Math.cos(-i * 45 + time / 45) * 6 * Constants.BOX_SIZE) - Constants.BOX_SIZE/2,
+                    ((int)(Math.sin(-i * 45 + time / 45) * 6 * Constants.BOX_SIZE) - Constants.BOX_SIZE/2) + yPos,
+                    Constants.BOX_SIZE, Constants.BOX_SIZE);
+        }
+        game.renderer.end();
         game.batch.begin();
-        game.batch.draw(texture, -Swatch.worldWidth/2, -Swatch.worldHeight / 5 + yPos);
+        game.batch.draw(texture, -texture.getWidth()/2, -texture.getHeight()/2 + yPos);
         game.batch.end();
     }
 
     public void renderEnter() {
         if (alpha > 0) {
             game.renderer.begin(ShapeRenderer.ShapeType.Filled);
+            //game.renderer.setColor(0,.5f,.5f,0);
+            //game.renderer.rect(-Swatch.worldWidth/2,-Swatch.worldHeight/2,Swatch.worldWidth,Swatch.worldHeight);
             alpha -= Constants.FADE_SPEED;
             game.renderer.end();
+            System.out.println("Alpha: " + alpha);
         }
         else {
             enter = false;
@@ -118,12 +141,12 @@ public class SplashScreen extends InputAdapter implements Screen{
         System.out.println(viewport.unproject(new Vector2(screenX,screenY)).x + ", " + viewport.unproject(new Vector2(screenX,screenY)).y);
 
         if (viewport.unproject(new Vector2(screenX,screenY)).x > 0) {
-            screenTransition = true;
+            exit = true;
             System.out.println("settings");
             nextScreen = 3;
         }
         else {
-            screenTransition = true;
+            exit = true;
             //level select
             nextScreen = 1;
         }

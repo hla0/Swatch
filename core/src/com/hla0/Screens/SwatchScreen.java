@@ -27,8 +27,12 @@ public class SwatchScreen extends InputAdapter implements Screen{
     int curScreen;
     int levelsComplete;
     int parentScreen;
+    FileHandle stars;
     FileHandle complete;
     boolean enter;
+    boolean exit;
+    //game 0, settings 1, win 2, lose 3
+    int gameState;
     Swatch game;
 
     public SwatchScreen(Swatch g) {
@@ -41,52 +45,107 @@ public class SwatchScreen extends InputAdapter implements Screen{
         font = new BitmapFont();
         font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         curScreen = 0;
+        gameState = 0;
         enter = true;
+        exit = false;
     }
 
     @Override
     public void show() {
-
+        enter = true; exit = false;
+        gameState = 0;
     }
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, .5f, .5f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         viewport.apply();
         render();
     }
     public void render() {
         game.renderer.setProjectionMatrix(camera.combined);
         game.batch.setProjectionMatrix(camera.combined);
+        //when entering game
+        //if (gameState == 0 && enter) {}
+        if (gameState == 0)
+            enter = false;
         game.renderer.begin(ShapeRenderer.ShapeType.Filled);
         grid.render(game.renderer);
         game.renderer.end();
         renderGridUI();
-         /*
-        if (grid.checkObjectives()) {
-            if (grid.level > levelsComplete) {
-                levelsComplete = grid.level;
-                complete.writeString("" + levelsComplete,false);
-            }
-            processStars();
-            System.out.println("Completed Level");
-            //prompt for next level or level select
-            if (!grid.isAnimating()) {
-                swatchScreen.switchScreen(4);
+
+        switch(gameState) {
+            //all three should act on enter and exit
+            case 1:
+                //renderSettings();
+                if (enter) {
+                    System.out.println("entered Settings");
+                    enter = false;
+                }
+                else if (exit) {
+                    System.out.println("exited Settings");
+                    exit = false;
+                }
+                else {
+
+                }
+                break;
+            case 2:
+                //renderWin();
+                if (enter) {
+                    System.out.println("entered win");
+                    enter = false;
+                }
+                else if (exit) {
+                    System.out.println("exited win");
+                    grid.loadLevel(grid.getLevel() + 1);
+                    gameState = 0;
+                    exit = false;
+                }
+                else {
+
+                }
+                break;
+            case 3:
+                //renderLose();
+                if (enter) {
+                    System.out.println("entered lose");
+                    enter = false;
+                }
+                else if (exit) {
+                    System.out.println("exited lose");
+                    exit = false;
+                    grid.loadLevel(grid.getLevel());
+                    gameState = 0;
+                }
+                else {
+
+                }
+                break;
+
+        }
+        if (gameState == 0) {
+            if (grid.checkObjectives()) {
+                if (grid.getLevel() > levelsComplete) {
+                    levelsComplete = grid.getLevel();
+                    complete.writeString("" + levelsComplete, false);
+                }
+                processStars();
+                System.out.println("Completed Level");
+                //prompt for next level or level select
+                if (!grid.isAnimating()) {
+                    gameState = 2;
+                    enter = true;
+                }
+            } else if (grid.checkFail()) {
+                System.out.println("Lost");
+                gameState = 3;
+                enter = true;
             }
         }
-        else if (grid.checkFail()) {
-            System.out.println("Lost");
-            swatchScreen.switchScreen(5);
-        }
-        */
 
     }
 
-    /*
+
     public void processStars() {
         //check stars
         //update stars
@@ -94,12 +153,12 @@ public class SwatchScreen extends InputAdapter implements Screen{
         if (Gdx.files.local("levelStars.txt").exists()) {
             String s = "";
             String sLine = stars.readString();
-            stars.writeString(sLine.substring(0,grid.level) + "1" + sLine.substring(grid.level+1,Constants.MAX_LEVEL),false);
+            stars.writeString(sLine.substring(0,grid.getLevel()) + "1" + sLine.substring(grid.getLevel() + 1,Constants.MAX_LEVEL),false);
         }
         else {
             String s = "";
             for (int i = 0; i < Constants.MAX_LEVEL; i++) {
-                if (grid.level == i) {
+                if (grid.getLevel() == i) {
                     s += "1";
                     //add star amount
                 }
@@ -108,32 +167,36 @@ public class SwatchScreen extends InputAdapter implements Screen{
             stars.writeString(s,false);
         }
     }
-    */
+
 
     public void renderGridUI() {
         font.setColor(Color.WHITE);
         //objectives
-        int numObjectives = 0;
         //TODO add moves left and menu button
+        int numberObj = 0;
+        int[] colorsObj = new int[Constants.NUMBER_COLORS];
         for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
             if (grid.getColorObjectives(i) > 0) {
-                game.renderer.begin(ShapeRenderer.ShapeType.Filled);
-                game.renderer.setColor(Square.getColor(i));
-                int xPos = (int)(numObjectives * Constants.BOX_SIZE * 1.5 + Constants.MARGIN * 1.5 + Constants.LEFT_PADDING);
-                int yPos = Swatch.worldHeight - Constants.BOX_SIZE * 4;
-                game.renderer.rect(xPos, yPos, Constants.MARGIN, Constants.MARGIN);
-                font.getData().setScale(2,2);
-                int destroyed = grid.getColorDestroyed(i);
-                if (destroyed > grid.getColorObjectives(i)) {
-                    destroyed = grid.getColorObjectives(i);
-                }
-                game.renderer.end();
-                game.batch.begin();
-
-                font.draw(game.batch,destroyed + "/" + grid.getColorObjectives(i),xPos - 5,yPos - Constants.BOX_SIZE);
-                game.batch.end();
-                numObjectives++;
+                colorsObj[numberObj] = i;
+                numberObj++;
             }
+        }
+        for (int i = 0; i < numberObj; i++) {
+            int index = colorsObj[i];
+            game.renderer.begin(ShapeRenderer.ShapeType.Filled);
+            game.renderer.setColor(Square.getColor(index));
+            int xPos = i * Swatch.worldWidth/numberObj + Constants.MARGIN + Swatch.worldWidth/numberObj/numberObj;
+            int yPos = Swatch.worldHeight - Constants.BOX_SIZE * 4;
+            game.renderer.rect(xPos, yPos, Constants.MARGIN, Constants.MARGIN);
+            font.getData().setScale(2,2);
+            int destroyed = grid.getColorDestroyed(index);
+            if (destroyed > grid.getColorObjectives(index)) {
+                destroyed = grid.getColorObjectives(index);
+            }
+            game.renderer.end();
+            game.batch.begin();
+            font.draw(game.batch,destroyed + "/" + grid.getColorObjectives(index),xPos - Constants.MARGIN/2,yPos - Constants.BOX_SIZE);
+            game.batch.end();
         }
 
         game.batch.begin();
@@ -188,14 +251,32 @@ public class SwatchScreen extends InputAdapter implements Screen{
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (game.getCurScreen() == 2) {
-            gameTouch(screenX,screenY);
+            switch (gameState) {
+                case 0:
+                    gameTouch(screenX,screenY);
+                    break;
+                case 1:
+                    //from settings
+                    gameState = 0;
+                    exit = true;
+                    break;
+                case 2:
+                    //from win
+                    gameState = 0;
+                    exit = true;
+                    break;
+                case 3:
+                    //from lose
+                    gameState = 0;
+                    exit = true;
+                    break;
+            }
             return true;
         }
         else {
             return false;
         }
     }
-
 
     public boolean gameTouch(int screenX, int screenY) {
         //do not process touches when grid is animating

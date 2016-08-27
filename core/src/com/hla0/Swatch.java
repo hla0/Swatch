@@ -1,4 +1,5 @@
 package com.hla0;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.hla0.Screens.LevelSelectScreen;
 import com.hla0.Screens.SettingsScreen;
@@ -73,6 +74,10 @@ public class Swatch extends Game {
 
 	@Override
 	public void render () {
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		super.render();
 	}
 

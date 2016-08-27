@@ -50,15 +50,17 @@ public class Grid {
     }
 
     //TODO parse JSON for level details in future
-    void loadLevel(int level) {
+    public void loadLevel(int level) {
         reset();
         this.level = level;
         //different amount of moves per level
-        moves = 10;
+        moves = 2;
         for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
             colorDestroyed[i] = 0;
             //TODO add different objectives for each level
-            colorObjectives[i] = 2;
+            if (i > 1) {
+                colorObjectives[i] = 20;
+            }
             System.out.println("Color " + i + ":" + colorDestroyed[i] + "/" + colorObjectives[i]);
         }
         //set levelMap up then generate
@@ -287,9 +289,9 @@ public class Grid {
         System.out.println("finished swapping");
     }
 
-    public int getDirection() {
-        return direction;
-    }
+    public int getDirection() {return direction;}
+
+    public int getLevel() {return level;}
 
     //should be called after swapLines and updateColumns
     public boolean checkMatches() {

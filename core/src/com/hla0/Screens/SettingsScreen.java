@@ -21,6 +21,7 @@ public class SettingsScreen extends InputAdapter implements Screen {
     BitmapFont font;
     Swatch game;
     boolean enter;
+    boolean exit;
 
     public SettingsScreen (Swatch g) {
         game = g;
@@ -29,29 +30,36 @@ public class SettingsScreen extends InputAdapter implements Screen {
         font = new BitmapFont();
         font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         enter = true;
+        exit = false;
     }
 
     public void renderSettings() {
-        game.renderer.begin(ShapeRenderer.ShapeType.Filled);
-        game.renderer.setColor(Color.TAN);
-        game.renderer.rect(-Swatch.worldWidth/2,-Swatch.worldHeight/2, Swatch.worldWidth, Swatch.worldHeight);
-        game.renderer.end();
-        game.batch.begin();
-        font.setColor(Color.WHITE);
-        font.getData().setScale(3, 3);
-        font.draw(game.batch, "Settings", 0, 0);
-        game.batch.end();
+        if (enter) {
+            System.out.println("entering settings");
+            enter = false;
+        }
+        else if (exit) {
+            System.out.println("exiting settings");
+            exit = false;
+            game.setScreen(game.getParentScreen(),3);
+        }
+        else {
+            game.renderer.begin(ShapeRenderer.ShapeType.Filled);
+            game.renderer.setColor(Color.TAN);
+            game.renderer.rect(-Swatch.worldWidth / 2, -Swatch.worldHeight / 2, Swatch.worldWidth, Swatch.worldHeight);
+            game.renderer.end();
+            game.batch.begin();
+            font.setColor(Color.WHITE);
+            font.getData().setScale(3, 3);
+            font.draw(game.batch, "Settings", 0, 0);
+            game.batch.end();
+        }
     }
 
 
-    @Override public void show() {}
+    @Override public void show() {enter = true; exit = false;}
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, .5f, .5f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
         render();
     }
 
@@ -74,7 +82,7 @@ public class SettingsScreen extends InputAdapter implements Screen {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (game.getCurScreen() == 3) {
             //getParentScreen
-            game.setScreen(game.getParentScreen(),3);
+            exit = true;
             return true;
         }
         else {
