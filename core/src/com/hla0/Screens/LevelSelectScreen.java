@@ -179,5 +179,4 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
     @Override
     public void dispose() {buttonPress.dispose();
     }
-    public void start() {enter = true;}
 }

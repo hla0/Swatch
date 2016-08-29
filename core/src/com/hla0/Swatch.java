@@ -69,7 +69,6 @@ public class Swatch extends Game {
 					menu.setLooping(true);
 				}
 				setScreen(splashScreen);
-				splashScreen.start();
 				break;
 			case 1:
 				if (isMusic()) {
@@ -78,7 +77,6 @@ public class Swatch extends Game {
 					menu.setLooping(true);
 				}
 				setScreen(levelSelectScreen);
-				levelSelectScreen.start();
 				break;
 			case 2:
 				//play game music instead
@@ -90,7 +88,6 @@ public class Swatch extends Game {
 					swatch.setLooping(true);
 				}
 				setScreen(swatchScreen);
-				swatchScreen.start();
 				break;
 			case 3:
 				if (isMusic()) {
@@ -106,7 +103,6 @@ public class Swatch extends Game {
 					}
 				}
 				setScreen(settingsScreen);
-				settingsScreen.start();
 				break;
 		}
 		//reset all the screens besides the screen switched to

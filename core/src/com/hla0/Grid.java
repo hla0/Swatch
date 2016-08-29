@@ -19,8 +19,11 @@ public class Grid {
     //check the state of all squares
     boolean animating;
     int[] colorDestroyed;
+    int[] anchorDestroyed;
     int[] colorObjectives;
+    int[] anchorObjectives;
     int totalDestroyed;
+    int totalAnchorDestroyed;
     int moves;
     int direction;
     int animatedScore;
@@ -43,6 +46,8 @@ public class Grid {
         levelMap = new int[Constants.GRID_SIZE][Constants.GRID_SIZE];
         columnChanged = new boolean[Constants.GRID_SIZE];
         colorDestroyed = new int[Constants.NUMBER_COLORS];
+        anchorDestroyed = new int[Constants.NUMBER_COLORS];
+        totalAnchorDestroyed = 0;
         this.viewport = viewport;
         top = Constants.BOTTOM_PADDING + (Constants.GRID_SIZE + 1) * (Constants.BOX_SIZE + Constants.MARGIN);
         animating = false;
@@ -64,8 +69,10 @@ public class Grid {
         //different amount of moves per level
         moves = Levels.getNumberMoves(level);
         colorObjectives = Levels.getColorObjectives(level);
+        anchorObjectives = Levels.getAnchorObjectives(level);
         for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
             colorDestroyed[i] = 0;
+            anchorDestroyed[i] = 0;
         }
         levelMap = Levels.getLevelMap(level);
         //currently set to random
@@ -447,12 +454,20 @@ public class Grid {
     //TODO remove anchors
     public boolean removeAnchors() {
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
-            if (squares[i][0].getType() == 1) {
-                columnChanged[i] = true;
-                squares[i][0].addScore(1000);
-                toDelete.add(squares[i][0]);
-                squares[i][0] = null;
-                return true;
+            int j = 0;
+            if (squares[i][j] != null) {
+                while (squares[i][j].getColorNum() < 0 && j < Constants.GRID_SIZE) {
+                    j++;
+                }
+                if (squares[i][j].getType() == 1 && j < Constants.GRID_SIZE) {
+                    totalAnchorDestroyed++;
+                    anchorDestroyed[squares[i][j].getColorNum()]++;
+                    columnChanged[i] = true;
+                    squares[i][j].addScore(1000);
+                    toDelete.add(squares[i][j]);
+                    squares[i][j] = null;
+                    return true;
+                }
             }
         }
         return false;
@@ -493,6 +508,8 @@ public class Grid {
     }
     public int getColorDestroyed(int i) {return colorDestroyed[i];}
     public int getColorObjectives(int i) {return colorObjectives[i];}
+    public int getAnchorDestroyed(int i) {return anchorDestroyed[i];}
+    public int getAnchorObjectives(int i) {return anchorObjectives[i];}
 
     public boolean isAnimating() {
         if (toDelete.size() > 0 || toSwap.size() > 0 || score > animatedScore) {
@@ -576,6 +593,9 @@ public class Grid {
             selected2 = null;
         }
     }
+
+    public int getTotalAnchorDestroyed() {return totalAnchorDestroyed;}
+
 
     public boolean checkObjectives() {
         for (int i = 0; i < Constants.NUMBER_COLORS; i++) {

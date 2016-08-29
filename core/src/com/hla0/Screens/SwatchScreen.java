@@ -104,7 +104,8 @@ public class SwatchScreen extends InputAdapter implements Screen{
                     exit = false;
                 }
                 else {
-
+                    //should have back home, music, sound, help, maybe credits
+                    //could go to level select but only not in free play mode
                 }
                 break;
             case 2:
@@ -200,9 +201,17 @@ public class SwatchScreen extends InputAdapter implements Screen{
         //TODO add moves left and menu button
         int numberObj = 0;
         int[] colorsObj = new int[Constants.NUMBER_COLORS];
+        int[] anchorObj = new int[Constants.NUMBER_COLORS * 2];
         for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
             if (grid.getColorObjectives(i) > 0) {
                 colorsObj[numberObj] = i;
+                numberObj++;
+            }
+        }
+        //assume objectives do not go above 6
+        for (int i = 0; i < Constants.NUMBER_COLORS + 1; i++) {
+            if (grid.getAnchorObjectives(i) > 0) {
+                anchorObj[numberObj] = i;
                 numberObj++;
             }
         }
@@ -327,8 +336,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
     }
 
     public Vector2 transformToGrid(Vector2 v1) {
-        return new Vector2((v1.x - Constants.LEFT_PADDING - (Constants.MARGIN / 2))/(Constants.BOX_SIZE + Constants.MARGIN),
+        return new Vector2((v1.x - Constants.LEFT_PADDING - (Constants.MARGIN / 2)) / (Constants.BOX_SIZE + Constants.MARGIN),
                 (v1.y - Constants.BOTTOM_PADDING - (Constants.MARGIN / 2)) / (Constants.BOX_SIZE + Constants.MARGIN));
     }
-    public void start() {enter = true;}
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -24,6 +25,8 @@ public class SettingsScreen extends InputAdapter implements Screen {
     boolean enter;
     boolean exit;
     Sound buttonPress;
+    FileHandle settings;
+    //have sound, music, credits, help
     public SettingsScreen (Swatch g) {
         game = g;
         camera = new OrthographicCamera();
@@ -96,7 +99,5 @@ public class SettingsScreen extends InputAdapter implements Screen {
             return false;
         }
     }
-    //TODO remove these
-    public void start() {enter = true;}
 
 }

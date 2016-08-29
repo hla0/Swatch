@@ -193,5 +193,4 @@ public class SplashScreen extends InputAdapter implements Screen{
 
         return true;
     }
-    public void start() {enter = true; alpha = 1;}
 }

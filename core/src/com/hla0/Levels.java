@@ -34,6 +34,17 @@ public class Levels {
         return colorObjectives;
     }
 
+    public static int[] getAnchorObjectives(int level) {
+        //includes clear which counts all
+        int[] anchorObjectives = new int[Constants.NUMBER_COLORS + 1];
+        if (level < Constants.ANCHOR_LEVEL) {
+            for (int i = 0; i < anchorObjectives.length; i++) {
+                anchorObjectives[i] = 0;
+            }
+        }
+        return anchorObjectives;
+    }
+
     //based on moves from level
     //TODO decide how to reward stars
     public static String numStars(int score, int level) {
@@ -61,7 +72,7 @@ public class Levels {
     }
 
     public static int availableType(int level) {
-        if (level > 0) {
+        if (level > Constants.ANCHOR_LEVEL) {
             if (Math.random() * 10 > 9) {
                 //anchor type
                 return 1;
@@ -71,6 +82,7 @@ public class Levels {
     }
 
     //TODO create different level maps
+    //left is bottom
     public static int[][] getLevelMap(int level) {
         int[][] randomLevelMap = new int[Constants.GRID_SIZE][Constants.GRID_SIZE];
         switch (level) {
@@ -118,6 +130,17 @@ public class Levels {
                         ,{0,0,1,0,0,1,0,0}
                         ,{0,0,1,0,0,1,0,0}};
                 return levelMap5;
+            case 9:
+                int[][] levelMap9 =
+                        {{1,1,1,1,1,1,1,1}
+                        ,{1,1,1,1,1,1,1,1}
+                        ,{1,1,0,0,0,0,1,1}
+                        ,{1,1,0,0,0,0,1,1}
+                        ,{1,1,0,0,0,0,1,1}
+                        ,{1,1,0,0,0,0,1,1}
+                        ,{1,1,1,1,1,1,1,1}
+                        ,{1,1,1,1,1,1,1,1}};
+                return levelMap9;
         }
         //temporary
         if (level > 0) {
