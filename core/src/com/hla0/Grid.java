@@ -495,10 +495,11 @@ public class Grid {
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             int j = 0;
             if (squares[i][j] != null) {
-                while (squares[i][j].getColorNum() < 0 && j < Constants.GRID_SIZE) {
+                System.out.println(j);
+                while (j < Constants.GRID_SIZE && squares[i][j] != null && squares[i][j].getColorNum() < 0) {
                     j++;
                 }
-                if (squares[i][j].getType() == 1 && j < Constants.GRID_SIZE) {
+                if (j < Constants.GRID_SIZE && squares[i][j] != null && squares[i][j].getType() == 1) {
                     colorDestroyed[squares[i][j].getColorNum()]++;
                     totalAnchorDestroyed++;
                     anchorDestroyed[squares[i][j].getColorNum()]++;
