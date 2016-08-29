@@ -232,6 +232,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
             }
         }
         font.setColor(Color.WHITE);
+        //TODO moves left, settings, maybe level
         for (int i = 0; i < numberObj; i++) {
             int index = obj[i];
             int xPos = i * Swatch.worldWidth / numberObj + Constants.MARGIN + Swatch.worldWidth / numberObj / numberObj;
@@ -260,7 +261,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
                     game.batch.begin();
                     int destroyed = grid.getTotalAnchorDestroyed();
                     if (destroyed > grid.getAnchorObjectives(index)) {
-                        destroyed =  grid.getTotalAnchorDestroyed();
+                        destroyed = grid.getAnchorObjectives(index);
                     }
                     font.getData().setScale(2, 2);
                     font.draw(game.batch, destroyed + "/" + grid.getAnchorObjectives(index), xPos - Constants.MARGIN / 2 - 3, yPos - Constants.BOX_SIZE);
@@ -285,6 +286,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
 
         game.batch.begin();
         //score
+        font.draw(game.batch,"Moves: " + grid.getMoves(), Constants.MARGIN,Swatch.worldHeight - Constants.BOX_SIZE * 2);
         font.getData().setScale(3,3);
         font.draw(game.batch,leadingZeros(grid.getScore()),200,200);
         game.batch.end();
@@ -388,24 +390,10 @@ public class SwatchScreen extends InputAdapter implements Screen{
         //Gdx.app.log(TAG, "Viewport world dimensions: (" + viewport.getWorldHeight() + ", " + viewport.getWorldWidth() + ")");
     }
 
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose () {
-    }
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
+    @Override public void dispose () {}
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
@@ -435,28 +423,22 @@ public class SwatchScreen extends InputAdapter implements Screen{
         }
     }
 
-    public boolean gameTouch(int screenX, int screenY) {
+    public void gameTouch(int screenX, int screenY) {
         //do not process touches when grid is animating
         if (!grid.isAnimating()) {
             Vector2 v = transformToGrid(viewport.unproject(new Vector2(screenX, screenY)));
-            boolean withinGrid;
             //removes MARGINs from grid with some flexibility for slightly off touches
             if (v.x % 1 >= .07 && v.x % 1 <= .93 && v.y % 1 >= .07 && v.y % 1 <= .93) {
                 if (v.x >= Constants.GRID_SIZE || v.x < 0 || v.y >= Constants.GRID_SIZE || v.y < 0) {
                     System.out.println("Outside grid");
-                    withinGrid = false;
                 } else {
                     System.out.println("Obtained grid coordinates: (" + (int) v.x + ", " + (int) v.y + ")");
                     grid.processTouch((int)v.x,(int) v.y);
-                    withinGrid = true;
                 }
             } else {
                 System.out.println("Outside grid");
-                withinGrid = false;
             }
-            return withinGrid;
         }
-        return false;
     }
 
     public Vector2 transformToGrid(Vector2 v1) {

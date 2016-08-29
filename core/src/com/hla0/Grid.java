@@ -551,6 +551,7 @@ public class Grid {
     public int getColorObjectives(int i) {return colorObjectives[i];}
     public int getAnchorDestroyed(int i) {return anchorDestroyed[i];}
     public int getAnchorObjectives(int i) {return anchorObjectives[i];}
+    public int getMoves() {return moves;}
 
     public boolean isAnimating() {
         if (toDelete.size() > 0 || toSwap.size() > 0 || score > animatedScore) {

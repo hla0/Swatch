@@ -38,10 +38,7 @@ public class StartScreen extends InputAdapter implements Screen{
         time = 0;
         game = g;
         camera = new OrthographicCamera();
-        //texture = new Texture("badlogic.jpg");
         texture = new Texture("splash_icon.png");
-        //viewport = new ScreenViewport(camera);
-        //viewport = new StretchViewport(Swatch.worldWidth,Swatch.worldHeight,camera);
         viewport = new FitViewport(Swatch.worldWidth,Swatch.worldHeight,camera);
         enter = true;
         exit = false;
@@ -72,83 +69,77 @@ public class StartScreen extends InputAdapter implements Screen{
 
     public void render() {
         game.batch.setProjectionMatrix(camera.combined);
-        if (exit) {
-            //System.out.println("Exiting splash");
-            renderExit();
-        }
-        else {
-            time++;
-            game.renderer.begin(ShapeRenderer.ShapeType.Filled);
-            for (int i = 0; i < 6; i++) {
-                //draw rotating squares
-                game.renderer.setColor(Square.getColor(i + 2));
-                game.renderer.rect((int)(Math.cos(-i * 45 + time / 45) * 6 * Constants.BOX_SIZE) - Constants.BOX_SIZE/2,
-                        (int)(Math.sin(-i * 45 + time / 45) * 6 * Constants.BOX_SIZE) - Constants.BOX_SIZE/2,
-                        Constants.BOX_SIZE, Constants.BOX_SIZE);
-            }
-
-            //if button not pressed
-            if (!startPressed) {
-                game.renderer.setColor(0/255f,172/255f,193/255f,1);
-            }
-            //pressed
-            else {
-                game.renderer.setColor(0/255f, 131/255f, 143/255f, 1);
-            }
-            game.renderer.rect(-Constants.BOX_SIZE * 4 / 2,-Constants.BOX_SIZE * 3 - texture.getHeight(),Constants.BOX_SIZE * 4, Constants.BOX_SIZE * 3 / 2);
-            game.renderer.end();
-            game.batch.begin();
-            game.batch.draw(texture, -texture.getWidth()/2, -texture.getHeight()/2);
-            game.batch.end();
-        }
-        if (enter) {
-            //System.out.println("Entering splash");
-            renderEnter();
-        }
-    }
-
-    public void renderExit() {
-        yVelocity += Constants.SCREEN_ACCELERATION;
-        yPos += yVelocity;
-        //game.render(nextScreen);
-        if (yPos > Swatch.worldHeight) {
-            exit = false;
-            game.setScreen(nextScreen,0);
-        }
         game.renderer.begin(ShapeRenderer.ShapeType.Filled);
-        for (int i = 0; i < 6; i++) {
-            //draw rotating squares
-            game.renderer.setColor(Square.getColor(i + 2));
-            game.renderer.rect((int)(Math.cos(-i * 45 + time / 45) * 6 * Constants.BOX_SIZE) - Constants.BOX_SIZE/2,
-                    ((int)(Math.sin(-i * 45 + time / 45) * 6 * Constants.BOX_SIZE) - Constants.BOX_SIZE/2) + yPos,
-                    Constants.BOX_SIZE, Constants.BOX_SIZE);
+        if (enter) {
+            System.out.println("entered start");
+            renderStart(1);
         }
-        if (startPressed) {
-            game.renderer.setColor(0 / 255f, 131 / 255f, 143 / 255f, 1);
+        else if (exit) {
+            System.out.println("exited start");
+            renderStart(2);
         }
         else {
-            game.renderer.setColor(0/255f,172/255f,193/255f,1);
+            renderStart(0);
         }
-        game.renderer.rect(-Constants.BOX_SIZE * 4 / 2,-Constants.BOX_SIZE * 3 - texture.getHeight() + yPos,Constants.BOX_SIZE * 4, Constants.BOX_SIZE * 3 / 2);
-        //TODO animate settings leaving
-        if (settingsPressed) {} else {}
         game.renderer.end();
-        game.batch.begin();
-        game.batch.draw(texture, -texture.getWidth()/2, -texture.getHeight()/2 + yPos);
-        game.batch.end();
     }
 
-    public void renderEnter() {
-        if (alpha > 0) {
-            game.renderer.begin(ShapeRenderer.ShapeType.Filled);
-            //game.renderer.setColor(0,.5f,.5f,0);
-            //game.renderer.rect(-Swatch.worldWidth/2,-Swatch.worldHeight/2,Swatch.worldWidth,Swatch.worldHeight);
-            alpha -= Constants.FADE_SPEED;
-            game.renderer.end();
-            //System.out.println("Alpha: " + alpha);
-        }
-        else {
-            enter = false;
+    public void renderStart(int state) {
+        switch (state) {
+            case 0:
+                time++;
+                for (int i = 0; i < 6; i++) {
+                    //draw rotating squares
+                    game.renderer.setColor(Square.getColor(i + 2));
+                    game.renderer.rect((int)(Math.cos(-i * 45 + time / 45) * 6 * Constants.BOX_SIZE) - Constants.BOX_SIZE/2,
+                            (int)(Math.sin(-i * 45 + time / 45) * 6 * Constants.BOX_SIZE) - Constants.BOX_SIZE/2,
+                            Constants.BOX_SIZE, Constants.BOX_SIZE);
+                }
+                if (startPressed) {
+                    game.renderer.setColor(0 / 255f, 131 / 255f, 143 / 255f, 1);
+                }
+                else {
+                    game.renderer.setColor(0/255f,172/255f,193/255f,1);
+                }
+                game.renderer.rect(-Constants.BOX_SIZE * 2,-Constants.BOX_SIZE * 3 - texture.getHeight(),Constants.BOX_SIZE * 4, Constants.BOX_SIZE * 3 / 2);
+                game.renderer.end();
+                game.batch.begin();
+                game.batch.draw(texture, -texture.getWidth()/2, -texture.getHeight()/2);
+                game.batch.end();
+                break;
+            case 1:
+                enter = false;
+                break;
+            case 2:
+                yVelocity += Constants.SCREEN_ACCELERATION;
+                yPos += yVelocity;
+                //game.render(nextScreen);
+                if (yPos > Swatch.worldHeight) {
+                    exit = false;
+                    game.setScreen(nextScreen,0);
+                }
+                for (int i = 0; i < 6; i++) {
+                    //draw rotating squares
+                    game.renderer.setColor(Square.getColor(i + 2));
+                    game.renderer.rect((int)(Math.cos(-i * 45 + time / 45) * 6 * Constants.BOX_SIZE) - Constants.BOX_SIZE/2,
+                            ((int)(Math.sin(-i * 45 + time / 45) * 6 * Constants.BOX_SIZE) - Constants.BOX_SIZE/2) + yPos,
+                            Constants.BOX_SIZE, Constants.BOX_SIZE);
+                }
+                if (startPressed) {
+                    game.renderer.setColor(0 / 255f, 131 / 255f, 143 / 255f, 1);
+                }
+                else {
+                    game.renderer.setColor(0/255f,172/255f,193/255f,1);
+                }
+                game.renderer.rect(-Constants.BOX_SIZE * 2,-Constants.BOX_SIZE * 3 - texture.getHeight() + yPos,Constants.BOX_SIZE * 4, Constants.BOX_SIZE * 3 / 2);
+                //TODO create Free play mode button
+                //TODO animate settings leaving
+                if (settingsPressed) {} else {}
+                game.renderer.end();
+                game.batch.begin();
+                game.batch.draw(texture, -texture.getWidth()/2, -texture.getHeight()/2 + yPos);
+                game.batch.end();
+                break;
         }
     }
     @Override public void resize(int width, int height) {viewport.update(width,height);} @Override public void pause() {}@Override public void resume() {}@Override public void hide() {}@Override public void dispose() {buttonPress.dispose();}
@@ -164,9 +155,7 @@ public class StartScreen extends InputAdapter implements Screen{
 
     public boolean startTouch(Vector2 pos, boolean down) {
         //choose levelSelect
-        //switchScreen(1);
         //TODO choose mode
-        //switchScreen(2);
         //choose settings
         //temporary
         // -Constants.BOX_SIZE * 4 / 2,-Constants.BOX_SIZE * 3 - texture.getHeight(),Constants.BOX_SIZE * 4, Constants.BOX_SIZE * 3 / 2
