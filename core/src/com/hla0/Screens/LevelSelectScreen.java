@@ -166,7 +166,6 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (game.getCurScreen() == 1) {
             Vector2 pos = viewport.unproject(new Vector2(screenX,screenY));
-            System.out.println(pos.x + ", " + pos.y);
             int level = levelPressed((int)pos.x,(int)pos.y);
             System.out.println("Pressed " + level);
             if (level > 0 && level <= levelsComplete + 1) {
@@ -178,6 +177,13 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
                 game.loadLevel(level);
             }
             else {
+                //TODO should be in start screen for free play mode
+                exit = true;
+                if (game.isSound()) {
+                    buttonPress.play();
+                }
+                nextScreen = 2;
+                game.loadLevel(0);
                 //determine if another button was pressed or check that first
             }
             return true;

@@ -196,8 +196,10 @@ public class SwatchScreen extends InputAdapter implements Screen{
         if (Gdx.files.local("levelStars.txt").exists()) {
             String s = "";
             String sLine = stars.readString();
-            String insert = Levels.numStars(grid.getScore(),grid.getLevel());
-            stars.writeString(sLine.substring(0,grid.getLevel()) + insert + sLine.substring(grid.getLevel() + 1,Constants.MAX_LEVEL),false);
+            if(grid.getLevel() != 0) {
+                String insert = Levels.numStars(grid.getScore(), grid.getLevel());
+                stars.writeString(sLine.substring(0, grid.getLevel()) + insert + sLine.substring(grid.getLevel() + 1, Constants.MAX_LEVEL), false);
+            }
         }
         else {
             String s = "";

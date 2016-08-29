@@ -38,8 +38,10 @@ public class Grid {
     int[][] levelMap;
     Sound remove;
     Sound select;
+    int combo;
 
     public Grid(Viewport viewport, int level, Swatch g) {
+        combo = 0;
         game = g;
         soundRemove = false;
         squares = new Square[Constants.GRID_SIZE][Constants.GRID_SIZE];
@@ -64,6 +66,8 @@ public class Grid {
     }
 
     public void loadLevel(int level) {
+        score = 0;
+        combo = 0;
         reset();
         this.level = level;
         //different amount of moves per level
@@ -334,12 +338,16 @@ public class Grid {
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             //TODO count number of matches in each method to calculate combo
             if (scanHorizontal(i)) {
+                //temporary
+                combo++;
                 match = true;
                 System.out.println("Found horizontal match on row " + i);
             }
         }
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             if (scanVertical(i)) {
+                //temporary
+                combo++;
                 match = true;
                 System.out.println("Found vertical match on column " + i);
             }
@@ -531,6 +539,7 @@ public class Grid {
 
     //where there is selected = *; change status of the variable within square
     public void processTouch(int x, int y) {
+        combo = 0;
         boolean onX = false;
         if (selected == null) {
             //square is empty
@@ -602,14 +611,24 @@ public class Grid {
 
 
     public boolean checkObjectives() {
-        for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
-            if (colorObjectives[i] > colorDestroyed[i]) {
-                return false;
+        if (getLevel() != 0) {
+            for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
+                if (colorObjectives[i] > colorDestroyed[i]) {
+                    return false;
+                }
+            }
+            score += moves * 1500;
+            moves = 0;
+            return true;
+        }
+        else {
+            //in free play mode
+            //to prevent overflow eventually if it gets that far
+            if (moves < -1000) {
+                moves = -1;
             }
         }
-        score += moves * 1500;
-        moves = 0;
-        return true;
+        return false;
     }
 
     public boolean checkFail() {

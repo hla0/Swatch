@@ -9,6 +9,9 @@ public class Levels {
 
     //TODO add different moves for each level
     public static int getNumberMoves(int level) {
+        if (level == 0) {
+            return -1;
+        }
         if (level < 10)
             return 30;
         return 20;
@@ -17,6 +20,9 @@ public class Levels {
     //TODO add different objectives for each level
     public static int[] getColorObjectives(int level) {
         int[] colorObjectives = new int[Constants.NUMBER_COLORS];
+        if (level == 0) {
+            return colorObjectives;
+        }
         if (level < 10) {
             for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
                 if (i > 1) {
@@ -37,6 +43,9 @@ public class Levels {
     public static int[] getAnchorObjectives(int level) {
         //includes clear which counts all
         int[] anchorObjectives = new int[Constants.NUMBER_COLORS + 1];
+        if (level == 0) {
+            return anchorObjectives;
+        }
         if (level < Constants.ANCHOR_LEVEL) {
             for (int i = 0; i < anchorObjectives.length; i++) {
                 anchorObjectives[i] = 0;
@@ -72,6 +81,12 @@ public class Levels {
     }
 
     public static int availableType(int level) {
+        if (level == 0) {
+            if (Math.random() * 10 > 9) {
+                //anchor type
+                return 1;
+            }
+        }
         if (level > Constants.ANCHOR_LEVEL) {
             if (Math.random() * 10 > 9) {
                 //anchor type
@@ -143,7 +158,7 @@ public class Levels {
                 return levelMap9;
         }
         //temporary
-        if (level > 0) {
+        if (level >= 0) {
             //set levelMap up then generate
             for (int i = 0; i < Constants.GRID_SIZE; i++) {
                 for (int j = 0; j < Constants.GRID_SIZE; j++) {
