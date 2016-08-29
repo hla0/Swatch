@@ -16,7 +16,7 @@ android {
     }
     defaultConfig {
         applicationId "com.hla0"
-        minSdkVersion 8
+        minSdkVersion 9
         targetSdkVersion 24
     }
     lintOptions { 

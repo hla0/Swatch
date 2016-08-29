@@ -154,10 +154,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
         }
         if (gameState == 0 && !grid.isAnimating()) {
             if (grid.checkObjectives()) {
-                if (grid.getLevel() > levelsComplete) {
-                    levelsComplete = grid.getLevel();
-                    complete.writeString("" + levelsComplete, false);
-                }
+                parseCompleteFile(complete);
                 processStars();
                 System.out.println("Completed Level");
                 //prompt for next level or level select
@@ -180,6 +177,10 @@ public class SwatchScreen extends InputAdapter implements Screen{
             String data = complete.readString();
             System.out.println("File data: " + data);
             levelsComplete = Integer.parseInt(data);
+            if (grid.checkObjectives() && grid.getLevel() > levelsComplete) {
+                levelsComplete = grid.getLevel();
+                complete.writeString("" + levelsComplete, false);
+            }
         }
         else {
             levelsComplete = 0;

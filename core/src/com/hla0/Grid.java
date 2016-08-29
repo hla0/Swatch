@@ -133,42 +133,44 @@ public class Grid {
     //deletions (depends on mode) match 3 and explode with white
     //remove the Square from the grid
     public void removeSquare(Square s) {
-        if (s != null && s.getType() != 1) {
-            animating = true;
-            if (!checkFail()) {
-                s.addScore(100);
-                score += s.getScore();
-            }
-            if (s.getColorNum() >= 0) {
-                columnChanged[s.x] = true;
-                colorDestroyed[s.getColorNum()]++;
-                totalDestroyed++;
-                if (score > Constants.MAX_SCORE) {
-                    score = Constants.MAX_SCORE;
+        if (s != null) {
+            if (s.getType() != 1) {
+                animating = true;
+                if (!checkFail()) {
+                    s.addScore(100);
+                    score += s.getScore();
                 }
-                //check white
-                if (s.getColorNum() == 1) {
-                    if (squares[s.x][s.y] != null) {
-                        toDelete.add(squares[s.x][s.y]);
+                if (s.getColorNum() >= 0) {
+                    columnChanged[s.x] = true;
+                    colorDestroyed[s.getColorNum()]++;
+                    totalDestroyed++;
+                    if (score > Constants.MAX_SCORE) {
+                        score = Constants.MAX_SCORE;
                     }
-                    squares[s.x][s.y] = null;
-                    if (s.x + 1 < Constants.GRID_SIZE) {
-                        removeSquare(squares[s.x + 1][s.y]);
+                    //check white
+                    if (s.getColorNum() == 1) {
+                        if (squares[s.x][s.y] != null) {
+                            toDelete.add(squares[s.x][s.y]);
+                        }
+                        squares[s.x][s.y] = null;
+                        if (s.x + 1 < Constants.GRID_SIZE) {
+                            removeSquare(squares[s.x + 1][s.y]);
+                        }
+                        if (s.x > 0) {
+                            removeSquare(squares[s.x - 1][s.y]);
+                        }
+                        if (s.y + 1 < Constants.GRID_SIZE) {
+                            removeSquare(squares[s.x][s.y + 1]);
+                        }
+                        if (s.y > 0) {
+                            removeSquare(squares[s.x][s.y - 1]);
+                        }
+                    } else {
+                        if (squares[s.x][s.y] != null) {
+                            toDelete.add(squares[s.x][s.y]);
+                        }
+                        squares[s.x][s.y] = null;
                     }
-                    if (s.x > 0) {
-                        removeSquare(squares[s.x - 1][s.y]);
-                    }
-                    if (s.y + 1 < Constants.GRID_SIZE) {
-                        removeSquare(squares[s.x][s.y + 1]);
-                    }
-                    if (s.y > 0) {
-                        removeSquare(squares[s.x][s.y - 1]);
-                    }
-                } else {
-                    if (squares[s.x][s.y] != null) {
-                        toDelete.add(squares[s.x][s.y]);
-                    }
-                    squares[s.x][s.y] = null;
                 }
             }
         }
@@ -465,6 +467,7 @@ public class Grid {
                     anchorDestroyed[squares[i][j].getColorNum()]++;
                     columnChanged[i] = true;
                     squares[i][j].addScore(1000);
+                    score += squares[i][j].getScore();
                     toDelete.add(squares[i][j]);
                     squares[i][j] = null;
                     return true;
@@ -623,7 +626,7 @@ public class Grid {
                 }
                 soundRemove = true;
             }
-            if (!animating) {
+            if (!animating && !checkFail()) {
                 if (soundRemove) {
                     soundRemove = false;
                 }
