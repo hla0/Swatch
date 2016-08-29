@@ -127,7 +127,8 @@ public class Grid {
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             for (int j = 0; j < Constants.GRID_SIZE; j++) {
                 if (squares[i][j] != null && squares[i][j].getColorNum() >= 0) {
-                    removeSquare(squares[i][j]);
+                    toDelete.add(squares[i][j]);
+                    squares[i][j] = null;
                 }
             }
         }

@@ -116,27 +116,16 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 }
                 break;
             case 2:
-
                 if (enter) {
-                    transitiontime++;
-                    if (game.isSound()) {
-                        winSound.play();
-                    }
-                    System.out.println("entered win");
-                    enter = false;
-                    renderWin(transitiontime,1);
+                    renderWin(1);
                 }
                 else if (exit) {
                     transitiontime++;
-                    System.out.println("exited win");
                     //might need to switch to level select or splash or replay
-                    grid.loadLevel(grid.getLevel() + 1);
-                    gameState = 0;
-                    exit = false;
-                    renderWin(transitiontime,2);
+                    renderWin(2);
                 }
                 else {
-                    renderWin(transitiontime,0);
+                    renderWin(0);
                 }
                 break;
             case 3:
@@ -144,30 +133,26 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 if (enter) {
                     transitiontime++;
                     System.out.println("entered lose");
-                    if (game.isSound()) {
-                        loseSound.play();
-                    }
-                    enter = false;
-                    renderLose(transitiontime,1);
+                    //enter = false;
+                    renderLose(1);
                 }
                 else if (exit) {
                     transitiontime++;
                     System.out.println("exited lose");
-                    exit = false;
+                    //exit = false;
                     //temporary
                     //might need to switch to level select or splash
-                    grid.loadLevel(grid.getLevel());
-                    gameState = 0;
-                    renderLose(transitiontime,2);
+                    renderLose(2);
                 }
                 else {
-                    transitiontime = 0;
-                    renderLose(transitiontime,0);
+                    System.out.println("steady lose");
+                    renderLose(0);
                 }
                 break;
-
         }
+        System.out.println(gameState);
         if (gameState == 0 && !grid.isAnimating()) {
+            System.out.println("in game");
             if (grid.checkObjectives()) {
                 parseCompleteFile(complete);
                 processStars();
@@ -240,7 +225,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 colorNum++;
             }
         }
-        //assume obj do not go above 6
+        //assume obj do not go above 7
         for (int i = 0; i < Constants.NUMBER_COLORS && numberObj < 7; i++) {
             if (grid.getAnchorObjectives(i) > 0) {
                 obj[numberObj] = i;
@@ -263,7 +248,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 }
                 game.renderer.end();
                 game.batch.begin();
-                font.draw(game.batch, destroyed + "/" + grid.getColorObjectives(index), xPos - Constants.MARGIN / 2, yPos - Constants.BOX_SIZE);
+                font.draw(game.batch, destroyed + "/" + grid.getColorObjectives(index), xPos - Constants.MARGIN / 2 - 3, yPos - Constants.BOX_SIZE);
                 game.batch.end();
             }
         }
@@ -275,18 +260,78 @@ public class SwatchScreen extends InputAdapter implements Screen{
         game.batch.end();
     }
 
-    public void renderWin(int time, int state) {
+    public void renderWin(int state) {
         game.batch.begin();
-        if (state == 0) {
-            game.batch.draw(winCard, 0, Constants.BOTTOM_PADDING);
+        switch (state) {
+            case 0:
+                game.batch.draw(winCard, 0, Constants.BOTTOM_PADDING);
+                break;
+            case 1:
+                //enter
+                transitiontime++;
+                if (transitiontime == 1) {
+                    if (game.isSound()) {
+                        winSound.play();
+                    }
+                }
+                System.out.println(transitiontime);
+                game.batch.draw(winCard, 0, Constants.BOTTOM_PADDING + Swatch.worldHeight - transitiontime * 35);
+                System.out.println("entered lose");
+                if (transitiontime > 30) {
+                    enter = false;
+                    transitiontime = 0;
+                }
+                break;
+            case 2:
+                //exit
+                transitiontime++;
+                game.batch.draw(winCard, 0, Constants.BOTTOM_PADDING + transitiontime * 35);
+                System.out.println("exited lose");
+                if (transitiontime > 30) {
+                    grid.loadLevel(grid.getLevel() + 1);
+                    gameState = 0;
+                    exit = false;
+                    transitiontime = 0;
+                }
+                break;
         }
         game.batch.end();
     }
 
-    public void renderLose(int time, int state) {
+    public void renderLose(int state) {
         game.batch.begin();
-        if (state == 0) {
-            game.batch.draw(loseCard, 0, Constants.BOTTOM_PADDING);
+        switch (state) {
+            case 0:
+                game.batch.draw(loseCard, 0, Constants.BOTTOM_PADDING);
+                break;
+            case 1:
+                //enter
+                transitiontime++;
+                if (transitiontime == 1) {
+                    if (game.isSound()) {
+                        loseSound.play();
+                    }
+                }
+                System.out.println(transitiontime);
+                game.batch.draw(loseCard, 0, Constants.BOTTOM_PADDING + Swatch.worldHeight - transitiontime * 35);
+                System.out.println("entered lose");
+                if (transitiontime > 30) {
+                    enter = false;
+                    transitiontime = 0;
+                }
+                break;
+            case 2:
+                //exit
+                transitiontime++;
+                game.batch.draw(loseCard, 0, Constants.BOTTOM_PADDING + transitiontime * 35);
+                System.out.println("exited lose");
+                if (transitiontime > 30) {
+                    grid.loadLevel(grid.getLevel());
+                    gameState = 0;
+                    exit = false;
+                    transitiontime = 0;
+                }
+                break;
         }
         game.batch.end();
     }
