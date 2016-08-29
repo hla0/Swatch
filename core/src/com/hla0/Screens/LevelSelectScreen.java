@@ -132,6 +132,8 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
 
     //render level numbers and stars onto squares
     public void renderLevelSelect(int state) {
+        //TODO need to animate the background separately
+
         //need to separate into two loops to put text in box
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 6; j++) {

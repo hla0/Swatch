@@ -150,9 +150,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 }
                 break;
         }
-        System.out.println(gameState);
         if (gameState == 0 && !grid.isAnimating()) {
-            System.out.println("in game");
             if (grid.checkObjectives()) {
                 parseCompleteFile(complete);
                 processStars();
@@ -218,6 +216,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
         int numberObj = 0;
         int colorNum = 0;
         int[] obj = new int[Constants.NUMBER_COLORS];
+        //assume obj do not go above 7
         for (int i = 0; i < Constants.NUMBER_COLORS && numberObj < 7; i++) {
             if (grid.getColorObjectives(i) > 0) {
                 obj[numberObj] = i;
@@ -225,31 +224,62 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 colorNum++;
             }
         }
-        //assume obj do not go above 7
-        for (int i = 0; i < Constants.NUMBER_COLORS && numberObj < 7; i++) {
+        for (int i = 0; i < Constants.NUMBER_COLORS + 1 && numberObj < 7; i++) {
             if (grid.getAnchorObjectives(i) > 0) {
+                System.out.println(i);
                 obj[numberObj] = i;
                 numberObj++;
             }
         }
-        //TODO check other int[] array for objectives and add into numberObj such as anchor
+        font.setColor(Color.WHITE);
         for (int i = 0; i < numberObj; i++) {
             int index = obj[i];
+            int xPos = i * Swatch.worldWidth / numberObj + Constants.MARGIN + Swatch.worldWidth / numberObj / numberObj;
+            int yPos = Swatch.worldHeight - Constants.BOX_SIZE * 4;
             if (i < colorNum) {
                 game.renderer.begin(ShapeRenderer.ShapeType.Filled);
                 game.renderer.setColor(Square.getColor(index));
-                int xPos = i * Swatch.worldWidth / numberObj + Constants.MARGIN + Swatch.worldWidth / numberObj / numberObj;
-                int yPos = Swatch.worldHeight - Constants.BOX_SIZE * 4;
                 game.renderer.rect(xPos, yPos, Constants.MARGIN, Constants.MARGIN);
-                font.getData().setScale(2, 2);
+                game.renderer.end();
+                game.batch.begin();
+
                 int destroyed = grid.getColorDestroyed(index);
                 if (destroyed > grid.getColorObjectives(index)) {
                     destroyed = grid.getColorObjectives(index);
                 }
-                game.renderer.end();
-                game.batch.begin();
+                font.getData().setScale(2, 2);
                 font.draw(game.batch, destroyed + "/" + grid.getColorObjectives(index), xPos - Constants.MARGIN / 2 - 3, yPos - Constants.BOX_SIZE);
                 game.batch.end();
+            }
+            else {
+                if (index == 8) {
+                    game.renderer.begin(ShapeRenderer.ShapeType.Line);
+                    game.renderer.setColor(Color.WHITE);
+                    game.renderer.ellipse(xPos, yPos, Constants.MARGIN, Constants.MARGIN);
+                    game.renderer.end();
+                    game.batch.begin();
+                    int destroyed = grid.getTotalAnchorDestroyed();
+                    if (destroyed > grid.getAnchorObjectives(index)) {
+                        destroyed =  grid.getTotalAnchorDestroyed();
+                    }
+                    font.getData().setScale(2, 2);
+                    font.draw(game.batch, destroyed + "/" + grid.getAnchorObjectives(index), xPos - Constants.MARGIN / 2 - 3, yPos - Constants.BOX_SIZE);
+                    game.batch.end();
+                }
+                else {
+                    game.renderer.begin(ShapeRenderer.ShapeType.Filled);
+                    game.renderer.setColor(Square.getColor(index));
+                    game.renderer.ellipse(xPos, yPos, Constants.MARGIN, Constants.MARGIN);
+                    game.renderer.end();
+                    game.batch.begin();
+                    int destroyed = grid.getAnchorDestroyed(index);
+                    if (destroyed > grid.getAnchorObjectives(index)) {
+                        destroyed = grid.getAnchorDestroyed(index);
+                    }
+                    font.getData().setScale(2, 2);
+                    font.draw(game.batch, destroyed + "/" + grid.getAnchorObjectives(index), xPos - Constants.MARGIN / 2 - 3, yPos - Constants.BOX_SIZE);
+                    game.batch.end();
+                }
             }
         }
 

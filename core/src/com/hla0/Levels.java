@@ -46,7 +46,7 @@ public class Levels {
         if (level == 0) {
             return anchorObjectives;
         }
-        if (level < Constants.ANCHOR_LEVEL) {
+        if (level > Constants.ANCHOR_LEVEL) {
             //any color
             anchorObjectives[Constants.NUMBER_COLORS] = 5;
             for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
