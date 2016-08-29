@@ -530,24 +530,23 @@ public class Grid {
                     if (!checkFail()) {
                         //add the current score to the new square when creating new squares
                         if (s.getHorizontalMatch() >= 6 || s.getVerticalMatch() >= 6) {
-                            squares[i][j].addScore(1000);
+                            squares[i][j].addScore(2500);
                         }
                         else if (s.getHorizontalMatch() >= 5 || s.getVerticalMatch() >= 5) {
-                            squares[i][j].addScore(600);
+                            squares[i][j].addScore(1500);
                         }
                         else if (s.getHorizontalMatch() >= 3 && s.getVerticalMatch() >= 3) {
-                            squares[i][j].addScore(300);
+                            squares[i][j].addScore(800);
                         }
                         else if (s.getHorizontalMatch() >= 4 || s.getVerticalMatch() >= 4) {
-                            squares[i][j].addScore(200);
+                            squares[i][j].addScore(500);
                         }
                         else if (s.getHorizontalMatch() >= 3) {
-                            squares[i][j].addScore(-(s.getHorizontalMatch() - 6) * 100);
+                            squares[i][j].addScore(300);
                         }
                         else if (s.getVerticalMatch() >= 3) {
-                            squares[i][j].addScore(-(s.getVerticalMatch() - 6) * 100);
+                            squares[i][j].addScore(300);
                         }
-
                     }
 
                     if ((s.getHorizontalMatch() >= 3 || s.getVerticalMatch() >= 3)) {
@@ -565,16 +564,18 @@ public class Grid {
                 int maxHorizontal = 0;
                 int index = 0;
                 for (int i = 0; i < Constants.GRID_SIZE; i++) {
-                    if (squares[i][j] != null) {
-                        if (squares[i][j].getHorizontalMatch() > maxHorizontal) {
+                    Square s = squares[i][j];
+                    if (s != null && s.getType() != 1) {
+                        if (s.getHorizontalMatch() > maxHorizontal) {
                             maxHorizontal = squares[i][j].getHorizontalMatch();
                             index = i;
                         }
                     }
                 }
                 for (int i = 0; i < Constants.GRID_SIZE; i++) {
-                    if (squares[i][j] != null) {
-                        int h = squares[i][j].getHorizontalMatch();
+                    Square s = squares[i][j];
+                    if (s != null && s.getType() != 1) {
+                        int h = s.getHorizontalMatch();
                         if (h >= 3 && h < maxHorizontal && index != i) {
                             squares[i][j].setHorizontalMatch(3);
                         }
@@ -586,18 +587,20 @@ public class Grid {
             int maxVertical = 0;
             int index = 0;
             for (int j = 0; j < Constants.GRID_SIZE; j++) {
-                if (squares[i][j] != null) {
-                    if (squares[i][j].getVerticalMatch() > maxVertical) {
-                        maxVertical = squares[i][j].getVerticalMatch();
+                Square s = squares[i][j];
+                if (s != null && s.getType() != 1) {
+                    if (s.getVerticalMatch() > maxVertical) {
+                        maxVertical = s.getVerticalMatch();
                         index = i;
                     }
                 }
             }
             for (int j = 0; j < Constants.GRID_SIZE; j++) {
-                if (squares[i][j] != null) {
-                    int v = squares[i][j].getVerticalMatch();
+                Square s = squares[i][j];
+                if (s != null && s.getType() != 1) {
+                    int v = s.getVerticalMatch();
                     if (v >= 3 &&  v < maxVertical && index != i) {
-                        squares[i][j].setHorizontalMatch(3);
+                        squares[i][j].setVerticalMatch(3);
                     }
                 }
             }
