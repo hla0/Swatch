@@ -31,6 +31,7 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
     String levelStars;
     boolean enter;
     boolean exit;
+    int transitionTime;
     Sound buttonPress;
     Vector2[] positions;
     Vector2[] size;
@@ -113,32 +114,57 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
     public void render() {
         if (enter) {
             System.out.println("entering level select");
-            enter = false;
+            renderLevelSelect(1);
         }
         else if (exit) {
             System.out.println("exiting level select");
-            game.setScreen(2,1);
-            exit = false;
+            renderLevelSelect(2);
         }
         else {
             game.renderer.setProjectionMatrix(camera.combined);
             game.batch.setProjectionMatrix(camera.combined);
             game.renderer.begin(ShapeRenderer.ShapeType.Filled);
             game.renderer.end();
-            renderLevelSelect();
+            renderLevelSelect(0);
         }
     }
 
 
     //render level numbers and stars onto squares
-    public void renderLevelSelect() {
+    public void renderLevelSelect(int state) {
         //need to separate into two loops to put text in box
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 6; j++) {
                 int index = i + j * 4;
                 //int numStars = Integer.parseInt(levelStars.substring(index,index+1));
                 int xPos = (i * Constants.BOX_SIZE * 3 + Constants.MARGIN * 2) - Swatch.worldWidth / 2;
-                int yPos = - j * Constants.BOX_SIZE * 3 + Constants.MARGIN * 2 + Swatch.worldHeight / 5;
+                int yPos = 0;
+                switch (state) {
+                    case 0:
+                        yPos = -j * Constants.BOX_SIZE * 3 + Constants.MARGIN * 2 + Swatch.worldHeight / 5;
+                        break;
+                    case 1:
+                        transitionTime++;
+                        yPos = -j * Constants.BOX_SIZE * 3 + Constants.MARGIN * 2 + Swatch.worldHeight / 5 + Swatch.worldHeight - transitionTime;
+                        if (transitionTime > Swatch.worldHeight) {
+                            enter = false;
+                            transitionTime = 0;
+                        }
+                        break;
+                    case 2:
+                        transitionTime++;
+                        yPos = -j * Constants.BOX_SIZE * 3 + Constants.MARGIN * 2 + Swatch.worldHeight / 5 + transitionTime;
+                        if (transitionTime > Swatch.worldHeight) {
+                            transitionTime = 0;
+                            exit = false;
+                            //weird re render of level select after game screen appears
+                            //this fixes it
+                            game.render(2);
+                            game.setScreen(2,1);
+
+                        }
+                        break;
+                }
                 positions[index] = new Vector2(xPos,yPos);
                 size[index] = new Vector2(Constants.BOX_SIZE * 2,Constants.BOX_SIZE * 2);
                 game.batch.begin();
