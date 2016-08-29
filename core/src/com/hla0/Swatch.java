@@ -7,7 +7,7 @@ import com.hla0.Screens.LevelSelectScreen;
 import com.hla0.Screens.SettingsScreen;
 import com.hla0.util.Constants;
 import com.hla0.Screens.SwatchScreen;
-import com.hla0.Screens.SplashScreen;
+import com.hla0.Screens.StartScreen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -22,7 +22,7 @@ public class Swatch extends Game {
 	int parentScreen;
 	int curScreen;
 	private SwatchScreen swatchScreen;
-	private SplashScreen splashScreen;
+	private StartScreen startScreen;
 	private SettingsScreen settingsScreen;
 	private LevelSelectScreen levelSelectScreen;
 	InputMultiplexer im;
@@ -37,12 +37,12 @@ public class Swatch extends Game {
 		batch = new SpriteBatch();
 		renderer = new ShapeRenderer();
 		swatchScreen = new SwatchScreen(this);
-		splashScreen = new SplashScreen(this);
+		startScreen = new StartScreen(this);
 		settingsScreen = new SettingsScreen(this);
 		levelSelectScreen = new LevelSelectScreen(this);
 
 		im = new InputMultiplexer();
-		im.addProcessor(splashScreen);
+		im.addProcessor(startScreen);
 		im.addProcessor(levelSelectScreen);
 		im.addProcessor(swatchScreen);
 		im.addProcessor(settingsScreen);
@@ -66,7 +66,7 @@ public class Swatch extends Game {
 					menu.play();
 					menu.setLooping(true);
 				}
-				setScreen(splashScreen);
+				setScreen(startScreen);
 				break;
 			case 1:
 				if (isMusic()) {
@@ -157,7 +157,7 @@ public class Swatch extends Game {
 	public void render(int i) {
 		switch (i) {
 			case 0:
-				splashScreen.render();
+				startScreen.render();
 				break;
 			case 1:
 				levelSelectScreen.render();

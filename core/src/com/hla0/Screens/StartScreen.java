@@ -17,7 +17,7 @@ import com.hla0.Square;
 import com.hla0.Swatch;
 import com.hla0.util.Constants;
 
-public class SplashScreen extends InputAdapter implements Screen{
+public class StartScreen extends InputAdapter implements Screen{
     private Swatch game;
     private Texture texture;
     private Viewport viewport;
@@ -32,7 +32,7 @@ public class SplashScreen extends InputAdapter implements Screen{
     Sound buttonPress;
     boolean startPressed;
     boolean settingsPressed;
-    public SplashScreen (Swatch g) {
+    public StartScreen (Swatch g) {
         startPressed = false;
         settingsPressed = false;
         time = 0;
@@ -156,20 +156,20 @@ public class SplashScreen extends InputAdapter implements Screen{
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (game.getCurScreen() == 0) {
-            splashTouch(viewport.unproject(new Vector2(screenX,screenY)),true);
+            startTouch(viewport.unproject(new Vector2(screenX,screenY)),true);
             return true;
         }
         return false;
     }
 
-    public boolean splashTouch(Vector2 pos, boolean down) {
+    public boolean startTouch(Vector2 pos, boolean down) {
         //choose levelSelect
         //switchScreen(1);
         //TODO choose mode
         //switchScreen(2);
         //choose settings
         //temporary
-       // -Constants.BOX_SIZE * 4 / 2,-Constants.BOX_SIZE * 3 - texture.getHeight(),Constants.BOX_SIZE * 4, Constants.BOX_SIZE * 3 / 2
+        // -Constants.BOX_SIZE * 4 / 2,-Constants.BOX_SIZE * 3 - texture.getHeight(),Constants.BOX_SIZE * 4, Constants.BOX_SIZE * 3 / 2
         //System.out.println("in box");
         //System.out.println(pos.x + ", " + pos.y);
         if (pos.y > -390 && pos.y < -390 + Constants.BOX_SIZE * 3 / 2) {
@@ -184,7 +184,7 @@ public class SplashScreen extends InputAdapter implements Screen{
             }
         } else {
             //exit = true;
-           // settingsPressed = true;
+            // settingsPressed = true;
             System.out.println("settings");
             if (game.isSound()) {
                 buttonPress.play();
