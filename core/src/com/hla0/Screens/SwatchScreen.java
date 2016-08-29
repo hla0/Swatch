@@ -286,7 +286,9 @@ public class SwatchScreen extends InputAdapter implements Screen{
 
         game.batch.begin();
         //score
-        font.draw(game.batch,"Moves: " + grid.getMoves(), Constants.MARGIN,Swatch.worldHeight - Constants.BOX_SIZE * 2);
+        if (grid.getMoves() >= 0) {
+            font.draw(game.batch, "Moves: " + grid.getMoves(), Constants.MARGIN, Swatch.worldHeight - Constants.BOX_SIZE * 2);
+        }
         font.getData().setScale(3,3);
         font.draw(game.batch,leadingZeros(grid.getScore()),200,200);
         game.batch.end();

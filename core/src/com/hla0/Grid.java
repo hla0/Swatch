@@ -524,7 +524,6 @@ public class Grid {
         flattenMatches();
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             for (int j = 0; j < Constants.GRID_SIZE; j++) {
-
                 Square s = squares[i][j];
                 if (s != null && s.getType() != 1) {
                     if (!checkFail()) {
@@ -558,7 +557,7 @@ public class Grid {
             }
         }
     }
-
+    //TODO use non-anchor max to fix 2 anchor highest match bug
     public void flattenMatches() {
         for (int j = 0; j < Constants.GRID_SIZE; j++) {
                 int maxHorizontal = 0;
