@@ -339,7 +339,7 @@ public class Grid {
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             //TODO count number of matches in each method to calculate combo
             if (scanHorizontal(i)) {
-                //temporary
+                //temporary does not work in all cases
                 combo++;
                 match = true;
                 System.out.println("Found horizontal match on row " + i);
@@ -361,8 +361,10 @@ public class Grid {
         boolean match = false;
         Square left1 = null;
         Square left2 = null;
+        Square left3 = null;
         Square right1 = null;
         Square right2 = null;
+        Square right3 = null;
 
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             Square curSquare = squares[i][row];
@@ -370,11 +372,17 @@ public class Grid {
                 int count = 1;
                 int curColor = curSquare.getColorNum();
                 if (curColor >= 0) {
+                    if (i - 3 >= 0) {
+                        left3 = squares[i - 3][row];
+                    }
                     if (i - 2 >= 0) {
                         left2 = squares[i - 2][row];
                     }
                     if (i - 1 >= 0) {
                         left1 = squares[i - 1][row];
+                    }
+                    if (i + 3 < Constants.GRID_SIZE) {
+                        right3 = squares[i + 3][row];
                     }
                     if (i + 2 < Constants.GRID_SIZE) {
                         right2 = squares[i + 2][row];
@@ -386,12 +394,18 @@ public class Grid {
                         count++;
                         if (left2 != null && left2.getColorNum() == curColor) {
                             count++;
+                            if (left3 != null && left3.getColorNum() == curColor) {
+                                count++;
+                            }
                         }
                     }
                     if (right1 != null && right1.getColorNum() == curColor) {
                         count++;
                         if (right2 != null && right2.getColorNum() == curColor) {
                             count++;
+                            if (right3 != null && right3.getColorNum() == curColor) {
+                                count++;
+                            }
                         }
                     }
                     if (count >= 3) {
@@ -414,8 +428,10 @@ public class Grid {
         boolean match = false;
         Square up1 = null;
         Square up2 = null;
+        Square up3 = null;
         Square down1 = null;
         Square down2 = null;
+        Square down3 = null;
 
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             Square curSquare = squares[col][i];
@@ -423,11 +439,17 @@ public class Grid {
                 int count = 1;
                 int curColor = curSquare.getColorNum();
                 if (curColor >= 0) {
+                    if (i + 3 < Constants.GRID_SIZE) {
+                        up3 = squares[col][i + 3];
+                    }
                     if (i + 2 < Constants.GRID_SIZE) {
                         up2 = squares[col][i + 2];
                     }
                     if (i + 1 < Constants.GRID_SIZE) {
                         up1 = squares[col][i + 1];
+                    }
+                    if (i - 3 >= 0) {
+                        down3 = squares[col][i - 3];
                     }
                     if (i - 2 >= 0) {
                         down2 = squares[col][i - 2];
@@ -439,12 +461,18 @@ public class Grid {
                         count++;
                         if (down2 != null && down2.getColorNum() == curColor) {
                             count++;
+                            if (down3 != null && down3.getColorNum() == curColor) {
+                                count++;
+                            }
                         }
                     }
                     if (up1 != null && up1.getColorNum() == curColor) {
                         count++;
                         if (up2 != null && up2.getColorNum() == curColor) {
                             count++;
+                            if (up3 != null && up3.getColorNum() == curColor) {
+                                count++;
+                            }
                         }
                     }
                     if (count >= 3) {
@@ -486,7 +514,7 @@ public class Grid {
         return false;
     }
 
-    //TODO if squares have a certain criteria (match horizontal and vertical) match 4 or 5
+    //TODO if squares have a certain criteria (match horizontal and vertical) match 4 or 5 or 6
     public void removeMatches() {
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             for (int j = 0; j < Constants.GRID_SIZE; j++) {
@@ -549,6 +577,7 @@ public class Grid {
             }
             //square is white
             else if (squares[x][y].getColorNum() == 1) {
+                combo++;
                 removeSquare(squares[x][y]);
                 updateColumns();
                 moves--;
