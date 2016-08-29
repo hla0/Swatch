@@ -516,7 +516,12 @@ public class Grid {
     }
 
     //TODO if squares have a certain criteria (match horizontal and vertical) match 4 or 5 or 6
+    //4, horizontal or vertical remove
+    //both horizontal and vertical// diagonal remove
+    //5, remove all of same color
+    //6 remove all squares
     public void removeMatches() {
+        flattenMatches();
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             for (int j = 0; j < Constants.GRID_SIZE; j++) {
 
@@ -524,21 +529,75 @@ public class Grid {
                 if (s != null && s.getType() != 1) {
                     if (!checkFail()) {
                         //add the current score to the new square when creating new squares
-                        if (s.getHorizontalMatch() >= 3) {
+                        if (s.getHorizontalMatch() >= 6 || s.getVerticalMatch() >= 6) {
+                            squares[i][j].addScore(1000);
+                        }
+                        else if (s.getHorizontalMatch() >= 5 || s.getVerticalMatch() >= 5) {
+                            squares[i][j].addScore(600);
+                        }
+                        else if (s.getHorizontalMatch() >= 3 && s.getVerticalMatch() >= 3) {
+                            squares[i][j].addScore(300);
+                        }
+                        else if (s.getHorizontalMatch() >= 4 || s.getVerticalMatch() >= 4) {
+                            squares[i][j].addScore(200);
+                        }
+                        else if (s.getHorizontalMatch() >= 3) {
                             squares[i][j].addScore(-(s.getHorizontalMatch() - 6) * 100);
                         }
                         else if (s.getVerticalMatch() >= 3) {
                             squares[i][j].addScore(-(s.getVerticalMatch() - 6) * 100);
                         }
-                        else if (s.getHorizontalMatch() >= 3 && s.getVerticalMatch() >= 3) {
-                            squares[i][j].addScore(300);
-                        }
+
                     }
 
                     if ((s.getHorizontalMatch() >= 3 || s.getVerticalMatch() >= 3)) {
                         if (squares[i][j].getType() == 0) {
                             removeSquare(squares[i][j]);
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    public void flattenMatches() {
+        for (int j = 0; j < Constants.GRID_SIZE; j++) {
+                int maxHorizontal = 0;
+                int index = 0;
+                for (int i = 0; i < Constants.GRID_SIZE; i++) {
+                    if (squares[i][j] != null) {
+                        if (squares[i][j].getHorizontalMatch() > maxHorizontal) {
+                            maxHorizontal = squares[i][j].getHorizontalMatch();
+                            index = i;
+                        }
+                    }
+                }
+                for (int i = 0; i < Constants.GRID_SIZE; i++) {
+                    if (squares[i][j] != null) {
+                        int h = squares[i][j].getHorizontalMatch();
+                        if (h >= 3 && h < maxHorizontal && index != i) {
+                            squares[i][j].setHorizontalMatch(3);
+                        }
+                    }
+                }
+
+        }
+        for (int i = 0; i < Constants.GRID_SIZE; i++) {
+            int maxVertical = 0;
+            int index = 0;
+            for (int j = 0; j < Constants.GRID_SIZE; j++) {
+                if (squares[i][j] != null) {
+                    if (squares[i][j].getVerticalMatch() > maxVertical) {
+                        maxVertical = squares[i][j].getVerticalMatch();
+                        index = i;
+                    }
+                }
+            }
+            for (int j = 0; j < Constants.GRID_SIZE; j++) {
+                if (squares[i][j] != null) {
+                    int v = squares[i][j].getVerticalMatch();
+                    if (v >= 3 &&  v < maxVertical && index != i) {
+                        squares[i][j].setHorizontalMatch(3);
                     }
                 }
             }
@@ -688,7 +747,7 @@ public class Grid {
         }
         if (animatedScore < score) {
             if (moves > 0) {
-                animatedScore += 51;
+                animatedScore += 251;
             } else {
                 animatedScore += 451;
             }
