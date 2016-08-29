@@ -82,8 +82,8 @@ public class Swatch extends Game {
 				//might have music with swatchscreen itself
 				if (isMusic()) {
 					menu.stop();
-					swatch.play();
-					swatch.setLooping(true);
+					//swatch.play();
+					//swatch.setLooping(true);
 				}
 				setScreen(swatchScreen);
 				break;

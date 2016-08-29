@@ -25,6 +25,7 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
     BitmapFont font;
     Swatch game;
     Texture levelButton;
+    Texture lockedLevelButton;
     int levelsComplete;
     int nextScreen;
     String levelStars;
@@ -52,6 +53,7 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
         buttonPress = Gdx.audio.newSound(Gdx.files.internal("select.wav"));
         nextScreen = -1;
         levelButton = new Texture("level_button.png");
+        lockedLevelButton = new Texture("locked_level_button.png");
     }
 
     private void parseCompleteFile(FileHandle complete) {
@@ -135,36 +137,25 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
             for (int j = 0; j < 6; j++) {
                 int index = i + j * 4;
                 //int numStars = Integer.parseInt(levelStars.substring(index,index+1));
-                game.renderer.begin(ShapeRenderer.ShapeType.Filled);
-                if (index + 1 > levelsComplete + 1) {
-                    game.renderer.setColor(Color.BLACK);
-                }
-                else {
-                    game.renderer.setColor(Color.WHITE);
-                }
                 int xPos = (i * Constants.BOX_SIZE * 3 + Constants.MARGIN * 2) - Swatch.worldWidth / 2;
                 int yPos = - j * Constants.BOX_SIZE * 3 + Constants.MARGIN * 2 + Swatch.worldHeight / 5;
                 positions[index] = new Vector2(xPos,yPos);
                 size[index] = new Vector2(Constants.BOX_SIZE * 2,Constants.BOX_SIZE * 2);
-                game.renderer.rect(xPos,yPos, Constants.BOX_SIZE * 2,Constants.BOX_SIZE * 2);
-                game.renderer.end();
                 game.batch.begin();
+                CharSequence curLevel = "" + (index + 1);
+                font.setColor(Color.BLACK);
                 if (index + 1 > levelsComplete + 1) {
-                    game.renderer.setColor(Color.BLACK);
-                    font.setColor(Color.WHITE);
+                    game.batch.draw(lockedLevelButton, xPos, yPos);
                 }
                 else {
-                    game.renderer.setColor(Color.WHITE);
-                    font.setColor(Color.BLACK);
+                    game.batch.draw(levelButton,xPos,yPos);
                 }
-                CharSequence curLevel = "" + (index + 1);
-                game.batch.draw(levelButton,xPos,yPos);
                 font.getData().setScale(2,2);
                 if (index + 1 >= 10) {
-                    font.draw(game.batch,curLevel,xPos + Constants.BOX_SIZE - 15,yPos + Constants.BOX_SIZE + 10);
+                    font.draw(game.batch,curLevel,xPos + Constants.BOX_SIZE - 15,yPos + Constants.BOX_SIZE + 12);
                 }
                 else {
-                    font.draw(game.batch, curLevel, xPos + Constants.BOX_SIZE - 5, yPos + Constants.BOX_SIZE + 10);
+                    font.draw(game.batch, curLevel, xPos + Constants.BOX_SIZE - 5, yPos + Constants.BOX_SIZE + 12);
                 }
                 game.batch.end();
             }
