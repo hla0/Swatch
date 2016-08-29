@@ -460,6 +460,7 @@ public class Grid {
                     j++;
                 }
                 if (squares[i][j].getType() == 1 && j < Constants.GRID_SIZE) {
+                    colorDestroyed[squares[i][j].getColorNum()]++;
                     totalAnchorDestroyed++;
                     anchorDestroyed[squares[i][j].getColorNum()]++;
                     columnChanged[i] = true;

@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.hla0.Swatch;
 import com.hla0.util.Constants;
@@ -29,6 +30,8 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
     boolean enter;
     boolean exit;
     Sound buttonPress;
+    Vector2[] positions;
+    Vector2[] size;
     public LevelSelectScreen (Swatch g) {
         game = g;
         camera = new OrthographicCamera();
@@ -42,6 +45,8 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
         System.out.println(levelStars);
         enter = true;
         exit = false;
+        positions = new Vector2[Constants.MAX_LEVEL];
+        size = new Vector2[Constants.MAX_LEVEL];
         //find a better button sound
         buttonPress = Gdx.audio.newSound(Gdx.files.internal("select.wav"));
         nextScreen = -1;
@@ -137,6 +142,8 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
                 }
                 int xPos = (i * Constants.BOX_SIZE * 3 + Constants.MARGIN * 2) - Swatch.worldWidth / 2;
                 int yPos = j * Constants.BOX_SIZE * 3 + Constants.MARGIN * 2 - Swatch.worldHeight / 4;
+                positions[index] = new Vector2(xPos,yPos);
+                size[index] = new Vector2(Constants.BOX_SIZE * 2,Constants.BOX_SIZE * 2);
                 game.renderer.rect(xPos,yPos, Constants.BOX_SIZE * 2,Constants.BOX_SIZE * 2);
                 game.renderer.end();
                 game.batch.begin();
@@ -158,17 +165,39 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (game.getCurScreen() == 1) {
-            exit = true;
-            //if touched level
-            if (game.isSound()) {
-                buttonPress.play();
+            Vector2 pos = viewport.unproject(new Vector2(screenX,screenY));
+            System.out.println(pos.x + ", " + pos.y);
+            int level = levelPressed((int)pos.x,(int)pos.y);
+            System.out.println("Pressed " + level);
+            if (level > 0 && level <= levelsComplete + 1) {
+                exit = true;
+                if (game.isSound()) {
+                    buttonPress.play();
+                }
+                nextScreen = 2;
+                game.loadLevel(level);
             }
-            nextScreen = 2;
+            else {
+                //determine if another button was pressed or check that first
+            }
             return true;
         }
         else {
             return false;
         }
+    }
+
+    public int levelPressed(int screenX, int screenY) {
+        for (int i = 0; i < Constants.MAX_LEVEL; i++) {
+            Vector2 pos = positions[i];
+            Vector2 s = size[i];
+            if (screenX > pos.x && screenX < pos.x + s.x) {
+                if (screenY > pos.y && screenY < pos.y + s.y) {
+                    return i + 1;
+                }
+            }
+        }
+        return 0;
     }
 
 

@@ -60,6 +60,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
     public void show() {
         enter = true; exit = false;
         gameState = 0;
+        parseCompleteFile(complete);
     }
 
     @Override
@@ -155,7 +156,6 @@ public class SwatchScreen extends InputAdapter implements Screen{
             if (grid.checkObjectives()) {
                 if (grid.getLevel() > levelsComplete) {
                     levelsComplete = grid.getLevel();
-                    complete = Gdx.files.local("levelsComplete.txt");
                     complete.writeString("" + levelsComplete, false);
                 }
                 processStars();
@@ -171,6 +171,19 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 grid.removeSquares();
                 enter = true;
             }
+        }
+    }
+
+    private void parseCompleteFile(FileHandle complete) {
+        complete = Gdx.files.local("levelsComplete.txt");
+        if (Gdx.files.local("levelsComplete.txt").exists()) {
+            String data = complete.readString();
+            System.out.println("File data: " + data);
+            levelsComplete = Integer.parseInt(data);
+        }
+        else {
+            levelsComplete = 0;
+            complete.writeString("0",false);
         }
     }
 
@@ -339,4 +352,9 @@ public class SwatchScreen extends InputAdapter implements Screen{
         return new Vector2((v1.x - Constants.LEFT_PADDING - (Constants.MARGIN / 2)) / (Constants.BOX_SIZE + Constants.MARGIN),
                 (v1.y - Constants.BOTTOM_PADDING - (Constants.MARGIN / 2)) / (Constants.BOX_SIZE + Constants.MARGIN));
     }
+
+    public void loadLevel(int level) {
+        grid.loadLevel(level);
+    }
+
 }

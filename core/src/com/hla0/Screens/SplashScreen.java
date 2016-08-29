@@ -171,6 +171,7 @@ public class SplashScreen extends InputAdapter implements Screen{
         //temporary
        // -Constants.BOX_SIZE * 4 / 2,-Constants.BOX_SIZE * 3 - texture.getHeight(),Constants.BOX_SIZE * 4, Constants.BOX_SIZE * 3 / 2
         //System.out.println("in box");
+        //System.out.println(pos.x + ", " + pos.y);
         if (pos.y > -390 && pos.y < -390 + Constants.BOX_SIZE * 3 / 2) {
             if (pos.x > -90 && pos.x < 90) {
                 System.out.println("in box");
@@ -182,13 +183,14 @@ public class SplashScreen extends InputAdapter implements Screen{
                 exit = true;
             }
         } else {
-            exit = true;
-            settingsPressed = true;
+            //exit = true;
+           // settingsPressed = true;
             System.out.println("settings");
             if (game.isSound()) {
                 buttonPress.play();
             }
-            nextScreen = 3;
+            //TODO readd settings screen when everything else is done
+            //nextScreen = 3;
         }
 
         return true;
