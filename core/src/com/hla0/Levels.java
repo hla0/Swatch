@@ -24,16 +24,16 @@ public class Levels {
             return colorObjectives;
         }
         if (level < 10) {
-            for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
+            for (int i = 2; i < Constants.NUMBER_COLORS; i++) {
                 if (i > 1) {
-                    colorObjectives[i] = 5;
+                    colorObjectives[i] = 10;
                 }
             }
         }
         else {
-            for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
+            for (int i = 2; i < Constants.NUMBER_COLORS; i++) {
                 if (i > 1) {
-                    colorObjectives[i] = 7;
+                    colorObjectives[i] = 13;
                 }
             }
         }
@@ -47,7 +47,9 @@ public class Levels {
             return anchorObjectives;
         }
         if (level < Constants.ANCHOR_LEVEL) {
-            for (int i = 0; i < anchorObjectives.length; i++) {
+            //any color
+            anchorObjectives[Constants.NUMBER_COLORS] = 5;
+            for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
                 anchorObjectives[i] = 0;
             }
         }

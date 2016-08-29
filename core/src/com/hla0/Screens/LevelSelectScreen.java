@@ -24,6 +24,7 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
     FitViewport viewport;
     BitmapFont font;
     Swatch game;
+    Texture levelButton;
     int levelsComplete;
     int nextScreen;
     String levelStars;
@@ -50,6 +51,7 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
         //find a better button sound
         buttonPress = Gdx.audio.newSound(Gdx.files.internal("select.wav"));
         nextScreen = -1;
+        levelButton = new Texture("level_button.png");
     }
 
     private void parseCompleteFile(FileHandle complete) {
@@ -141,7 +143,7 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
                     game.renderer.setColor(Color.WHITE);
                 }
                 int xPos = (i * Constants.BOX_SIZE * 3 + Constants.MARGIN * 2) - Swatch.worldWidth / 2;
-                int yPos = j * Constants.BOX_SIZE * 3 + Constants.MARGIN * 2 - Swatch.worldHeight / 4;
+                int yPos = - j * Constants.BOX_SIZE * 3 + Constants.MARGIN * 2 + Swatch.worldHeight / 5;
                 positions[index] = new Vector2(xPos,yPos);
                 size[index] = new Vector2(Constants.BOX_SIZE * 2,Constants.BOX_SIZE * 2);
                 game.renderer.rect(xPos,yPos, Constants.BOX_SIZE * 2,Constants.BOX_SIZE * 2);
@@ -156,7 +158,14 @@ public class LevelSelectScreen extends InputAdapter implements Screen{
                     font.setColor(Color.BLACK);
                 }
                 CharSequence curLevel = "" + (index + 1);
-                font.draw(game.batch,curLevel,xPos,yPos);
+                game.batch.draw(levelButton,xPos,yPos);
+                font.getData().setScale(2,2);
+                if (index + 1 >= 10) {
+                    font.draw(game.batch,curLevel,xPos + Constants.BOX_SIZE - 15,yPos + Constants.BOX_SIZE + 10);
+                }
+                else {
+                    font.draw(game.batch, curLevel, xPos + Constants.BOX_SIZE - 5, yPos + Constants.BOX_SIZE + 10);
+                }
                 game.batch.end();
             }
         }

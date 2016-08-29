@@ -22,6 +22,8 @@ import com.hla0.util.Constants;
 
 public class SwatchScreen extends InputAdapter implements Screen{
     public static final String TAG = SwatchScreen.class.getName();
+    private Texture winCard;
+    private Texture loseCard;
     Grid grid;
     OrthographicCamera camera;
     FitViewport viewport;
@@ -36,8 +38,9 @@ public class SwatchScreen extends InputAdapter implements Screen{
     //game 0, settings 1, win 2, lose 3
     int gameState;
     Swatch game;
-    Sound win;
-    Sound lose;
+    Sound winSound;
+    Sound loseSound;
+    int transitiontime;
 
     public SwatchScreen(Swatch g) {
         game = g;
@@ -52,8 +55,11 @@ public class SwatchScreen extends InputAdapter implements Screen{
         gameState = 0;
         enter = true;
         exit = false;
-        win = Gdx.audio.newSound(Gdx.files.internal("win.mp3"));
-        lose = Gdx.audio.newSound(Gdx.files.internal("lose.wav"));
+        winCard = new Texture("win.png");
+        loseCard = new Texture("lose.png");
+        winSound = Gdx.audio.newSound(Gdx.files.internal("win.mp3"));
+        loseSound = Gdx.audio.newSound(Gdx.files.internal("lose.wav"));
+        transitiontime = 0;
     }
 
     @Override
@@ -110,44 +116,53 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 }
                 break;
             case 2:
-                //renderWin();
+
                 if (enter) {
+                    transitiontime++;
                     if (game.isSound()) {
-                        win.play();
+                        winSound.play();
                     }
                     System.out.println("entered win");
                     enter = false;
+                    renderWin(transitiontime,1);
                 }
                 else if (exit) {
+                    transitiontime++;
                     System.out.println("exited win");
                     //might need to switch to level select or splash or replay
                     grid.loadLevel(grid.getLevel() + 1);
                     gameState = 0;
                     exit = false;
+                    renderWin(transitiontime,2);
                 }
                 else {
-
+                    renderWin(transitiontime,0);
                 }
                 break;
             case 3:
                 //renderLose();
                 if (enter) {
+                    transitiontime++;
                     System.out.println("entered lose");
                     if (game.isSound()) {
-                        lose.play();
+                        loseSound.play();
                     }
                     enter = false;
+                    renderLose(transitiontime,1);
                 }
                 else if (exit) {
+                    transitiontime++;
                     System.out.println("exited lose");
                     exit = false;
                     //temporary
                     //might need to switch to level select or splash
                     grid.loadLevel(grid.getLevel());
                     gameState = 0;
+                    renderLose(transitiontime,2);
                 }
                 else {
-
+                    transitiontime = 0;
+                    renderLose(transitiontime,0);
                 }
                 break;
 
@@ -216,38 +231,41 @@ public class SwatchScreen extends InputAdapter implements Screen{
         //objectives
         //TODO add moves left and menu button
         int numberObj = 0;
-        int[] colorsObj = new int[Constants.NUMBER_COLORS];
-        int[] anchorObj = new int[Constants.NUMBER_COLORS * 2];
-        for (int i = 0; i < Constants.NUMBER_COLORS; i++) {
+        int colorNum = 0;
+        int[] obj = new int[Constants.NUMBER_COLORS];
+        for (int i = 0; i < Constants.NUMBER_COLORS && numberObj < 7; i++) {
             if (grid.getColorObjectives(i) > 0) {
-                colorsObj[numberObj] = i;
+                obj[numberObj] = i;
                 numberObj++;
+                colorNum++;
             }
         }
-        //assume objectives do not go above 6
-        for (int i = 0; i < Constants.NUMBER_COLORS + 1; i++) {
+        //assume obj do not go above 6
+        for (int i = 0; i < Constants.NUMBER_COLORS && numberObj < 7; i++) {
             if (grid.getAnchorObjectives(i) > 0) {
-                anchorObj[numberObj] = i;
+                obj[numberObj] = i;
                 numberObj++;
             }
         }
         //TODO check other int[] array for objectives and add into numberObj such as anchor
         for (int i = 0; i < numberObj; i++) {
-            int index = colorsObj[i];
-            game.renderer.begin(ShapeRenderer.ShapeType.Filled);
-            game.renderer.setColor(Square.getColor(index));
-            int xPos = i * Swatch.worldWidth/numberObj + Constants.MARGIN + Swatch.worldWidth/numberObj/numberObj;
-            int yPos = Swatch.worldHeight - Constants.BOX_SIZE * 4;
-            game.renderer.rect(xPos, yPos, Constants.MARGIN, Constants.MARGIN);
-            font.getData().setScale(2,2);
-            int destroyed = grid.getColorDestroyed(index);
-            if (destroyed > grid.getColorObjectives(index)) {
-                destroyed = grid.getColorObjectives(index);
+            int index = obj[i];
+            if (i < colorNum) {
+                game.renderer.begin(ShapeRenderer.ShapeType.Filled);
+                game.renderer.setColor(Square.getColor(index));
+                int xPos = i * Swatch.worldWidth / numberObj + Constants.MARGIN + Swatch.worldWidth / numberObj / numberObj;
+                int yPos = Swatch.worldHeight - Constants.BOX_SIZE * 4;
+                game.renderer.rect(xPos, yPos, Constants.MARGIN, Constants.MARGIN);
+                font.getData().setScale(2, 2);
+                int destroyed = grid.getColorDestroyed(index);
+                if (destroyed > grid.getColorObjectives(index)) {
+                    destroyed = grid.getColorObjectives(index);
+                }
+                game.renderer.end();
+                game.batch.begin();
+                font.draw(game.batch, destroyed + "/" + grid.getColorObjectives(index), xPos - Constants.MARGIN / 2, yPos - Constants.BOX_SIZE);
+                game.batch.end();
             }
-            game.renderer.end();
-            game.batch.begin();
-            font.draw(game.batch,destroyed + "/" + grid.getColorObjectives(index),xPos - Constants.MARGIN/2,yPos - Constants.BOX_SIZE);
-            game.batch.end();
         }
 
         game.batch.begin();
@@ -257,6 +275,21 @@ public class SwatchScreen extends InputAdapter implements Screen{
         game.batch.end();
     }
 
+    public void renderWin(int time, int state) {
+        game.batch.begin();
+        if (state == 0) {
+            game.batch.draw(winCard, 0, Constants.BOTTOM_PADDING);
+        }
+        game.batch.end();
+    }
+
+    public void renderLose(int time, int state) {
+        game.batch.begin();
+        if (state == 0) {
+            game.batch.draw(loseCard, 0, Constants.BOTTOM_PADDING);
+        }
+        game.batch.end();
+    }
     public CharSequence leadingZeros(int s) {
         CharSequence score = "" + s;
         if (s < 100000) {score = "0" + score;}

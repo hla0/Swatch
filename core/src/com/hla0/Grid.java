@@ -62,7 +62,7 @@ public class Grid {
         animatedScore = 0;
         direction = -1;
         select = Gdx.audio.newSound(Gdx.files.internal("select.wav"));
-        remove = Gdx.audio.newSound(Gdx.files.internal("remove.wav"));
+        remove = Gdx.audio.newSound(Gdx.files.internal("remove.mp3"));
     }
 
     public void loadLevel(int level) {
