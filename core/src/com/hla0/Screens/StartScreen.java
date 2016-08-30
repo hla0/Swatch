@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hla0.Square;
 import com.hla0.Swatch;
@@ -39,7 +40,7 @@ public class StartScreen extends InputAdapter implements Screen{
         game = g;
         camera = new OrthographicCamera();
         texture = new Texture("splash_icon.png");
-        viewport = new FitViewport(Swatch.worldWidth,Swatch.worldHeight,camera);
+        viewport = new StretchViewport(Swatch.worldWidth,Swatch.worldHeight,camera);
         enter = true;
         exit = false;
         //TODO find a better button sound

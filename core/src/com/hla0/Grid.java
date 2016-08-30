@@ -409,7 +409,7 @@ public class Grid {
                             }
                         }
                     }
-                    if (count >= 3) {
+                    if (count >= 3 && squares[i][row].getType() != 1) {
                         squares[i][row].setHorizontalMatch(count);
                         System.out.println(count + "Found horizontal match for " + curSquare.getX() + ", " + curSquare.getY());
                         match = true;
@@ -476,7 +476,7 @@ public class Grid {
                             }
                         }
                     }
-                    if (count >= 3) {
+                    if (count >= 3 && squares[col][i].getType() != 1) {
                         squares[col][i].setVerticalMatch(count);
                         System.out.println(count + "Found vertical match for " + curSquare.getX() + ", " + curSquare.getY());
                         match = true;
