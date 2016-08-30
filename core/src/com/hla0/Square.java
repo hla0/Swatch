@@ -242,14 +242,14 @@ public class Square {
         //render shadow
         if (getColorNum() >= 0 && pos.y < Constants.BOTTOM_PADDING + Constants.MARGIN + (Constants.BOX_SIZE + Constants.MARGIN) * Constants.GRID_SIZE) {
             r.setColor(new Color(Constants.SHADOW_COLOR, Constants.SHADOW_COLOR, Constants.SHADOW_COLOR, 0.5f));
-            if (type == 0) {
+            if (type != 1) {
                 r.rect(pos.x + 2, pos.y - 2, Constants.BOX_SIZE, Constants.BOX_SIZE);
             }
             else if (type == 1) {
                 r.ellipse(pos.x + 2, pos.y - 2, Constants.BOX_SIZE, Constants.BOX_SIZE);
             }
             r.setColor(getColor());
-            if (type == 0) {
+            if (type != 1) {
                 r.rect(pos.x, pos.y, Constants.BOX_SIZE, Constants.BOX_SIZE);
             }
             else if (type == 1) {
@@ -281,14 +281,14 @@ public class Square {
         //render shadow
         if (getColorNum() >= 0) {
             r.setColor(new Color(Constants.SHADOW_COLOR, Constants.SHADOW_COLOR, Constants.SHADOW_COLOR, 0.5f));
-            if (type == 0) {
+            if (type != 1) {
                 r.rect(pos.x + 2, pos.y - 2, width, height);
             }
             else if (type == 1) {
                 r.ellipse(pos.x + 2, pos.y - 2, width, height);
             }
             r.setColor(getColor());
-            if (type == 0) {
+            if (type != 1) {
                 r.rect(pos.x, pos.y, width, height);
             }
             else if (type == 1) {
@@ -320,7 +320,7 @@ public class Square {
                     pos.x += Constants.SWAP_VELOCITY;
                     break;
             }
-        if (type == 0) {
+        if (type != 1) {
             r.rect(pos.x, pos.y, width, height);
         }
         else if (type == 1) {

@@ -138,12 +138,13 @@ public class Grid {
     //deletions (depends on mode) match 3 and explode with white
     //remove the Square from the grid
     public void removeSquare(Square s) {
-        if (s != null) {
-            if (s.getType() != 1) {
-                animating = true;
-                if (!checkFail()) {
-                    s.addScore(100);
-                    score += s.getScore();
+        if (s != null && s.getType() != 1) {
+            animating = true;
+            if (!checkFail()) {
+                s.addScore(50);
+                score += s.getScore();
+                if (s.getType() > 2) {
+                    System.out.println("Special square: " + s.getType());
                 }
                 if (s.getColorNum() >= 0) {
                     columnChanged[s.x] = true;
@@ -490,12 +491,10 @@ public class Grid {
         return match;
     }
 
-    //TODO remove anchors
     public boolean removeAnchors() {
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             int j = 0;
             if (squares[i][j] != null) {
-                System.out.println(j);
                 while (j < Constants.GRID_SIZE && squares[i][j] != null && squares[i][j].getColorNum() < 0) {
                     j++;
                 }
@@ -521,7 +520,7 @@ public class Grid {
     //5, remove all of same color
     //6 remove all squares
     public void removeMatches() {
-        flattenMatches();
+        //flattenMatches();
         for (int i = 0; i < Constants.GRID_SIZE; i++) {
             for (int j = 0; j < Constants.GRID_SIZE; j++) {
                 Square s = squares[i][j];
@@ -530,27 +529,33 @@ public class Grid {
                         //add the current score to the new square when creating new squares
                         if (s.getHorizontalMatch() >= 6 || s.getVerticalMatch() >= 6) {
                             squares[i][j].addScore(2500);
+                            removeSquare(squares[i][j]);
+                            //squares[i][j] = new Square(i,j,s.getColorNum(),5);
                         }
                         else if (s.getHorizontalMatch() >= 5 || s.getVerticalMatch() >= 5) {
                             squares[i][j].addScore(1500);
+                            removeSquare(squares[i][j]);
+                            //squares[i][j] = new Square(i,j,s.getColorNum(),4);
                         }
                         else if (s.getHorizontalMatch() >= 3 && s.getVerticalMatch() >= 3) {
                             squares[i][j].addScore(800);
+                            removeSquare(squares[i][j]);
+                            //squares[i][j] = new Square(i,j,s.getColorNum(),3);
                         }
                         else if (s.getHorizontalMatch() >= 4 || s.getVerticalMatch() >= 4) {
                             squares[i][j].addScore(500);
+                            removeSquare(squares[i][j]);
+                            //squares[i][j] = new Square(i,j,s.getColorNum(),2);
+
                         }
                         else if (s.getHorizontalMatch() >= 3) {
                             squares[i][j].addScore(300);
+                            removeSquare(squares[i][j]);
                         }
                         else if (s.getVerticalMatch() >= 3) {
                             squares[i][j].addScore(300);
-                        }
-                    }
-
-                    if ((s.getHorizontalMatch() >= 3 || s.getVerticalMatch() >= 3)) {
-                        if (squares[i][j].getType() == 0) {
                             removeSquare(squares[i][j]);
+
                         }
                     }
                 }
@@ -575,7 +580,7 @@ public class Grid {
                     Square s = squares[i][j];
                     if (s != null && s.getType() != 1) {
                         int h = s.getHorizontalMatch();
-                        if (h >= 3 && h < maxHorizontal && index != i) {
+                        if (h <= maxHorizontal && index != i) {
                             squares[i][j].setHorizontalMatch(3);
                         }
                     }
@@ -598,7 +603,7 @@ public class Grid {
                 Square s = squares[i][j];
                 if (s != null && s.getType() != 1) {
                     int v = s.getVerticalMatch();
-                    if (v >= 3 &&  v < maxVertical && index != i) {
+                    if (v <= maxVertical && index != i) {
                         squares[i][j].setVerticalMatch(3);
                     }
                 }

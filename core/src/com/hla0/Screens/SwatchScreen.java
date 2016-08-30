@@ -208,7 +208,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
         }
     }
 
-
+    //TODO text needs to be centered below properly for all amounts of numbers
     public void renderGridUI() {
         font.setColor(Color.WHITE);
         //objectives
@@ -216,44 +216,55 @@ public class SwatchScreen extends InputAdapter implements Screen{
         int numberObj = 0;
         int colorNum = 0;
         int[] obj = new int[Constants.NUMBER_COLORS];
-        //assume obj do not go above 7
-        for (int i = 0; i < Constants.NUMBER_COLORS && numberObj < 7; i++) {
+        //assume obj do not go above 6
+        for (int i = 0; i < Constants.NUMBER_COLORS && numberObj < 6; i++) {
             if (grid.getColorObjectives(i) > 0) {
                 obj[numberObj] = i;
                 numberObj++;
                 colorNum++;
             }
         }
-        for (int i = 0; i < Constants.NUMBER_COLORS + 1 && numberObj < 7; i++) {
+        for (int i = 0; i < Constants.NUMBER_COLORS + 1 && numberObj < 6; i++) {
             if (grid.getAnchorObjectives(i) > 0) {
-                System.out.println(i);
                 obj[numberObj] = i;
                 numberObj++;
             }
         }
-        font.setColor(Color.WHITE);
+        font.setColor(Color.BLACK);
         //TODO moves left, settings, maybe level
         for (int i = 0; i < numberObj; i++) {
+            int offset = 0;
             int index = obj[i];
             int xPos = i * Swatch.worldWidth / numberObj + Constants.MARGIN + Swatch.worldWidth / numberObj / numberObj;
             int yPos = Swatch.worldHeight - Constants.BOX_SIZE * 4;
             if (i < colorNum) {
+                if (grid.getColorObjectives(index) < 10) {
+                    //offset += Constants.MARGIN / 2;
+                }
+                if (grid.getColorDestroyed(index) >= 10) {
+                    offset -= Constants.MARGIN / 2;
+                }
                 game.renderer.begin(ShapeRenderer.ShapeType.Filled);
                 game.renderer.setColor(Square.getColor(index));
                 game.renderer.rect(xPos, yPos, Constants.MARGIN, Constants.MARGIN);
                 game.renderer.end();
                 game.batch.begin();
-
                 int destroyed = grid.getColorDestroyed(index);
                 if (destroyed > grid.getColorObjectives(index)) {
                     destroyed = grid.getColorObjectives(index);
                 }
                 font.getData().setScale(2, 2);
-                font.draw(game.batch, destroyed + "/" + grid.getColorObjectives(index), xPos - Constants.MARGIN / 2 - 3, yPos - Constants.BOX_SIZE);
+                font.draw(game.batch, String.format("%d/%d",destroyed,grid.getColorObjectives(index)), xPos - Constants.MARGIN / 2 + offset, yPos - Constants.BOX_SIZE);
                 game.batch.end();
             }
             else {
+                if (grid.getAnchorObjectives(index) < 10) {
+                    //offset += Constants.MARGIN / 2;
+                }
                 if (index == 8) {
+                    if (grid.getTotalAnchorDestroyed() >= 10) {
+                        offset -= Constants.MARGIN / 2;
+                    }
                     game.renderer.begin(ShapeRenderer.ShapeType.Line);
                     game.renderer.setColor(Color.WHITE);
                     game.renderer.ellipse(xPos, yPos, Constants.MARGIN, Constants.MARGIN);
@@ -264,10 +275,13 @@ public class SwatchScreen extends InputAdapter implements Screen{
                         destroyed = grid.getAnchorObjectives(index);
                     }
                     font.getData().setScale(2, 2);
-                    font.draw(game.batch, destroyed + "/" + grid.getAnchorObjectives(index), xPos - Constants.MARGIN / 2 - 3, yPos - Constants.BOX_SIZE);
+                    font.draw(game.batch, String.format("%d/%d",destroyed,grid.getAnchorObjectives(index)), xPos - Constants.MARGIN / 2 + offset, yPos - Constants.BOX_SIZE);
                     game.batch.end();
                 }
                 else {
+                    if (grid.getAnchorDestroyed(index) >= 10) {
+                        offset -= Constants.MARGIN / 2;
+                    }
                     game.renderer.begin(ShapeRenderer.ShapeType.Filled);
                     game.renderer.setColor(Square.getColor(index));
                     game.renderer.ellipse(xPos, yPos, Constants.MARGIN, Constants.MARGIN);
@@ -278,7 +292,7 @@ public class SwatchScreen extends InputAdapter implements Screen{
                         destroyed = grid.getAnchorDestroyed(index);
                     }
                     font.getData().setScale(2, 2);
-                    font.draw(game.batch, destroyed + "/" + grid.getAnchorObjectives(index), xPos - Constants.MARGIN / 2 - 3, yPos - Constants.BOX_SIZE);
+                    font.draw(game.batch, String.format("%d/%d",destroyed,grid.getAnchorObjectives(index)), xPos - Constants.MARGIN / 2 + offset, yPos - Constants.BOX_SIZE);
                     game.batch.end();
                 }
             }
@@ -308,7 +322,6 @@ public class SwatchScreen extends InputAdapter implements Screen{
                         winSound.play();
                     }
                 }
-                System.out.println(transitionTime);
                 game.batch.draw(winCard, 0, Constants.BOTTOM_PADDING + Swatch.worldHeight - transitionTime * 35);
                 System.out.println("entered lose");
                 if (transitionTime > 30) {

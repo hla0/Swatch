@@ -26,7 +26,7 @@ public class Levels {
         if (level < 10) {
             for (int i = 2; i < Constants.NUMBER_COLORS; i++) {
                 if (i > 1) {
-                    colorObjectives[i] = 10;
+                    colorObjectives[i] = i * 2;
                 }
             }
         }
