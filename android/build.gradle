@@ -16,9 +16,17 @@ android {
     }
     defaultConfig {
         applicationId "com.hla0"
-        minSdkVersion 9
+        minSdkVersion 14
         targetSdkVersion 24
     }
+    buildTypes {
+       release {
+           minifyEnabled true
+// use minifyEnabled instead of runProguard if your gradle plugin version is 0.14+
+           proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
+           proguardFile 'proguard-project.txt'
+       }
+   }
     lintOptions { 
         checkReleaseBuilds false
     }
