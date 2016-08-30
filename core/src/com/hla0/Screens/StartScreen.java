@@ -65,10 +65,6 @@ public class StartScreen extends InputAdapter implements Screen{
     @Override
     public void render(float delta) {
         viewport.apply();
-        render();
-    }
-
-    public void render() {
         game.batch.setProjectionMatrix(camera.combined);
         game.renderer.begin(ShapeRenderer.ShapeType.Filled);
         if (enter) {

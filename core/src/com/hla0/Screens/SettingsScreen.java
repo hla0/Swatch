@@ -6,7 +6,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -38,7 +37,12 @@ public class SettingsScreen extends InputAdapter implements Screen {
         buttonPress = Gdx.audio.newSound(Gdx.files.internal("select.wav"));
     }
 
-    public void renderSettings() {
+    @Override public void show() {enter = true; exit = false;buttonPress = Gdx.audio.newSound(Gdx.files.internal("select.wav"));}
+    @Override
+    public void render(float delta) {
+        viewport.apply();
+        game.renderer.setProjectionMatrix(camera.combined);
+        game.batch.setProjectionMatrix(camera.combined);
         if (enter) {
             System.out.println("entering settings");
             enter = false;
@@ -59,20 +63,6 @@ public class SettingsScreen extends InputAdapter implements Screen {
             font.draw(game.batch, "Settings", 0, 0);
             game.batch.end();
         }
-    }
-
-
-    @Override public void show() {enter = true; exit = false;buttonPress = Gdx.audio.newSound(Gdx.files.internal("select.wav"));}
-    @Override
-    public void render(float delta) {
-        render();
-    }
-
-    public void render() {
-        viewport.apply();
-        game.renderer.setProjectionMatrix(camera.combined);
-        game.batch.setProjectionMatrix(camera.combined);
-        renderSettings();
     }
 
     @Override public void resize(int width, int height) {viewport.update(width,height);}

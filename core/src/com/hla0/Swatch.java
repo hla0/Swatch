@@ -155,18 +155,19 @@ public class Swatch extends Game {
 
 	public int getCurScreen() {return curScreen;}
 	public void render(int i) {
+		float delta = Gdx.graphics.getDeltaTime();
 		switch (i) {
 			case 0:
-				startScreen.render();
+				startScreen.render(delta);
 				break;
 			case 1:
-				levelSelectScreen.render();
+				levelSelectScreen.render(delta);
 				break;
 			case 2:
-				swatchScreen.render();
+				swatchScreen.render(delta);
 				break;
 			case 3:
-				settingsScreen.render();
+				settingsScreen.render(delta);
 				break;
 		}
 	}

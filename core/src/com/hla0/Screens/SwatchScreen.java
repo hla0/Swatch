@@ -70,9 +70,6 @@ public class SwatchScreen extends InputAdapter implements Screen{
     @Override
     public void render(float delta) {
         viewport.apply();
-        render();
-    }
-    public void render() {
         game.renderer.setProjectionMatrix(camera.combined);
         game.batch.setProjectionMatrix(camera.combined);
         //when entering game
@@ -236,12 +233,6 @@ public class SwatchScreen extends InputAdapter implements Screen{
             int xPos = i * Swatch.worldWidth / numberObj + Constants.MARGIN + Swatch.worldWidth / numberObj / numberObj;
             int yPos = Swatch.worldHeight - Constants.BOX_SIZE * 4;
             if (i < colorNum) {
-                if (grid.getColorObjectives(index) < 10) {
-                    //offset += Constants.MARGIN / 2;
-                }
-                if (grid.getColorDestroyed(index) >= 10) {
-                    offset -= Constants.MARGIN / 2;
-                }
                 game.renderer.begin(ShapeRenderer.ShapeType.Filled);
                 game.renderer.setColor(Square.getColor(index));
                 game.renderer.rect(xPos, yPos, Constants.MARGIN, Constants.MARGIN);
@@ -250,6 +241,9 @@ public class SwatchScreen extends InputAdapter implements Screen{
                 int destroyed = grid.getColorDestroyed(index);
                 if (destroyed > grid.getColorObjectives(index)) {
                     destroyed = grid.getColorObjectives(index);
+                }
+                if (destroyed >= 10) {
+                    offset -= Constants.MARGIN / 2;
                 }
                 font.getData().setScale(2, 2);
                 font.draw(game.batch, String.format("%d/%d",destroyed,grid.getColorObjectives(index)), xPos - Constants.MARGIN / 2 + offset, yPos - Constants.BOX_SIZE);
