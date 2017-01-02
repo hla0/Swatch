@@ -2,6 +2,7 @@ package com.hla0;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.hla0.Screens.LevelSelectScreen;
 import com.hla0.Screens.SettingsScreen;
@@ -17,6 +18,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class Swatch extends Game {
 	public SpriteBatch batch;
 	public ShapeRenderer renderer;
+	public FreeTypeFontGenerator generator;
+	public FreeTypeFontGenerator.FreeTypeFontParameter parameter;
 	public static final int worldWidth = Constants.LEFT_PADDING + Constants.RIGHT_PADDING + Constants.GRID_SIZE * (Constants.BOX_SIZE + Constants.MARGIN) + Constants.MARGIN;
 	public static final int worldHeight = Constants.GRID_SIZE * (Constants.BOX_SIZE + Constants.MARGIN) + Constants.TOP_PADDING + Constants.BOTTOM_PADDING + Constants.MARGIN;
 	int parentScreen;
@@ -34,6 +37,8 @@ public class Swatch extends Game {
 	public void create () {
 		curScreen = 0;
 		parentScreen = -1;
+		generator = new FreeTypeFontGenerator(Gdx.files.internal("Helvetica.otf"));
+		parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 		batch = new SpriteBatch();
 		renderer = new ShapeRenderer();
 		swatchScreen = new SwatchScreen(this);

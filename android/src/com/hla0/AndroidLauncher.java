@@ -22,6 +22,7 @@ public class AndroidLauncher extends AndroidApplication {
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		//TODO should create splash screen here
 		RelativeLayout layout = new RelativeLayout(this);
 

@@ -1,19 +1,16 @@
 package com.hla0.Screens;
 
-import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hla0.Square;
 import com.hla0.Swatch;
 import com.hla0.util.Constants;
@@ -21,7 +18,9 @@ import com.hla0.util.Constants;
 public class StartScreen extends InputAdapter implements Screen{
     private Swatch game;
     private Texture texture;
-    private Viewport viewport;
+    private Texture startButton;
+    private Texture startButtonPressed;
+    private FitViewport viewport;
     private OrthographicCamera camera;
     int yPos;
     int yVelocity;
@@ -33,6 +32,7 @@ public class StartScreen extends InputAdapter implements Screen{
     Sound buttonPress;
     boolean startPressed;
     boolean settingsPressed;
+    BitmapFont font60;
     public StartScreen (Swatch g) {
         startPressed = false;
         settingsPressed = false;
@@ -40,12 +40,17 @@ public class StartScreen extends InputAdapter implements Screen{
         game = g;
         camera = new OrthographicCamera();
         texture = new Texture("splash_icon.png");
-        viewport = new StretchViewport(Swatch.worldWidth,Swatch.worldHeight,camera);
+        startButton = new Texture("start_button.png");
+        startButtonPressed = new Texture("start_button_pressed.png");
+        viewport = new FitViewport(Swatch.worldWidth,Swatch.worldHeight,camera);
         enter = true;
         exit = false;
+
         //TODO find a better button sound
         buttonPress = Gdx.audio.newSound(Gdx.files.internal("select.wav"));
         alpha = 1;
+        game.parameter.size = 60;
+        font60 = game.generator.generateFont(game.parameter);
     }
 
     @Override
@@ -98,9 +103,14 @@ public class StartScreen extends InputAdapter implements Screen{
                 else {
                     game.renderer.setColor(0/255f,172/255f,193/255f,1);
                 }
-                game.renderer.rect(-Constants.BOX_SIZE * 2,-Constants.BOX_SIZE * 3 - texture.getHeight(),Constants.BOX_SIZE * 4, Constants.BOX_SIZE * 3 / 2);
+                //game.renderer.rect(-Constants.BOX_SIZE * 2,-Constants.BOX_SIZE * 3 - texture.getHeight(),Constants.BOX_SIZE * 4, Constants.BOX_SIZE * 3 / 2);
                 game.renderer.end();
                 game.batch.begin();
+                font60.setColor(Color.BLACK);
+                font60.draw(game.batch,"Swatch",-Constants.BOX_SIZE * 2 - 18, texture.getHeight() * 3 / 2);
+                game.batch.draw(startButton,-Constants.BOX_SIZE * 5 / 2,-Constants.BOX_SIZE * 3 - texture.getHeight());
+                //font48.setColor(Color.BLACK);
+                //font48.draw(game.batch,"Start",-Constants.BOX_SIZE - 10,-Constants.BOX_SIZE - 27 - texture.getHeight());
                 game.batch.draw(texture, -texture.getWidth()/2, -texture.getHeight()/2);
                 game.batch.end();
                 break;
@@ -128,12 +138,22 @@ public class StartScreen extends InputAdapter implements Screen{
                 else {
                     game.renderer.setColor(0/255f,172/255f,193/255f,1);
                 }
-                game.renderer.rect(-Constants.BOX_SIZE * 2,-Constants.BOX_SIZE * 3 - texture.getHeight() + yPos,Constants.BOX_SIZE * 4, Constants.BOX_SIZE * 3 / 2);
+                //game.renderer.rect(-Constants.BOX_SIZE * 2,-Constants.BOX_SIZE * 3 - texture.getHeight() + yPos,Constants.BOX_SIZE * 4, Constants.BOX_SIZE * 3 / 2);
                 //TODO create Free play mode button
                 //TODO animate settings leaving
                 if (settingsPressed) {} else {}
                 game.renderer.end();
                 game.batch.begin();
+                font60.setColor(Color.BLACK);
+                font60.draw(game.batch,"Swatch",-Constants.BOX_SIZE * 2 - 18, texture.getHeight() * 3 / 2 + yPos);
+                if (startPressed) {
+                    game.batch.draw(startButtonPressed, -Constants.BOX_SIZE * 5 / 2, -Constants.BOX_SIZE * 3 - texture.getHeight() + yPos);
+                }
+                else {
+                    game.batch.draw(startButton, -Constants.BOX_SIZE * 5 / 2, -Constants.BOX_SIZE * 3 - texture.getHeight() + yPos);
+                }
+                //font48.setColor(Color.BLACK);
+                //font48.draw(game.batch,"Start",-Constants.BOX_SIZE - 10,-Constants.BOX_SIZE - 27 - texture.getHeight() + yPos);
                 game.batch.draw(texture, -texture.getWidth()/2, -texture.getHeight()/2 + yPos);
                 game.batch.end();
                 break;
